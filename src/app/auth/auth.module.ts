@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { AuthResolver } from './auth.resolver'
-import { UserModule } from '../user/user.module'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { PassportModule } from '@nestjs/passport'
 import { JwtModule, JwtModuleOptions, JwtService } from '@nestjs/jwt'
 import { JwtStrategy } from './jwt.strategy'
 import { LocalStrategy } from './local.strategy'
+import { UserService } from './user.service'
+import { User } from './entities/user.entity'
+import { HttpModule } from '@nestjs/axios'
 
 @Module({
   providers: [
@@ -14,10 +16,12 @@ import { LocalStrategy } from './local.strategy'
     AuthResolver,
     JwtService,
     JwtStrategy,
-    LocalStrategy
+    LocalStrategy,
+    UserService,
+    User
   ],
   imports: [
-    UserModule,
+    HttpModule,
     PassportModule,
     ConfigModule,
     JwtModule.registerAsync({

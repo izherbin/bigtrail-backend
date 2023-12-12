@@ -1,11 +1,10 @@
-import { Injectable } from '@nestjs/common'
-import { UserService } from '../user/user.service'
-import { LoginUserInput } from './dto/login-user.input'
-import * as bcrypt from 'bcrypt'
-import { User } from '../user/entities/user.entity'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { UserService } from './user.service'
+// import { User } from './entities/user.entity'
 import { JwtService } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config'
-import { CreateUserInput } from '../user/dto/create-user.input'
+import { LoginPhoneInput } from './dto/login-phone.input'
+import { LoginCodeInput } from './dto/login-code.input'
 
 @Injectable()
 export class AuthService {
@@ -15,11 +14,13 @@ export class AuthService {
     private readonly configService: ConfigService
   ) {}
 
-  async validateUser(loginUserInput: LoginUserInput) {
-    const { email, password } = loginUserInput
+  validateUser(loginUserInput: LoginCodeInput) {
+    const { code } = loginUserInput
 
-    const user = await this.userService.findOne(email)
-    const isMatch = await bcrypt.compare(password, user.password)
+    const user = this.userService.user
+    const isMatch = code === user.code
+    console.log('user.code:', user.code)
+    console.log('code:', code)
 
     if (user && isMatch) {
       return user
@@ -28,14 +29,18 @@ export class AuthService {
     return null
   }
 
-  login(user: User) {
+  login(loginUserInput: LoginCodeInput) {
+    const user = this.validateUser(loginUserInput)
+
+    if (!user) {
+      throw new UnauthorizedException()
+    }
+
     return {
       user,
       authToken: this.jwtService.sign(
         {
-          email: user.email,
-          name: user.name,
-          sub: user._id
+          phone: user.phone
         },
         {
           secret: this.configService.get<string>('JWT_SECRET')
@@ -44,18 +49,9 @@ export class AuthService {
     }
   }
 
-  async signup(payload: CreateUserInput) {
-    const user = await this.userService.findOne(payload.email)
+  async signup(payload: LoginPhoneInput) {
+    const phone = payload.phone
 
-    if (user) {
-      throw new Error('User already exists, login instead')
-    }
-
-    const hash = await bcrypt.hash(
-      payload.password,
-      Number(this.configService.get<string>('SALT_ROUNDS'))
-    )
-
-    return this.userService.createUser({ ...payload, password: hash })
+    return this.userService.createUser({ phone })
   }
 }

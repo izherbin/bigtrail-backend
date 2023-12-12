@@ -5,12 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { ApolloDriver } from '@nestjs/apollo'
 import { join } from 'path'
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
-import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose'
-import { ConfigModule, ConfigService } from '@nestjs/config'
-import { UserModule } from './user/user.module'
-import { BookModule } from './book/book.module'
-import { AuthorModule } from './author/author.module'
-import { CommonModule } from './common/common.module'
+import { ConfigModule } from '@nestjs/config'
 import { AuthModule } from './auth/auth.module'
 @Module({
   imports: [
@@ -21,24 +16,9 @@ import { AuthModule } from './auth/auth.module'
       playground: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()]
     }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        const options: MongooseModuleOptions = {
-          uri: configService.get<string>('DATABASE_URL')
-        }
-
-        return options
-      }
-    }),
     ConfigModule.forRoot({
       cache: true
     }),
-    UserModule,
-    BookModule,
-    AuthorModule,
-    CommonModule,
     AuthModule
   ],
   controllers: [],

@@ -1,27 +1,27 @@
-import { Args, Context, Mutation, Resolver } from '@nestjs/graphql'
+import { Args, /*Context,*/ Mutation, Resolver } from '@nestjs/graphql'
 import { LoginUserResponce } from './dto/login-user.response'
-import { LoginUserInput } from './dto/login-user.input'
-import { UseGuards } from '@nestjs/common'
+// import { UseGuards } from '@nestjs/common'
 import { AuthService } from './auth.service'
-import { GqlAuthGuard } from './gql-auth.guards'
-import { User } from '../user/entities/user.entity'
-import { CreateUserInput } from '../user/dto/create-user.input'
+// import { GqlAuthGuard } from './gql-auth.guards'
+import { User } from './entities/user.entity'
+import { LoginPhoneInput } from './dto/login-phone.input'
+import { LoginCodeInput } from './dto/login-code.input'
 
 @Resolver()
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
   @Mutation(() => LoginUserResponce)
-  @UseGuards(GqlAuthGuard)
+  // @UseGuards(GqlAuthGuard)
   login(
-    @Args('loginUserInput') loginUserInput: LoginUserInput,
-    @Context() context: any
+    @Args('loginUserInput') loginUserInput: LoginCodeInput
+    // @Context() context: any
   ) {
-    return this.authService.login(context.user)
+    return this.authService.login(loginUserInput)
   }
 
   @Mutation(() => User)
-  signup(@Args('signupInput') signupInput: CreateUserInput) {
+  signup(@Args('signupInput') signupInput: LoginPhoneInput) {
     return this.authService.signup(signupInput)
   }
 }
