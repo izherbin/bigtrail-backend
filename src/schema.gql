@@ -21,6 +21,7 @@ type Query {
 type Mutation {
   login(loginUserInput: LoginCodeInput!): LoginUserResponce!
   signup(signupInput: LoginPhoneInput!): User!
+  kill: String!
 }
 
 input LoginCodeInput {

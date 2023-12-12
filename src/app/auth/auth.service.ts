@@ -54,4 +54,15 @@ export class AuthService {
 
     return this.userService.createUser({ phone })
   }
+
+  kill() {
+    this.userService.user = {
+      phone: null,
+      code: null,
+      tsSMSSent: null,
+      token: null
+    }
+
+    return 'Authentication process stoped'
+  }
 }
