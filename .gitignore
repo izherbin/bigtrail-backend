@@ -37,3 +37,6 @@ lerna-debug.log*
 # Test files
 test_*.js
 test_*.mjs
+
+# Config file
+.env
