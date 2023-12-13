@@ -1,10 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { UserService } from './user.service'
-// import { User } from './entities/user.entity'
 import { JwtService } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config'
 import { LoginPhoneInput } from './dto/login-phone.input'
 import { LoginCodeInput } from './dto/login-code.input'
+import { User } from './entities/user.entity'
 
 @Injectable()
 export class AuthService {
@@ -29,13 +29,7 @@ export class AuthService {
     return null
   }
 
-  login(loginUserInput: LoginCodeInput) {
-    const user = this.validateUser(loginUserInput)
-
-    if (!user) {
-      throw new UnauthorizedException()
-    }
-
+  login(user: User) {
     return {
       user,
       authToken: this.jwtService.sign(

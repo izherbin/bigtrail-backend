@@ -1,5 +1,5 @@
 import {
-  ForbiddenException,
+  // ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable
@@ -8,7 +8,7 @@ import { LoginPhoneInput } from './dto/login-phone.input'
 import { User } from './entities/user.entity'
 import { ConfigService } from '@nestjs/config'
 import { HttpService } from '@nestjs/axios'
-import { catchError /*, lastValueFrom, map */, lastValueFrom, map } from 'rxjs'
+// import { catchError, lastValueFrom, map, lastValueFrom, map } from 'rxjs'
 
 @Injectable()
 export class UserService {

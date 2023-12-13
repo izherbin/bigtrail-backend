@@ -10,7 +10,6 @@ type User {
 }
 
 type LoginUserResponce {
-  user: User!
   authToken: String!
 }
 
