@@ -19,8 +19,6 @@ export class AuthService {
 
     const user = this.userService.user
     const isMatch = code === user.code
-    console.log('user.code:', user.code)
-    console.log('code:', code)
 
     if (user && isMatch) {
       return user

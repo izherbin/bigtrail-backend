@@ -2,13 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type User {
-  phone: String!
-  code: Int!
-  tsSMSSent: Float!
-  token: String
-}
-
 type LoginUserResponce {
   authToken: String!
 }
@@ -19,7 +12,7 @@ type Query {
 
 type Mutation {
   login(loginUserInput: LoginCodeInput!): LoginUserResponce!
-  signup(signupInput: LoginPhoneInput!): User!
+  signup(signupInput: LoginPhoneInput!): String!
   kill: String!
 }
 

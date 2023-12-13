@@ -60,7 +60,7 @@ export class UserService {
 
     this.user.tsSMSSent = Date.now()
 
-    return this.user
+    return 'SMS sent successfully, your code is: ' + this.user.code
   }
 
   removeUser() {
