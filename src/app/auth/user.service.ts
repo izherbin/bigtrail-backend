@@ -59,7 +59,7 @@ export class UserService {
     const msg = await lastValueFrom(request)
 
     console.log('msg.err_code:', msg.err_code)
-    if (msg.err_code) {
+    if (msg.err_code !== '0') {
       throw new HttpException(msg.text, HttpStatus.BAD_REQUEST)
     }
 
