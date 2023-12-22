@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql'
+import { Field, ObjectType } from '@nestjs/graphql'
 
 @ObjectType()
 export class LoginCodeResponce {
@@ -10,7 +10,4 @@ export class LoginCodeResponce {
 
   @Field(() => String)
   canSendAgain: string
-
-  @Field(() => Int)
-  code: number
 }

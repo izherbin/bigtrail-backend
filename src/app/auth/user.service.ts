@@ -71,8 +71,7 @@ export class UserService {
       canSendAgain: String(
         this.user.tsSMSSent +
           Number(this.configService.get<string>('NEW_SMS_TIMEOUT'))
-      ),
-      code: this.user.code
+      )
     }
   }
 

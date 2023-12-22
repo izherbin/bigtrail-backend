@@ -10,7 +10,6 @@ type LoginCodeResponce {
   phone: String!
   sent: String!
   canSendAgain: String!
-  code: Int!
 }
 
 type Query {
