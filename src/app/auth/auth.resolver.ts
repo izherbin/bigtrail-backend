@@ -5,6 +5,7 @@ import { AuthService } from './auth.service'
 import { GqlAuthGuard } from './gql-auth.guards'
 import { LoginPhoneInput } from './dto/login-phone.input'
 import { LoginCodeInput } from './dto/login-code.input'
+import { LoginCodeResponce } from './dto/login-code.response'
 
 @Resolver()
 export class AuthResolver {
@@ -19,7 +20,7 @@ export class AuthResolver {
     return this.authService.login(context.user)
   }
 
-  @Mutation(() => String)
+  @Mutation(() => LoginCodeResponce)
   signup(@Args('signupInput') signupInput: LoginPhoneInput) {
     return this.authService.signup(signupInput)
   }

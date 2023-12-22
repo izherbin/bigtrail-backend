@@ -6,13 +6,21 @@ type LoginUserResponce {
   authToken: String!
 }
 
+type LoginCodeResponce {
+  phone: String!
+  sent: String!
+  canSendAgain: String!
+  code: Int!
+}
+
 type Query {
+  """Это для проверки авторизации"""
   getHello: String!
 }
 
 type Mutation {
   login(loginUserInput: LoginCodeInput!): LoginUserResponce!
-  signup(signupInput: LoginPhoneInput!): String!
+  signup(signupInput: LoginPhoneInput!): LoginCodeResponce!
   kill: String!
 }
 

@@ -9,6 +9,15 @@
       "program": "${file}",
       "request": "launch",
       "skipFiles": ["<node_internals>/**"],
+      "preLaunchTask": "tsc: сборка — tsconfig.build.json",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "type": "node"
+    },
+    {
+      "name": "Launch JS",
+      "program": "${file}",
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**"],
       "type": "node"
     },
     {

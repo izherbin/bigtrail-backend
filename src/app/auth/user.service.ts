@@ -1,14 +1,9 @@
-import {
-  // ForbiddenException,
-  HttpException,
-  HttpStatus,
-  Injectable
-} from '@nestjs/common'
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { LoginPhoneInput } from './dto/login-phone.input'
 import { User } from './entities/user.entity'
 import { ConfigService } from '@nestjs/config'
 import { HttpService } from '@nestjs/axios'
-// import { catchError, lastValueFrom, map, lastValueFrom, map } from 'rxjs'
+import { catchError, lastValueFrom, map } from 'rxjs'
 
 @Injectable()
 export class UserService {
@@ -29,38 +24,60 @@ export class UserService {
       throw new HttpException('SMS too early', HttpStatus.CONFLICT)
     }
 
+    if (!this.validatePhone(loginPhoneInput.phone)) {
+      throw new HttpException('Incorrect phone number', HttpStatus.BAD_REQUEST)
+    }
     this.user.phone = loginPhoneInput.phone
 
     this.user.code = Math.round(Math.random() * 899999 + 100000)
 
-    // const request = this.http
-    //   .post(
-    //     'https://api.releans.com/v2/message',
-    //     {},
-    //     {
-    //       params: {
-    //         sender: this.configService.get<string>('SMS_SENDER_NAME'),
-    //         mobile: '+' + loginPhoneInput.phone,
-    //         content: 'Your code is : ' + this.user.code
-    //       },
-    //       headers: {
-    //         Authorization:
-    //           'Bearer ' + this.configService.get<string>('SMS_API_KEY')
-    //       }
-    //     }
-    //   )
-    //   .pipe(map((res) => res.status))
-    //   .pipe(
-    //     catchError(() => {
-    //       throw new ForbiddenException('API not available')
-    //     })
-    //   )
-    // const status = await lastValueFrom(request)
-    // console.log('status:', status)
+    const request = this.http
+      .post(
+        'http://api.sms-prosto.ru/',
+        {},
+        {
+          params: {
+            method: 'push_msg',
+            format: 'json',
+            key: this.configService.get<string>('SMS_API_KEY'),
+            text: this.user.code,
+            phone: Number(this.user.phone),
+            sender_name: this.configService.get<string>('SMS_SENDER_NAME'),
+            priority: 1
+          }
+        }
+      )
+      .pipe(map((res) => res.data.response.msg))
+      .pipe(
+        catchError(() => {
+          throw new HttpException(
+            'API not available',
+            HttpStatus.SERVICE_UNAVAILABLE
+          )
+        })
+      )
+    const msg = await lastValueFrom(request)
+
+    console.log('msg.err_code:', msg.err_code)
+    if (msg.err_code) {
+      throw new HttpException(msg.text, HttpStatus.BAD_REQUEST)
+    }
 
     this.user.tsSMSSent = Date.now()
 
-    return 'SMS sent successfully, your code is: ' + this.user.code
+    return {
+      phone: this.user.phone,
+      sent: String(this.user.tsSMSSent),
+      canSendAgain: String(
+        this.user.tsSMSSent +
+          Number(this.configService.get<string>('NEW_SMS_TIMEOUT'))
+      ),
+      code: this.user.code
+    }
+  }
+
+  validatePhone(phone: string): boolean {
+    return /^7\d{10}/.test(phone)
   }
 
   removeUser() {

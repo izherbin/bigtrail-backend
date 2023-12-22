@@ -7,7 +7,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guards'
 export class AppResolver {
   constructor(private readonly appService: AppService) {}
 
-  @Query(() => String)
+  @Query(() => String, { description: 'Это для проверки авторизации' })
   @UseGuards(JwtAuthGuard)
   getHello(): string {
     return this.appService.getHello()
