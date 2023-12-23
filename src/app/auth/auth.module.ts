@@ -6,7 +6,6 @@ import { PassportModule } from '@nestjs/passport'
 import { JwtModule, JwtModuleOptions, JwtService } from '@nestjs/jwt'
 import { JwtStrategy } from './jwt.strategy'
 import { LocalStrategy } from './local.strategy'
-import { UserService } from './user.service'
 import { User } from './entities/user.entity'
 import { HttpModule } from '@nestjs/axios'
 
@@ -17,7 +16,6 @@ import { HttpModule } from '@nestjs/axios'
     JwtService,
     JwtStrategy,
     LocalStrategy,
-    UserService,
     User
   ],
   imports: [
