@@ -2,13 +2,23 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+"""Объект ответа после отправки кода аутентификации"""
 type LoginUserResponce {
+  """JWT-токен для аутентификации запросов с фронтенда"""
   authToken: String!
 }
 
+"""Объект ответа после отправки смс"""
 type LoginCodeResponce {
+  """Номер телефона в формате string 7ХХХХХХХХХХ"""
   phone: String!
+
+  """Время отправки смс пользователю в формате timestamp"""
   sent: String!
+
+  """
+  Время допустимой повторной отправки смс пользователю в формате timestamp
+  """
   canSendAgain: String!
 }
 
@@ -18,15 +28,24 @@ type Query {
 }
 
 type Mutation {
+  """Отправить код аутентификации, полученный по смс"""
   login(loginUserInput: LoginCodeInput!): LoginUserResponce!
+
+  """Отправить номер телефона для аутентификации"""
   signup(signupInput: LoginPhoneInput!): LoginCodeResponce!
+
+  """Прекратить процесс аутентификации"""
   kill: String!
 }
 
+"""Объект запроса с кодом для аутентификации по смс"""
 input LoginCodeInput {
+  """Код аутентификации по смс в формате number NNNNNN"""
   code: Int!
 }
 
+"""Объект запроса с номером телефона для аутентификации по смс"""
 input LoginPhoneInput {
+  """Номер телефона в формате string 7ХХХХХХХХХХ"""
   phone: String!
 }

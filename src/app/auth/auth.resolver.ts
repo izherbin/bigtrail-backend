@@ -11,7 +11,10 @@ import { LoginCodeResponce } from './dto/login-code.response'
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
-  @Mutation(() => LoginUserResponce)
+  @Mutation(() => LoginUserResponce, {
+    //? name: 'verifyCode',
+    description: 'Отправить код аутентификации, полученный по смс'
+  })
   @UseGuards(GqlAuthGuard)
   login(
     @Args('loginUserInput') loginUserInput: LoginCodeInput,
@@ -20,12 +23,18 @@ export class AuthResolver {
     return this.authService.login(context.user)
   }
 
-  @Mutation(() => LoginCodeResponce)
+  @Mutation(() => LoginCodeResponce, {
+    //? name: 'sendCode',
+    description: 'Отправить номер телефона для аутентификации'
+  })
   signup(@Args('signupInput') signupInput: LoginPhoneInput) {
     return this.authService.signup(signupInput)
   }
 
-  @Mutation(() => String)
+  @Mutation(() => String, {
+    //? name: 'cancelAuth',
+    description: 'Прекратить процесс аутентификации'
+  })
   kill() {
     return this.authService.kill()
   }
