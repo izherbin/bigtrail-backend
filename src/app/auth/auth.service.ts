@@ -61,7 +61,7 @@ export class AuthService {
     }
     this.user.phone = payload.phone
 
-    this.user.code = Math.round(Math.random() * 899999 + 100000)
+    this.user.code = this.genCode()
     console.log('code:', this.user.code)
 
     const request = this.http
@@ -111,6 +111,37 @@ export class AuthService {
 
   validatePhone(phone: string): boolean {
     return /^7\d{10}/.test(phone)
+  }
+
+  genCode(): number {
+    const uniqueDigits = []
+    const pairedDigits = []
+    let code = 0
+    for (let i = 0; i < 6; i++) {
+      while (true) {
+        const newDigit = Math.round(Math.random() * 9)
+        if (!i && !newDigit) continue
+        const count = uniqueDigits.reduce((cnt, digit) => {
+          if (digit === newDigit) return cnt + 1
+          else return cnt
+        }, 0)
+        if (count >= 2) continue
+        else if (count == 1) {
+          const countPairs = pairedDigits.reduce((cnt, digit) => {
+            if (digit === newDigit) return cnt + 1
+            else return cnt
+          }, 0)
+          if (countPairs === 0) pairedDigits.push(newDigit)
+          else continue
+        } else {
+          if (uniqueDigits.length < 4) uniqueDigits.push(newDigit)
+          else continue
+        }
+        code = code * 10 + newDigit
+        break
+      }
+    }
+    return code
   }
 
   kill() {
