@@ -21,8 +21,8 @@ export class UserService {
     return await userFromDB.updateOne(user)
   }
 
-  async setName(setNameInput: SetNameInput) {
-    const { phone, name } = setNameInput
+  async setName(phone, setNameInput: SetNameInput) {
+    const { name } = setNameInput
     const user = await this.userModel.findOne({ phone })
     if (!user) {
       throw new HttpException('No such user', HttpStatus.NOT_FOUND)

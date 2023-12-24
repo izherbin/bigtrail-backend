@@ -25,6 +25,9 @@ type LoginCodeResponce {
 type Query {
   """Это для проверки авторизации"""
   getHello: String!
+
+  """Определение телефона пользователя"""
+  whoAmI: String!
 }
 
 type Mutation {
@@ -55,9 +58,6 @@ input LoginPhoneInput {
 
 """Объект запроса именем пользователя"""
 input SetNameInput {
-  """Номер телефона в формате string 7ХХХХХХХХХХ"""
-  phone: String!
-
   """Имя пользователя"""
   name: String!
 }
