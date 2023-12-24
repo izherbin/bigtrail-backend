@@ -36,6 +36,9 @@ type Mutation {
 
   """Прекратить процесс аутентификации"""
   kill: String!
+
+  """Установить имя пользователя"""
+  setName(setnameInput: SetNameInput!): String!
 }
 
 """Объект запроса с кодом для аутентификации по смс"""
@@ -48,4 +51,13 @@ input LoginCodeInput {
 input LoginPhoneInput {
   """Номер телефона в формате string 7ХХХХХХХХХХ"""
   phone: String!
+}
+
+"""Объект запроса именем пользователя"""
+input SetNameInput {
+  """Номер телефона в формате string 7ХХХХХХХХХХ"""
+  phone: String!
+
+  """Имя пользователя"""
+  name: String!
 }

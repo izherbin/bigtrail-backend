@@ -6,11 +6,13 @@ import { LoginCodeInput } from './dto/login-code.input'
 import { User } from './entities/user.entity'
 import { catchError, lastValueFrom, map } from 'rxjs'
 import { HttpService } from '@nestjs/axios'
+import { UserService } from '../user/user.service'
 
 @Injectable()
 export class AuthService {
   constructor(
     private user: User,
+    private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private http: HttpService
@@ -95,6 +97,7 @@ export class AuthService {
     // }
 
     this.user.tsSMSSent = Date.now()
+    this.userService.createUser(this.user)
 
     return {
       phone: this.user.phone,
@@ -112,6 +115,7 @@ export class AuthService {
 
   kill() {
     this.user = {
+      ...this.user,
       phone: null,
       code: null,
       tsSMSSent: null,

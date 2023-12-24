@@ -6,8 +6,11 @@ import { PassportModule } from '@nestjs/passport'
 import { JwtModule, JwtModuleOptions, JwtService } from '@nestjs/jwt'
 import { JwtStrategy } from './jwt.strategy'
 import { LocalStrategy } from './local.strategy'
-import { User } from './entities/user.entity'
+import { User, UserSchema } from './entities/user.entity'
 import { HttpModule } from '@nestjs/axios'
+import { UserModule } from '../user/user.module'
+import { UserService } from '../user/user.service'
+import { MongooseModule } from '@nestjs/mongoose'
 
 @Module({
   providers: [
@@ -16,9 +19,12 @@ import { HttpModule } from '@nestjs/axios'
     JwtService,
     JwtStrategy,
     LocalStrategy,
+    UserService,
     User
   ],
   imports: [
+    UserModule,
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     HttpModule,
     PassportModule,
     ConfigModule,
