@@ -13,15 +13,32 @@ export class UserService {
     private readonly configService: ConfigService
   ) {}
 
-  async createUser(user: User) {
+  async getUser(phone: string) {
+    const user = await this.userModel.findOne({ phone })
+    return user
+  }
+
+  async createUser(phone: string) {
+    const user = await this.userModel.findOne({ phone })
+    if (user) {
+      throw new HttpException(
+        'This user is already exists',
+        HttpStatus.CONFLICT
+      )
+    }
+    const res = await this.userModel.insertMany([{ phone }])
+    return res[0]
+  }
+
+  async updateUser(user: User) {
     const userFromDB = await this.userModel.findOne({ phone: user.phone })
     if (!userFromDB) {
-      return await this.userModel.insertMany([user])
+      throw new HttpException('No such user', HttpStatus.NOT_FOUND)
     }
     return await userFromDB.updateOne(user)
   }
 
-  async setName(phone, setNameInput: SetNameInput) {
+  async setName(phone: string, setNameInput: SetNameInput) {
     const { name } = setNameInput
     const user = await this.userModel.findOne({ phone })
     if (!user) {

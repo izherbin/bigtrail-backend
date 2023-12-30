@@ -41,3 +41,6 @@ lerna-debug.log*
 test_*.js
 test_*.mjs
 test_*.ts
+
+# GraphDoc files
+/doc

@@ -3,7 +3,6 @@ import { JwtService } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config'
 import { LoginPhoneInput } from './dto/login-phone.input'
 import { LoginCodeInput } from './dto/login-code.input'
-import { User } from './entities/user.entity'
 import { catchError, lastValueFrom, map } from 'rxjs'
 import { HttpService } from '@nestjs/axios'
 import { UserService } from '../user/user.service'
@@ -11,17 +10,17 @@ import { UserService } from '../user/user.service'
 @Injectable()
 export class AuthService {
   constructor(
-    private user: User,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private http: HttpService
   ) {}
 
-  validateUser(loginUserInput: LoginCodeInput) {
-    const { code } = loginUserInput
-
-    const user = this.user
+  async validateUser(phone: string, code: number) {
+    const user = await this.userService.getUser(phone)
+    if (!user) {
+      return null
+    }
     const isMatch = code === user.code
 
     if (user && isMatch) {
@@ -31,12 +30,17 @@ export class AuthService {
     return null
   }
 
-  login(user: User) {
+  async login(loginUserInput: LoginCodeInput) {
+    const { phone } = loginUserInput
+    const user = await this.userService.getUser(phone)
+    if (!user) {
+      throw new HttpException('No such phone', HttpStatus.NOT_FOUND)
+    }
     return {
       user,
       authToken: this.jwtService.sign(
         {
-          phone: user.phone
+          phone
         },
         {
           secret: this.configService.get<string>('JWT_SECRET')
@@ -46,11 +50,16 @@ export class AuthService {
   }
 
   async signup(payload: LoginPhoneInput) {
-    const tsCheck = Date.now()
+    const { phone } = payload
+    let user = await this.userService.getUser(phone)
+    if (!user) {
+      user = await this.userService.createUser(phone)
+    }
 
+    const tsCheck = Date.now()
     if (
-      this.user.tsSMSSent &&
-      tsCheck - this.user.tsSMSSent <
+      user.tsSMSSent &&
+      tsCheck - user.tsSMSSent <
         Number(this.configService.get<string>('NEW_SMS_TIMEOUT'))
     ) {
       throw new HttpException('SMS too early', HttpStatus.CONFLICT)
@@ -59,10 +68,9 @@ export class AuthService {
     if (!this.validatePhone(payload.phone)) {
       throw new HttpException('Incorrect phone number', HttpStatus.BAD_REQUEST)
     }
-    this.user.phone = payload.phone
 
-    this.user.code = this.genCode()
-    console.log('code:', this.user.code)
+    user.code = this.genCode()
+    console.log('code:', user.code)
 
     const request = this.http
       .post(
@@ -73,8 +81,8 @@ export class AuthService {
             method: 'push_msg',
             format: 'json',
             key: this.configService.get<string>('SMS_API_KEY'),
-            text: this.user.code,
-            phone: Number(this.user.phone),
+            text: user.code + ' - код для авторизации в BigTrail',
+            phone: Number(user.phone),
             sender_name: this.configService.get<string>('SMS_SENDER_NAME'),
             priority: 1
           }
@@ -96,14 +104,14 @@ export class AuthService {
       throw new HttpException(msg.text, HttpStatus.BAD_REQUEST)
     }
 
-    this.user.tsSMSSent = Date.now()
-    this.userService.createUser(this.user)
+    user.tsSMSSent = Date.now()
+    this.userService.updateUser(user)
 
     return {
-      phone: this.user.phone,
-      sent: String(this.user.tsSMSSent),
+      phone: user.phone,
+      sent: String(user.tsSMSSent),
       canSendAgain: String(
-        this.user.tsSMSSent +
+        user.tsSMSSent +
           Number(this.configService.get<string>('NEW_SMS_TIMEOUT'))
       )
     }
@@ -144,15 +152,16 @@ export class AuthService {
     return code
   }
 
-  kill() {
-    this.user = {
-      ...this.user,
-      phone: null,
-      code: null,
-      tsSMSSent: null,
-      token: null
+  async kill(payload: LoginPhoneInput) {
+    const { phone } = payload
+    const user = await this.userService.getUser(phone)
+    if (!user) {
+      return 'Authentication process stoped'
     }
-
+    user.code = null
+    user.tsSMSSent = null
+    user.token = null
+    await this.userService.updateUser(user)
     return 'Authentication process stoped'
   }
 }
