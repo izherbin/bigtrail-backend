@@ -44,3 +44,6 @@ test_*.ts
 
 # Graphdoc files
 /doc
+
+# GraphDoc files
+/doc

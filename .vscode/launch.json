@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch Current File",
+      "name": "Файл TS",
       "program": "${file}",
       "request": "launch",
       "skipFiles": ["<node_internals>/**"],
@@ -14,7 +14,7 @@
       "type": "node"
     },
     {
-      "name": "Launch JS",
+      "name": "Файл JS",
       "program": "${file}",
       "request": "launch",
       "skipFiles": ["<node_internals>/**"],
@@ -23,7 +23,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Запустить программу",
+      "name": "Сервер",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/src/main.ts",
       "preLaunchTask": "tsc: сборка — tsconfig.build.json",

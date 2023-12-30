@@ -35,7 +35,7 @@ export class AuthResolver {
     //? name: 'cancelAuth',
     description: 'Прекратить процесс аутентификации'
   })
-  kill() {
-    return this.authService.kill()
+  kill(@Args('signupInput') phoneInput: LoginPhoneInput) {
+    return this.authService.kill(phoneInput)
   }
 }

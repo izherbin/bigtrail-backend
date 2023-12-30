@@ -19,8 +19,7 @@ import { MongooseModule } from '@nestjs/mongoose'
     JwtService,
     JwtStrategy,
     LocalStrategy,
-    UserService,
-    User
+    UserService
   ],
   imports: [
     UserModule,
