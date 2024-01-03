@@ -23,6 +23,5 @@ jobs:
             cd /projects/bigtrail-backend
             sudo /home/github/scripts/dev_grant_github.sh
             git pull
-            npm ci
-            pm2 restart backend
             sudo /home/github/scripts/dev_grant_root.sh
+            sudo /home/github/scripts/backend_restart.sh
