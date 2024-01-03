@@ -8,7 +8,9 @@ import { Phone } from './auth/phone.decorator'
 export class AppResolver {
   constructor(private readonly appService: AppService) {}
 
-  @Query(() => String, { description: 'Это для проверки авторизации' })
+  @Query(() => String, {
+    description: 'Это для проверки авторизации, а заодно и автодеплоя'
+  })
   @UseGuards(JwtAuthGuard)
   getHello(): string {
     return this.appService.getHello()
