@@ -22,5 +22,5 @@ jobs:
           script: |
             cd /projects/bigtrail-backend
             sudo /home/github/scripts/dev_grant_github.sh
-            git pull git@github.com:izherbin/bigtrail-backend.git master
+            git pull
             sudo /home/github/scripts/dev_grant_root.sh
