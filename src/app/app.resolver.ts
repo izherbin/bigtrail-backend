@@ -9,7 +9,7 @@ export class AppResolver {
   constructor(private readonly appService: AppService) {}
 
   @Query(() => String, {
-    description: 'Это для проверки авторизации, а заодно и автодеплоя'
+    description: 'Это для проверки авторизации'
   })
   @UseGuards(JwtAuthGuard)
   getHello(): string {
