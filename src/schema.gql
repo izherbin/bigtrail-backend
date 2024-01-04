@@ -22,8 +22,94 @@ type LoginCodeResponce {
   canSendAgain: String!
 }
 
+type TrackPoint {
+  """Широта"""
+  lat: Float!
+
+  """Долгота"""
+  lon: Float!
+
+  """Высота"""
+  alt: Float!
+
+  """Временная метка"""
+  timestamp: Float!
+
+  """Скорость"""
+  speed: Float!
+
+  """Ускорение"""
+  boost: Float!
+
+  """Вертикальная скорость"""
+  altSpeed: Float!
+}
+
+type TrackPhoto {
+  """Сыылка на фото"""
+  uri: String!
+
+  """Данные какие-то"""
+  data: String!
+
+  """Описание"""
+  description: String!
+
+  """id локальный для фронта"""
+  id: String!
+}
+
+type TrackNote {
+  """Точка трека"""
+  point: TrackPoint!
+
+  """id локальный для фронта"""
+  id: String!
+
+  """Описание"""
+  description: String!
+
+  """Набор фотографий"""
+  photos: [TrackPhoto!]!
+
+  """Нерабочее?"""
+  disabled: Boolean!
+}
+
+type Track {
+  """Идентифкатор в MongoDB"""
+  _id: String!
+
+  """Имя трека"""
+  name: String!
+
+  """Временная метка"""
+  timestamp: Float!
+
+  """Массив точек трека"""
+  points: [TrackPoint!]!
+
+  """Длительность"""
+  duration: Float!
+
+  """Расстояние"""
+  distance: Float!
+
+  """Заметки о точках трека"""
+  notes: [TrackNote!]!
+
+  """Загружено?"""
+  uploaded: Boolean!
+
+  """Адрес"""
+  address: String!
+
+  """Нерабочее?"""
+  disabled: Boolean!
+}
+
 type Query {
-  """Это для проверки авторизации"""
+  """Это для проверки авторизации, а заодно и автодеплоя"""
   getHello: String!
 
   """Определение телефона пользователя"""
@@ -42,6 +128,7 @@ type Mutation {
 
   """Установить имя пользователя"""
   setName(setnameInput: SetNameInput!): String!
+  uploadTrack(createTrackInput: CreateTrackInput!): Track!
 }
 
 """Объект запроса с кодом для аутентификации по смс"""
@@ -63,4 +150,87 @@ input LoginPhoneInput {
 input SetNameInput {
   """Имя пользователя"""
   name: String!
+}
+
+input CreateTrackInput {
+  """Имя трека"""
+  name: String!
+
+  """Временная метка"""
+  timestamp: Float!
+
+  """Массив точек трека"""
+  points: [TrackPointInput!]!
+
+  """Длительность"""
+  duration: Float!
+
+  """Расстояние"""
+  distance: Float!
+
+  """Заметки о точках трека"""
+  notes: [TrackNoteInput!]!
+
+  """Загружено?"""
+  uploaded: Boolean!
+
+  """Адрес"""
+  address: String!
+
+  """Нерабочее?"""
+  disabled: Boolean!
+}
+
+input TrackPointInput {
+  """Широта"""
+  lat: Float!
+
+  """Долгота"""
+  lon: Float!
+
+  """Высота"""
+  alt: Float!
+
+  """Временная метка"""
+  timestamp: Float!
+
+  """Скорость"""
+  speed: Float!
+
+  """Ускорение"""
+  boost: Float!
+
+  """Вертикальная скорость"""
+  altSpeed: Float!
+}
+
+input TrackNoteInput {
+  """Точка трека"""
+  point: TrackPointInput!
+
+  """id локальный для фронта"""
+  id: String!
+
+  """Описание"""
+  description: String!
+
+  """Набор фотографий"""
+  photos: [TrackPhotoInput!]!
+
+  """Нерабочее?"""
+  disabled: Boolean!
+}
+
+input TrackPhotoInput {
+  """Сыылка на фото"""
+  uri: String!
+
+  """Данные какие-то"""
+  data: String!
+
+  """Описание"""
+  description: String!
+
+  """id локальный для фронта"""
+  id: String!
 }

@@ -9,6 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { AuthModule } from './auth/auth.module'
 import { UserModule } from './user/user.module'
 import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose'
+import { TrackModule } from './track/track.module'
 @Module({
   imports: [
     GraphQLModule.forRoot({
@@ -33,7 +34,8 @@ import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose'
       cache: true
     }),
     AuthModule,
-    UserModule
+    UserModule,
+    TrackModule
   ],
   controllers: [],
   providers: [AppResolver, AppService]
