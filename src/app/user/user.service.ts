@@ -13,6 +13,14 @@ export class UserService {
     private readonly configService: ConfigService
   ) {}
 
+  async getProfile(phone: string) {
+    const user = await this.userModel.findOne({ phone })
+    return {
+      phone: user.phone,
+      name: user.name
+    }
+  }
+
   async getUser(phone: string) {
     const user = await this.userModel.findOne({ phone })
     return user

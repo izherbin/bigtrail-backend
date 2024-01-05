@@ -1,13 +1,22 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { SetNameInput } from './dto/set-name.input'
 import { UserService } from './user.service'
 import { Phone } from '../auth/phone.decorator'
 import { UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/jwt-auth.guards'
+import { GetUserResponce } from './dto/get-user.response'
 
 @Resolver()
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
+
+  @Query(() => GetUserResponce, {
+    description: 'Получить профайл пользователя'
+  })
+  @UseGuards(JwtAuthGuard)
+  getProfile(@Phone() phone: string) {
+    return this.userService.getProfile(phone)
+  }
 
   @Mutation(() => String, {
     //? name: 'sendCode',
