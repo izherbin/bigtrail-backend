@@ -19,7 +19,6 @@ export class UserResolver {
   }
 
   @Mutation(() => String, {
-    //? name: 'sendCode',
     description: 'Установить имя пользователя'
   })
   @UseGuards(JwtAuthGuard)
