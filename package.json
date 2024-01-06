@@ -1,8 +1,8 @@
 {
-  "name": "auth-sms",
+  "name": "bigtrail-backend",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "Maxim Piskunov (qualaddar@gmail.com)",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
