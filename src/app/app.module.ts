@@ -10,6 +10,8 @@ import { AuthModule } from './auth/auth.module'
 import { UserModule } from './user/user.module'
 import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose'
 import { TrackModule } from './track/track.module'
+import { MinioClientModule } from './minio-client/minio-client.module'
+
 @Module({
   imports: [
     GraphQLModule.forRoot({
@@ -35,7 +37,8 @@ import { TrackModule } from './track/track.module'
     }),
     AuthModule,
     UserModule,
-    TrackModule
+    TrackModule,
+    MinioClientModule
   ],
   controllers: [],
   providers: [AppResolver, AppService]
