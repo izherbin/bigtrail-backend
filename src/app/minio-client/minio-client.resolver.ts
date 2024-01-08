@@ -1,6 +1,6 @@
-import { Query, Resolver } from '@nestjs/graphql'
+import { Args, Query, Resolver } from '@nestjs/graphql'
 import { MinioClientService } from './minio-client.service'
-import { BucketItemFromList } from './dto/minio-client.dto'
+import { BucketItem, BucketItemFromList } from './dto/minio-client.dto'
 
 @Resolver()
 export class MinioClientResolver {
@@ -11,5 +11,14 @@ export class MinioClientResolver {
   })
   listAllBuckets() {
     return this.minioClientService.listAllBuckets()
+  }
+
+  @Query(() => [BucketItem], {
+    description: 'Выдача списка всех объектов в бакете'
+  })
+  listObjectsInBucket(
+    @Args({ name: 'bucketName', description: 'Имя бакета' }) bucketName: string
+  ) {
+    return this.minioClientService.listObjectsInBucket(bucketName)
   }
 }
