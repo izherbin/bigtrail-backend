@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { BucketItem } from 'minio'
 import { MinioService } from 'nestjs-minio-client'
+import { DownloadLinkInput } from './dto/download-link.input.dto'
 
 @Injectable()
 export class MinioClientService {
@@ -19,5 +20,16 @@ export class MinioClientService {
       stream.on('end', () => resolve(listTemp))
     })
     return list
+  }
+
+  async getDownloadLink(downloadLinkInput: DownloadLinkInput) {
+    const { bucketName, objectName, expiry } = downloadLinkInput
+
+    const link: string = await this.minioService.client.presignedGetObject(
+      bucketName,
+      objectName,
+      expiry
+    )
+    return link
   }
 }
