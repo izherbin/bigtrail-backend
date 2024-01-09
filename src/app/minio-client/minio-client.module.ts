@@ -18,6 +18,9 @@ import { MinioClientResolver } from './minio-client.resolver'
           secretKey: config.get('MINIO_SECRET_KEY')
         }
       }
+    }),
+    ConfigModule.forRoot({
+      cache: true
     })
   ],
   providers: [MinioClientResolver, MinioClientService],

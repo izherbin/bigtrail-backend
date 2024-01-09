@@ -28,4 +28,12 @@ export class UserResolver {
   ) {
     return this.userService.setName(phone, setNameInput)
   }
+
+  @Mutation(() => String, {
+    description: 'Удалить профайл пользователя'
+  })
+  @UseGuards(JwtAuthGuard)
+  deleteProfile(@Phone() phone: string) {
+    return this.userService.deleteUser(phone)
+  }
 }

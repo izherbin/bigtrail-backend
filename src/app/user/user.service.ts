@@ -46,6 +46,15 @@ export class UserService {
     return await userFromDB.updateOne(user)
   }
 
+  async deleteUser(phone: string) {
+    const userFromDB = await this.userModel.findOne({ phone })
+    if (!userFromDB) {
+      throw new HttpException('No such user', HttpStatus.NOT_FOUND)
+    }
+    await this.userModel.deleteOne({ phone })
+    return `User ${phone} успешно удален`
+  }
+
   async setName(phone: string, setNameInput: SetNameInput) {
     const { name } = setNameInput
     const user = await this.userModel.findOne({ phone })

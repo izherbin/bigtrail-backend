@@ -1,7 +1,11 @@
-import { Args, Query, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { MinioClientService } from './minio-client.service'
 import { BucketItem, BucketItemFromList } from './dto/minio-client.dto'
 import { DownloadLinkInput } from './dto/download-link.input.dto'
+import { UploadFileInput, UploadedObjectInfo } from './dto/upload-file.dto'
+import { UploadedFile, UseInterceptors } from '@nestjs/common'
+import { FileInterceptor } from '@nestjs/platform-express'
+import { BufferedFile } from './file.model'
 
 @Resolver()
 export class MinioClientResolver {
@@ -30,5 +34,17 @@ export class MinioClientResolver {
     @Args('downloadLinkInput') downloadLinkInput: DownloadLinkInput
   ) {
     return this.minioClientService.getDownloadLink(downloadLinkInput)
+  }
+
+  @Mutation(() => UploadedObjectInfo, {
+    name: 'uploadFile',
+    description: 'Загрузить файл на сервер Minio'
+  })
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadFile(
+    @Args('loginUserInput') uploadFileInput: UploadFileInput,
+    @UploadedFile() file: BufferedFile
+  ) {
+    return this.minioClientService.uploadFile(uploadFileInput, file)
   }
 }
