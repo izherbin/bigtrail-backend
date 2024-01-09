@@ -3,6 +3,8 @@ import { AppService } from './app.service'
 import { Query, Resolver } from '@nestjs/graphql'
 import { JwtAuthGuard } from './auth/jwt-auth.guards'
 import { Phone } from './auth/phone.decorator'
+import { Schema as MongooSchema } from 'mongoose'
+import { UserId } from './auth/user-id.decorator'
 
 @Resolver()
 export class AppResolver {
@@ -20,5 +22,11 @@ export class AppResolver {
   @UseGuards(JwtAuthGuard)
   whoAmI(@Phone() phone: string): string {
     return this.appService.whoAmI(phone)
+  }
+
+  @Query(() => String, { description: 'Определение id пользователя' })
+  @UseGuards(JwtAuthGuard)
+  myId(@UserId() _id: MongooSchema.Types.ObjectId): string {
+    return this.appService.myId(_id)
   }
 }

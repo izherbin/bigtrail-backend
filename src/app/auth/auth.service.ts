@@ -37,11 +37,13 @@ export class AuthService {
       throw new HttpException('No such phone', HttpStatus.NOT_FOUND)
     }
 
+    const _id = user._id
     return {
       user,
       authToken: this.jwtService.sign(
         {
-          phone
+          phone,
+          _id
         },
         {
           secret: this.configService.get<string>('JWT_SECRET')

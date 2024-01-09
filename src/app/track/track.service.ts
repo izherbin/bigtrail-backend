@@ -3,7 +3,7 @@ import { CreateTrackInput } from './dto/create-track.input'
 import { UpdateTrackInput } from './dto/update-track.input'
 import { InjectModel } from '@nestjs/mongoose'
 import { Track, TrackDocument } from './entities/track.entity'
-import { Model } from 'mongoose'
+import { Model, Schema as MongooSchema } from 'mongoose'
 
 @Injectable()
 export class TrackService {
@@ -12,8 +12,12 @@ export class TrackService {
     private trackModel: Model<TrackDocument>
   ) {}
 
-  create(createTrackInput: CreateTrackInput) {
+  create(
+    UserId: MongooSchema.Types.ObjectId,
+    createTrackInput: CreateTrackInput
+  ) {
     const createTrack = new this.trackModel(createTrackInput)
+    createTrack.userId = UserId
     return createTrack.save()
   }
 

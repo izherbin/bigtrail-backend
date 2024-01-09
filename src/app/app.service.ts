@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common'
+import { Schema as MongooSchema } from 'mongoose'
 
 @Injectable()
 export class AppService {
@@ -8,5 +9,9 @@ export class AppService {
 
   whoAmI(phone: string): string {
     return 'Your phone is: ' + phone
+  }
+
+  myId(_id: MongooSchema.Types.ObjectId): string {
+    return 'Your Id is: ' + _id.toString()
   }
 }

@@ -84,7 +84,11 @@ export class Track {
   @Field(() => String, { description: 'Идентифкатор в MongoDB' })
   _id: MongooSchema.Types.ObjectId
 
-  type: 'track'
+  @Prop({ default: 'track' })
+  type: string
+
+  @Prop()
+  userId: MongooSchema.Types.ObjectId
 
   @Field(() => String, { description: 'Имя трека' })
   @Prop()
