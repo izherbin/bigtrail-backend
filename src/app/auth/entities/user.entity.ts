@@ -33,6 +33,9 @@ export class User {
   @Prop()
   tsSMSSent: timestamp
 
+  @Prop({ default: false })
+  isAdmin: boolean
+
   @Field(() => String, {
     nullable: true,
     description: 'JWT-токен для аутентификации запросов с фронтенда'

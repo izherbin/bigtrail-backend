@@ -36,6 +36,7 @@ export class AuthService {
     if (!user) {
       throw new HttpException('No such phone', HttpStatus.NOT_FOUND)
     }
+
     return {
       user,
       authToken: this.jwtService.sign(
@@ -52,8 +53,20 @@ export class AuthService {
   async signup(payload: LoginPhoneInput) {
     const { phone } = payload
     let user = await this.userService.getUser(phone)
+
     if (!user) {
       user = await this.userService.createUser(phone)
+    }
+
+    if (user.isAdmin) {
+      return {
+        phone,
+        sent: '1000000000000',
+        canSendAgain: String(
+          1000000000000 +
+            Number(this.configService.get<string>('NEW_SMS_TIMEOUT'))
+        )
+      }
     }
 
     const tsCheck = Date.now()
@@ -158,6 +171,11 @@ export class AuthService {
     if (!user) {
       return 'Authentication process stoped'
     }
+
+    if (user.isAdmin) {
+      return 'Can not stop authentication process'
+    }
+
     user.code = null
     user.tsSMSSent = null
     user.token = null

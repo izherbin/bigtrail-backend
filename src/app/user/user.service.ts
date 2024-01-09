@@ -43,6 +43,14 @@ export class UserService {
     if (!userFromDB) {
       throw new HttpException('No such user', HttpStatus.NOT_FOUND)
     }
+
+    if (userFromDB.isAdmin) {
+      throw new HttpException(
+        'Can not update this profile',
+        HttpStatus.FORBIDDEN
+      )
+    }
+
     return await userFromDB.updateOne(user)
   }
 
@@ -51,6 +59,14 @@ export class UserService {
     if (!userFromDB) {
       throw new HttpException('No such user', HttpStatus.NOT_FOUND)
     }
+
+    if (userFromDB.isAdmin) {
+      throw new HttpException(
+        'Can not delete this profile',
+        HttpStatus.FORBIDDEN
+      )
+    }
+
     await this.userModel.deleteOne({ phone })
     return `User ${phone} успешно удален`
   }
@@ -60,6 +76,13 @@ export class UserService {
     const user = await this.userModel.findOne({ phone })
     if (!user) {
       throw new HttpException('No such user', HttpStatus.NOT_FOUND)
+    }
+
+    if (user.isAdmin) {
+      throw new HttpException(
+        'Can not change this profile',
+        HttpStatus.FORBIDDEN
+      )
     }
 
     user.name = name
