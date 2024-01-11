@@ -18,6 +18,14 @@ export class AppResolver {
     return this.appService.getHello()
   }
 
+  @Query(() => String, {
+    description: 'Вывод версии программы'
+  })
+  @UseGuards(JwtAuthGuard)
+  getVersion(): string {
+    return this.appService.getVersion()
+  }
+
   @Query(() => String, { description: 'Определение телефона пользователя' })
   @UseGuards(JwtAuthGuard)
   whoAmI(@Phone() phone: string): string {
