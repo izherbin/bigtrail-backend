@@ -2,7 +2,6 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { BucketItem } from 'minio'
 import { MinioService } from 'nestjs-minio-client'
 import { DownloadLinkInput } from './dto/download-link.input.dto'
-import { BufferedFile } from './file.model'
 import { ConfigService } from '@nestjs/config'
 import { UploadFileInput } from './dto/upload-file.dto'
 
@@ -43,12 +42,9 @@ export class MinioClientService {
     return link
   }
 
-  async uploadFile(uploadFileInput: UploadFileInput, file: BufferedFile) {
-    const { bucketName, objectName } = uploadFileInput
+  async uploadFile(uploadFileInput: UploadFileInput) {
+    const { bucketName, objectName, file } = uploadFileInput
 
-    if (!(file.mimetype.includes('jpeg') || file.mimetype.includes('png'))) {
-      throw new HttpException('File type not supported', HttpStatus.BAD_REQUEST)
-    }
     // const timestamp = Date.now().toString()
     // const hashedFileName = crypto
     //   .createHash('md5')
@@ -63,7 +59,7 @@ export class MinioClientService {
     // const fileName = hashedFileName + extension
 
     const res = await this.minioService.client
-      .putObject(bucketName, objectName, file.buffer)
+      .putObject(bucketName, objectName, (await file).createReadStream())
       .catch((err) => {
         console.log('Error calculating download link:', err)
         throw new HttpException(
@@ -73,5 +69,19 @@ export class MinioClientService {
       })
 
     return res
+  }
+
+  async singleUpload(createReadStream, filename) {
+    const res = await this.minioService.client
+      .putObject('test-images', filename, createReadStream())
+      .catch((err) => {
+        console.log('Error calculating download link:', err)
+        throw new HttpException(
+          'Error calculating download link',
+          HttpStatus.BAD_REQUEST
+        )
+      })
+
+    return 'File uploaded'
   }
 }

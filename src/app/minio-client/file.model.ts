@@ -1,3 +1,7 @@
+// import { Stream } from 'stream'
+
+import { Readable } from 'stream'
+
 export interface BufferedFile {
   fieldname: string
   originalname: string
@@ -21,6 +25,13 @@ export interface StoredFileMetadata {
   size: number
   updatedAt: Date
   fileSrc?: string
+}
+
+export interface FileUpload {
+  filename: string
+  mimetype: string
+  encoding: string
+  createReadStream: () => Readable
 }
 
 export type AppMimeType = 'image/png' | 'image/jpeg'

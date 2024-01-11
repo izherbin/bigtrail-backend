@@ -3,9 +3,8 @@ import { MinioClientService } from './minio-client.service'
 import { BucketItem, BucketItemFromList } from './dto/minio-client.dto'
 import { DownloadLinkInput } from './dto/download-link.input.dto'
 import { UploadFileInput, UploadedObjectInfo } from './dto/upload-file.dto'
-import { UploadedFile, UseInterceptors } from '@nestjs/common'
-import { FileInterceptor } from '@nestjs/platform-express'
-import { BufferedFile } from './file.model'
+import { FileUpload } from './file.model'
+import { GraphQLUpload } from 'graphql-upload'
 
 @Resolver()
 export class MinioClientResolver {
@@ -40,11 +39,18 @@ export class MinioClientResolver {
     name: 'uploadFile',
     description: 'Загрузить файл на сервер Minio'
   })
-  @UseInterceptors(FileInterceptor('image'))
-  async uploadFile(
-    @Args('loginUserInput') uploadFileInput: UploadFileInput,
-    @UploadedFile() file: BufferedFile
+  async uploadFile(@Args('uploadFileInput') uploadFileInput: UploadFileInput) {
+    return this.minioClientService.uploadFile(uploadFileInput)
+  }
+
+  @Mutation(() => String, {
+    name: 'singleUpload',
+    description: 'Загрузить файл на сервер Minio'
+  })
+  async singleUpload(
+    @Args({ name: 'file', type: () => GraphQLUpload })
+    { createReadStream, filename }: FileUpload
   ) {
-    return this.minioClientService.uploadFile(uploadFileInput, file)
+    return this.minioClientService.singleUpload(createReadStream, filename)
   }
 }

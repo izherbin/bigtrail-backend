@@ -1,4 +1,6 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql'
+import { GraphQLUpload } from 'graphql-upload'
+import { FileUpload } from '../file.model'
 
 @InputType({
   description: 'Входные данные для загрузки файла'
@@ -9,6 +11,9 @@ export class UploadFileInput {
 
   @Field(() => String, { description: 'Имя объекта' })
   objectName: string
+
+  @Field(() => GraphQLUpload)
+  file: Promise<FileUpload>
 }
 
 @ObjectType({
