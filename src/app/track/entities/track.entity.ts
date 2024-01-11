@@ -87,6 +87,7 @@ export class Track {
   @Prop({ default: 'track' })
   type: string
 
+  @Field(() => String, { description: 'id создателя' })
   @Prop()
   userId: MongooSchema.Types.ObjectId
 

@@ -12,17 +12,18 @@ export class TrackService {
     private trackModel: Model<TrackDocument>
   ) {}
 
-  create(
+  async create(
     UserId: MongooSchema.Types.ObjectId,
     createTrackInput: CreateTrackInput
   ) {
     const createTrack = new this.trackModel(createTrackInput)
     createTrack.userId = UserId
-    return createTrack.save()
+    return await createTrack.save()
   }
 
-  findAll() {
-    return `This action returns all track`
+  async findAll() {
+    const tracks = await this.trackModel.find()
+    return tracks
   }
 
   findOne(id: number) {

@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args } from '@nestjs/graphql'
+import { Resolver, Mutation, Args, Query } from '@nestjs/graphql'
 import { TrackService } from './track.service'
 import { Track } from './entities/track.entity'
 import { CreateTrackInput } from './dto/create-track.input'
@@ -19,6 +19,12 @@ export class TrackResolver {
     @Args('createTrackInput') createTrackInput: CreateTrackInput
   ) {
     return this.trackService.create(userId, createTrackInput)
+  }
+
+  @Query(() => [Track])
+  @UseGuards(JwtAuthGuard)
+  getAllTracks() {
+    return this.trackService.findAll()
   }
 
   // @Query(() => [Track], { name: 'track' })
