@@ -9,7 +9,7 @@ export class AppService {
   }
 
   getVersion(): string {
-    const out = execSync('git show --pretty="%h %s %ar" HEAD')
+    const out = execSync('git show --pretty="%h %ar %s" HEAD')
       .toString()
       .split('\n')
     return out[0]
