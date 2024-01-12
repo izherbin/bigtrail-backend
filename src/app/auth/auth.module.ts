@@ -33,10 +33,7 @@ import { MinioClientModule } from '../minio-client/minio-client.module'
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
         const properties: JwtModuleOptions = {
-          secret: configService.get<string>('JWT_SECRET'),
-          signOptions: {
-            expiresIn: '24h'
-          }
+          secret: configService.get<string>('JWT_SECRET')
         }
         return properties
       }
