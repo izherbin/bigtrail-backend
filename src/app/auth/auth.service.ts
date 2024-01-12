@@ -104,37 +104,37 @@ export class AuthService {
     user.code = this.genCode()
     console.log('code:', user.code)
 
-    // const request = this.http
-    //   .post(
-    //     'http://api.sms-prosto.ru/',
-    //     {},
-    //     {
-    //       params: {
-    //         method: 'push_msg',
-    //         format: 'json',
-    //         key: this.configService.get<string>('SMS_API_KEY'),
-    //         text: user.code + ' - код для авторизации в BigTrail',
-    //         phone: Number(user.phone),
-    //         sender_name: this.configService.get<string>('SMS_SENDER_NAME'),
-    //         priority: 1
-    //       }
-    //     }
-    //   )
-    //   .pipe(map((res) => res.data.response.msg))
-    //   .pipe(
-    //     catchError(() => {
-    //       throw new HttpException(
-    //         'API not available',
-    //         HttpStatus.SERVICE_UNAVAILABLE
-    //       )
-    //     })
-    //   )
-    // const msg = await lastValueFrom(request)
+    const request = this.http
+      .post(
+        'http://api.sms-prosto.ru/',
+        {},
+        {
+          params: {
+            method: 'push_msg',
+            format: 'json',
+            key: this.configService.get<string>('SMS_API_KEY'),
+            text: user.code + ' - код для авторизации в BigTrail',
+            phone: Number(user.phone),
+            sender_name: this.configService.get<string>('SMS_SENDER_NAME'),
+            priority: 1
+          }
+        }
+      )
+      .pipe(map((res) => res.data.response.msg))
+      .pipe(
+        catchError(() => {
+          throw new HttpException(
+            'API not available',
+            HttpStatus.SERVICE_UNAVAILABLE
+          )
+        })
+      )
+    const msg = await lastValueFrom(request)
 
-    // console.log('msg.err_code:', msg.err_code)
-    // if (msg.err_code !== '0') {
-    //   throw new HttpException(msg.text, HttpStatus.BAD_REQUEST)
-    // }
+    console.log('msg.err_code:', msg.err_code)
+    if (msg.err_code !== '0') {
+      throw new HttpException(msg.text, HttpStatus.BAD_REQUEST)
+    }
 
     user.tsSMSSent = Date.now()
     this.userService.updateUser(user)
