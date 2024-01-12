@@ -21,6 +21,9 @@ export class AuthService {
     if (!user) {
       return null
     }
+    if (!code || !user.code) {
+      return null
+    }
     const isMatch = code === user.code
 
     if (user && isMatch) {
@@ -38,6 +41,11 @@ export class AuthService {
     }
 
     const _id = user._id
+    if (!user.isAdmin) {
+      user.code = null
+      user.save()
+    }
+
     return {
       user,
       authToken: this.jwtService.sign(
