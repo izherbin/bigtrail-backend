@@ -4,6 +4,7 @@ import { MinioService } from 'nestjs-minio-client'
 import { DownloadLinkInput } from './dto/download-link.input.dto'
 import { ConfigService } from '@nestjs/config'
 import { UploadFileInput } from './dto/upload-file.dto'
+import { Readable } from 'stream'
 
 @Injectable()
 export class MinioClientService {
@@ -71,17 +72,18 @@ export class MinioClientService {
     return res
   }
 
-  async singleUpload(createReadStream, filename) {
+  async singleUpload(
+    bucketName: string,
+    createReadStream: { (): Readable; (): string | Readable | Buffer },
+    filename: string
+  ) {
     const res = await this.minioService.client
-      .putObject('test-images', filename, createReadStream())
+      .putObject(bucketName, filename, createReadStream())
       .catch((err) => {
-        console.log('Error calculating download link:', err)
-        throw new HttpException(
-          'Error calculating download link',
-          HttpStatus.BAD_REQUEST
-        )
+        console.log('Error uploading file:', err)
+        throw new HttpException('Error uploading file', HttpStatus.BAD_REQUEST)
       })
 
-    return 'File uploaded'
+    return res
   }
 }

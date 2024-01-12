@@ -43,7 +43,7 @@ export class MinioClientResolver {
     return this.minioClientService.uploadFile(uploadFileInput)
   }
 
-  @Mutation(() => String, {
+  @Mutation(() => UploadedObjectInfo, {
     name: 'singleUpload',
     description: 'Загрузить файл на сервер Minio'
   })
@@ -51,6 +51,10 @@ export class MinioClientResolver {
     @Args({ name: 'file', type: () => GraphQLUpload })
     { createReadStream, filename }: FileUpload
   ) {
-    return this.minioClientService.singleUpload(createReadStream, filename)
+    return this.minioClientService.singleUpload(
+      'test-images',
+      createReadStream,
+      filename
+    )
   }
 }

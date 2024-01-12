@@ -5,10 +5,17 @@ import { Phone } from '../auth/phone.decorator'
 import { UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/jwt-auth.guards'
 import { GetUserResponce } from './dto/get-user.response'
+import { UploadedObjectInfo } from '../minio-client/dto/upload-file.dto'
+import { GraphQLUpload } from 'graphql-upload'
+import { FileUpload } from '../minio-client/file.model'
+import { MinioClientService } from '../minio-client/minio-client.service'
 
 @Resolver()
 export class UserResolver {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly minioClientService: MinioClientService
+  ) {}
 
   @Query(() => GetUserResponce, {
     description: 'Получить профайл пользователя'
@@ -27,6 +34,19 @@ export class UserResolver {
     @Args('setnameInput') setNameInput: SetNameInput
   ) {
     return this.userService.setName(phone, setNameInput)
+  }
+
+  @Mutation(() => UploadedObjectInfo, {
+    name: 'setProfileAvatar',
+    description: 'Загрузить файл на сервер Minio'
+  })
+  @UseGuards(JwtAuthGuard)
+  setProfileAvatar(
+    @Phone() phone: string,
+    @Args({ name: 'file', type: () => GraphQLUpload })
+    { createReadStream, filename }: FileUpload
+  ) {
+    return this.userService.setProfileAvatar(phone, createReadStream, filename)
   }
 
   @Mutation(() => String, {

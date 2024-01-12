@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { User, UserSchema } from '../auth/entities/user.entity'
 import { ConfigModule } from '@nestjs/config'
 import { UserResolver } from './user.resolver'
+import { MinioClientModule } from '../minio-client/minio-client.module'
 
 @Module({
   providers: [UserService, UserResolver],
@@ -11,7 +12,8 @@ import { UserResolver } from './user.resolver'
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     ConfigModule.forRoot({
       cache: true
-    })
+    }),
+    MinioClientModule
   ],
   exports: [UserService]
 })

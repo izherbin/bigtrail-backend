@@ -11,6 +11,7 @@ import { HttpModule } from '@nestjs/axios'
 import { UserModule } from '../user/user.module'
 import { UserService } from '../user/user.service'
 import { MongooseModule } from '@nestjs/mongoose'
+import { MinioClientModule } from '../minio-client/minio-client.module'
 
 @Module({
   providers: [
@@ -39,7 +40,8 @@ import { MongooseModule } from '@nestjs/mongoose'
         }
         return properties
       }
-    })
+    }),
+    MinioClientModule
   ]
 })
 export class AuthModule {}
