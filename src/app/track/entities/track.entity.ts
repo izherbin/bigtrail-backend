@@ -13,23 +13,23 @@ export class TrackPoint {
   @Prop()
   lon: number
 
-  @Field(() => Float, { description: 'Высота' })
+  @Field(() => Float, { nullable: true, description: 'Высота' })
   @Prop()
   alt?: number
 
-  @Field(() => Float, { description: 'Временная метка' })
+  @Field(() => Float, { nullable: true, description: 'Временная метка' })
   @Prop()
   timestamp?: number
 
-  @Field(() => Float, { description: 'Скорость' })
+  @Field(() => Float, { nullable: true, description: 'Скорость' })
   @Prop()
   speed?: number
 
-  @Field(() => Float, { description: 'Ускорение' })
+  @Field(() => Float, { nullable: true, description: 'Ускорение' })
   @Prop()
   boost?: number
 
-  @Field(() => Float, { description: 'Вертикальная скорость' })
+  @Field(() => Float, { nullable: true, description: 'Вертикальная скорость' })
   @Prop()
   altSpeed?: number
 }
@@ -37,19 +37,22 @@ export class TrackPoint {
 @ObjectType()
 @Schema({ _id: false })
 export class TrackPhoto {
-  @Field(() => String, { description: 'Сыылка на фото' })
+  @Field(() => String, { nullable: true, description: 'Сыылка на фото' })
   @Prop()
   uri?: string
 
-  @Field(() => String, { description: 'Данные какие-то' })
+  @Field(() => String, { nullable: true, description: 'Данные какие-то' })
   @Prop()
   data?: string
 
-  @Field(() => String, { description: 'Описание' })
+  @Field(() => String, { nullable: true, description: 'Описание' })
   @Prop()
   description?: string
 
-  @Field(() => String, { description: 'id локальный для фронта' })
+  @Field(() => String, {
+    nullable: true,
+    description: 'id локальный для фронта'
+  })
   @Prop()
   id?: string // Тут id можно не валидировать тк он локальный для фронта
 }
@@ -69,7 +72,10 @@ export class TrackNote {
   @Prop()
   description?: string
 
-  @Field(() => [TrackPhoto], { description: 'Набор фотографий' })
+  @Field(() => [TrackPhoto], {
+    nullable: true,
+    description: 'Набор фотографий'
+  })
   @Prop()
   photos?: TrackPhoto[]
 
@@ -103,27 +109,30 @@ export class Track {
   @Prop()
   points: TrackPoint[]
 
-  @Field(() => Float, { description: 'Длительность' })
+  @Field(() => Float, { nullable: true, description: 'Длительность' })
   @Prop()
   duration?: number
 
-  @Field(() => Float, { description: 'Расстояние' })
+  @Field(() => Float, { nullable: true, description: 'Расстояние' })
   @Prop()
   distance?: number
 
-  @Field(() => [TrackNote], { description: 'Заметки о точках трека' })
+  @Field(() => [TrackNote], {
+    nullable: true,
+    description: 'Заметки о точках трека'
+  })
   @Prop()
   notes?: TrackNote[]
 
-  @Field(() => Boolean, { description: 'Загружено?' })
+  @Field(() => Boolean, { nullable: true, description: 'Загружено?' })
   @Prop()
   uploaded?: boolean
 
-  @Field(() => String, { description: 'Адрес' })
+  @Field(() => String, { nullable: true, description: 'Адрес' })
   @Prop()
   address?: string
 
-  @Field(() => Boolean, { description: 'Нерабочее?' })
+  @Field(() => Boolean, { nullable: true, description: 'Нерабочее?' })
   @Prop()
   disabled?: boolean
 }

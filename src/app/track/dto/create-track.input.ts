@@ -8,34 +8,37 @@ export class TrackPointInput {
   @Field(() => Float, { description: 'Долгота' })
   lon: number
 
-  @Field(() => Float, { description: 'Высота' })
+  @Field(() => Float, { nullable: true, description: 'Высота' })
   alt?: number
 
-  @Field(() => Float, { description: 'Временная метка' })
+  @Field(() => Float, { nullable: true, description: 'Временная метка' })
   timestamp?: number
 
-  @Field(() => Float, { description: 'Скорость' })
+  @Field(() => Float, { nullable: true, description: 'Скорость' })
   speed?: number
 
-  @Field(() => Float, { description: 'Ускорение' })
+  @Field(() => Float, { nullable: true, description: 'Ускорение' })
   boost?: number
 
-  @Field(() => Float, { description: 'Вертикальная скорость' })
+  @Field(() => Float, { nullable: true, description: 'Вертикальная скорость' })
   altSpeed?: number
 }
 
 @InputType()
 export class TrackPhotoInput {
-  @Field(() => String, { description: 'Сыылка на фото' })
+  @Field(() => String, { nullable: true, description: 'Сыылка на фото' })
   uri?: string
 
-  @Field(() => String, { description: 'Данные какие-то' })
+  @Field(() => String, { nullable: true, description: 'Данные какие-то' })
   data?: string
 
-  @Field(() => String, { description: 'Описание' })
+  @Field(() => String, { nullable: true, description: 'Описание' })
   description?: string
 
-  @Field(() => String, { description: 'id локальный для фронта' })
+  @Field(() => String, {
+    nullable: true,
+    description: 'id локальный для фронта'
+  })
   id?: string // Тут id можно не валидировать тк он локальный для фронта
 }
 
@@ -47,13 +50,16 @@ export class TrackNoteInput {
   @Field(() => String, { description: 'id локальный для фронта' })
   id: string // Тут id можно не валидировать тк он локальный для фронта
 
-  @Field(() => String, { description: 'Описание' })
+  @Field(() => String, { nullable: true, description: 'Описание' })
   description?: string
 
-  @Field(() => [TrackPhotoInput], { description: 'Набор фотографий' })
+  @Field(() => [TrackPhotoInput], {
+    nullable: true,
+    description: 'Набор фотографий'
+  })
   photos?: TrackPhotoInput[]
 
-  @Field(() => Boolean, { description: 'Нерабочее?' })
+  @Field(() => Boolean, { nullable: true, description: 'Нерабочее?' })
   disabled?: boolean
 }
 
@@ -68,21 +74,24 @@ export class CreateTrackInput {
   @Field(() => [TrackPointInput], { description: 'Массив точек трека' })
   points: TrackPointInput[]
 
-  @Field(() => Float, { description: 'Длительность' })
+  @Field(() => Float, { nullable: true, description: 'Длительность' })
   duration?: number
 
-  @Field(() => Float, { description: 'Расстояние' })
+  @Field(() => Float, { nullable: true, description: 'Расстояние' })
   distance?: number
 
-  @Field(() => [TrackNoteInput], { description: 'Заметки о точках трека' })
+  @Field(() => [TrackNoteInput], {
+    nullable: true,
+    description: 'Заметки о точках трека'
+  })
   notes?: TrackNoteInput[]
 
-  @Field(() => Boolean, { description: 'Загружено?' })
+  @Field(() => Boolean, { nullable: true, description: 'Загружено?' })
   uploaded?: boolean
 
-  @Field(() => String, { description: 'Адрес' })
+  @Field(() => String, { nullable: true, description: 'Адрес' })
   address?: string
 
-  @Field(() => Boolean, { description: 'Нерабочее?' })
+  @Field(() => Boolean, { nullable: true, description: 'Нерабочее?' })
   disabled?: boolean
 }
