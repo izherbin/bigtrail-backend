@@ -23,8 +23,8 @@ export class TrackResolver {
 
   @Query(() => [Track])
   @UseGuards(JwtAuthGuard)
-  getAllTracks() {
-    return this.trackService.findAll()
+  getAllTracks(@UserId() userId: MongooSchema.Types.ObjectId) {
+    return this.trackService.findByUserId(userId)
   }
 
   // @Query(() => [Track], { name: 'track' })

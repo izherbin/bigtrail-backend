@@ -26,6 +26,11 @@ export class TrackService {
     return tracks
   }
 
+  async findByUserId(userId: MongooSchema.Types.ObjectId) {
+    const tracks = await this.trackModel.find({ userId: userId })
+    return tracks
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} track`
   }
