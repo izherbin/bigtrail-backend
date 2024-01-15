@@ -39,7 +39,7 @@ export class MinioClientResolver {
     description: 'Получение временной ссылки на загрузку объекта в бакет'
   })
   getUploaddLink(@Args('uploadLinkInput') uploadLinkInput: PresignedLinkInput) {
-    return this.minioClientService.getDownloadLink(uploadLinkInput)
+    return this.minioClientService.getUploadLink(uploadLinkInput)
   }
 
   @Mutation(() => UploadedObjectInfo, {
