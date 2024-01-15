@@ -4,7 +4,7 @@ import { Field, InputType, Int } from '@nestjs/graphql'
   description:
     'Входные данные для получения временной ссылки на скачивания файла'
 })
-export class DownloadLinkInput {
+export class PresignedLinkInput {
   @Field(() => String, { description: 'Имя бакета' })
   bucketName: string
 

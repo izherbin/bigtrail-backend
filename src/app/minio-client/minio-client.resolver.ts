@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { MinioClientService } from './minio-client.service'
 import { BucketItem, BucketItemFromList } from './dto/minio-client.dto'
-import { DownloadLinkInput } from './dto/download-link.input.dto'
+import { PresignedLinkInput } from './dto/presigned-link.input.dto'
 import { UploadFileInput, UploadedObjectInfo } from './dto/upload-file.dto'
 import { FileUpload } from './file.model'
 import { GraphQLUpload } from 'graphql-upload'
@@ -30,7 +30,7 @@ export class MinioClientResolver {
     description: 'Получение временной ссылки на скачивание объекта в бакете'
   })
   getDownloadLink(
-    @Args('downloadLinkInput') downloadLinkInput: DownloadLinkInput
+    @Args('downloadLinkInput') downloadLinkInput: PresignedLinkInput
   ) {
     return this.minioClientService.getDownloadLink(downloadLinkInput)
   }

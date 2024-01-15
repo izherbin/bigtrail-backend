@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { BucketItem } from 'minio'
 import { MinioService } from 'nestjs-minio-client'
-import { DownloadLinkInput } from './dto/download-link.input.dto'
+import { PresignedLinkInput } from './dto/presigned-link.input.dto'
 import { ConfigService } from '@nestjs/config'
 import { UploadFileInput } from './dto/upload-file.dto'
 import { Readable } from 'stream'
@@ -28,7 +28,7 @@ export class MinioClientService {
     return list
   }
 
-  async getDownloadLink(downloadLinkInput: DownloadLinkInput) {
+  async getDownloadLink(downloadLinkInput: PresignedLinkInput) {
     const { bucketName, objectName, expiry } = downloadLinkInput
 
     const link: string = await this.minioService.client
@@ -37,6 +37,21 @@ export class MinioClientService {
         console.log('Error calculating download link:', err)
         throw new HttpException(
           'Error calculating download link',
+          HttpStatus.BAD_REQUEST
+        )
+      })
+    return link
+  }
+
+  async getUploadLink(uploadLinkInput: PresignedLinkInput) {
+    const { bucketName, objectName, expiry } = uploadLinkInput
+
+    const link: string = await this.minioService.client
+      .presignedPutObject(bucketName, objectName, expiry)
+      .catch((err) => {
+        console.log('Error calculating upload link:', err)
+        throw new HttpException(
+          'Error calculating upload link',
           HttpStatus.BAD_REQUEST
         )
       })

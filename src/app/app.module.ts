@@ -18,6 +18,7 @@ import { MinioClientModule } from './minio-client/minio-client.module'
       cors: true,
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      upload: false,
       playground: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()]
     }),
