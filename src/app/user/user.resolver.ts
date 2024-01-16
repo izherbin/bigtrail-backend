@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql'
 import { SetNameInput } from './dto/set-name.input'
 import { UserService } from './user.service'
 import { Phone } from '../auth/phone.decorator'
@@ -9,7 +9,9 @@ import { UploadedObjectInfo } from '../minio-client/dto/upload-file.dto'
 import { GraphQLUpload } from 'graphql-upload'
 import { FileUpload } from '../minio-client/file.model'
 import { MinioClientService } from '../minio-client/minio-client.service'
+import { PubSub } from 'graphql-subscriptions'
 
+const pubSub = new PubSub()
 @Resolver()
 export class UserResolver {
   constructor(
@@ -25,15 +27,33 @@ export class UserResolver {
     return this.userService.getProfile(phone)
   }
 
-  @Mutation(() => String, {
+  @Subscription(() => GetUserResponce, {
+    description: 'Следить за профайлом пользователя',
+    filter: (payload, variables, context): boolean => {
+      const ctx = context.req.extra.request
+      const res = payload.watchProfile.phone === ctx.user.phone
+      console.log('My phone:', ctx.user.phone)
+      console.log('Changed phone:', payload.watchProfile.phone)
+      return res
+    }
+  })
+  @UseGuards(JwtAuthGuard)
+  watchProfile() {
+    const res = pubSub.asyncIterator('profileChanged')
+    return res
+  }
+
+  @Mutation(() => GetUserResponce, {
     description: 'Установить имя пользователя'
   })
   @UseGuards(JwtAuthGuard)
-  setName(
+  async setName(
     @Phone() phone: string,
     @Args('setnameInput') setNameInput: SetNameInput
   ) {
-    return this.userService.setName(phone, setNameInput)
+    const profile = await this.userService.setName(phone, setNameInput)
+    pubSub.publish('profileChanged', { watchProfile: profile })
+    return profile
   }
 
   @Mutation(() => UploadedObjectInfo, {

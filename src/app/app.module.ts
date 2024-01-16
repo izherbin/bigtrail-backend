@@ -17,6 +17,10 @@ import { MinioClientModule } from './minio-client/minio-client.module'
     GraphQLModule.forRoot({
       cors: true,
       driver: ApolloDriver,
+      subscriptions: {
+        'graphql-ws': true
+      },
+      // installSubscriptionHandlers: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       upload: false,
       playground: false,

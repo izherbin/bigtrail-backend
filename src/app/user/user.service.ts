@@ -90,7 +90,12 @@ export class UserService {
 
     user.name = name
     await user.save()
-    return 'Name set successfully'
+
+    const res = {
+      phone: user.phone,
+      name: user.name
+    }
+    return res
   }
 
   async setProfileAvatar(
