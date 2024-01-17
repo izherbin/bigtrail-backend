@@ -10,9 +10,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       'ctx.getContext().req:',
       JSON.stringify(ctx.getContext().req, null, '  ')
     )
-    const res = ctx.getContext().req.extra
-      ? ctx.getContext().req.extra.request
-      : ctx.getContext().req
-    return res
+    return ctx.getContext().req
   }
 }

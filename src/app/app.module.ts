@@ -11,6 +11,13 @@ import { UserModule } from './user/user.module'
 import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose'
 import { TrackModule } from './track/track.module'
 import { MinioClientModule } from './minio-client/minio-client.module'
+import { Context } from 'graphql-ws'
+
+interface Extra {
+  request: {
+    rawHeaders: string[]
+  }
+}
 
 @Module({
   imports: [
@@ -18,7 +25,29 @@ import { MinioClientModule } from './minio-client/minio-client.module'
       cors: true,
       driver: ApolloDriver,
       subscriptions: {
-        'graphql-ws': true
+        'graphql-ws': {
+          context: ({ extra }) => {
+            console.log('extra: ', extra)
+            return { req: extra.request }
+          },
+          onConnect: (context: Context<any>) => {
+            const { connectionParams, extra } = context
+            const tokenStr = connectionParams?.headers?.Authorization
+              ? connectionParams?.headers?.Authorization
+              : null
+            if (tokenStr) {
+              ;(extra as Extra).request.rawHeaders.push('authosization')
+              ;(extra as Extra).request.rawHeaders.push(tokenStr)
+            }
+            console.log(
+              'extra.request:',
+              JSON.stringify((extra as Extra).request, null, '  ')
+            )
+            // return {
+            //   req: (extra as Extra).request
+            // }
+          }
+        }
       },
       // installSubscriptionHandlers: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),

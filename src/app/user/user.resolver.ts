@@ -38,7 +38,8 @@ export class UserResolver {
     }
   })
   @UseGuards(JwtAuthGuard)
-  watchProfile() {
+  watchProfile(@Phone() phone: string) {
+    console.log('phone:', phone)
     const res = pubSub.asyncIterator('profileChanged')
     return res
   }
