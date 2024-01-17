@@ -15,7 +15,7 @@ import { Context } from 'graphql-ws'
 
 interface Extra {
   request: {
-    rawHeaders: string[]
+    headers: object
   }
 }
 
@@ -27,25 +27,21 @@ interface Extra {
       subscriptions: {
         'graphql-ws': {
           context: ({ extra }) => {
-            console.log('extra: ', extra)
+            // console.log('extra: ', extra)
             return { req: extra.request }
           },
           onConnect: (context: Context<any>) => {
             const { connectionParams, extra } = context
+            console.log(
+              'connectionParams:',
+              JSON.stringify(connectionParams, null, '  ')
+            )
             const tokenStr = connectionParams?.headers?.Authorization
               ? connectionParams?.headers?.Authorization
-              : null
+              : connectionParams?.Authorization
             if (tokenStr) {
-              ;(extra as Extra).request.rawHeaders.push('authorization')
-              ;(extra as Extra).request.rawHeaders.push(tokenStr)
+              ;(extra as Extra).request.headers['authorization'] = tokenStr
             }
-            console.log(
-              'extra.request:',
-              JSON.stringify((extra as Extra).request, null, '  ')
-            )
-            // return {
-            //   req: (extra as Extra).request
-            // }
           }
         }
       },
