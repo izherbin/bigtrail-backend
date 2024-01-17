@@ -36,7 +36,7 @@ interface Extra {
               ? connectionParams?.headers?.Authorization
               : null
             if (tokenStr) {
-              ;(extra as Extra).request.rawHeaders.push('authosization')
+              ;(extra as Extra).request.rawHeaders.push('authorization')
               ;(extra as Extra).request.rawHeaders.push(tokenStr)
             }
             console.log(
