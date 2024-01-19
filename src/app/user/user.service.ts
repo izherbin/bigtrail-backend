@@ -131,6 +131,13 @@ export class UserService {
           user.avatar = avatar
           user.avatarFile = value as string
           user.save()
+
+          const profile = {
+            phone: user.phone,
+            name: user.name,
+            avatar: user.avatar
+          }
+          pubSub.publish('profileChanged', { getProfile: profile })
         }
       },
       (reason) => {
