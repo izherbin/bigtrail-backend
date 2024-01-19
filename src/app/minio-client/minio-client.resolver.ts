@@ -38,7 +38,7 @@ export class MinioClientResolver {
   @Query(() => String, {
     description: 'Получение временной ссылки на загрузку объекта в бакет'
   })
-  getUploaddLink(@Args('uploadLinkInput') uploadLinkInput: PresignedLinkInput) {
+  getUploadLink(@Args('uploadLinkInput') uploadLinkInput: PresignedLinkInput) {
     return this.minioClientService.getUploadLink(uploadLinkInput)
   }
 

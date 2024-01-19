@@ -120,10 +120,16 @@ export class UserService {
     console.log('We are to upload file ', filename)
 
     this.minioClientService.listenForFileUploaded('avatars', filename).then(
-      (value) => {
+      async (value) => {
         if (value) {
-          console.log('Avatar Uploaded: ', value)
-          user.avatar = value as string
+          console.log('Avatar Uploaded:', value)
+          const avatar = await this.minioClientService.getDownloadLink({
+            bucketName: 'avatars',
+            objectName: value as string,
+            expiry: 7 * 24 * 60 * 60
+          })
+          user.avatar = avatar
+          user.avatarFile = value as string
           user.save()
         }
       },

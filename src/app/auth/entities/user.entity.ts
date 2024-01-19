@@ -18,6 +18,9 @@ export class User {
   @Prop()
   avatar: string
 
+  @Prop()
+  avatarFile: string
+
   @Field(() => String, {
     description: 'Номер телефона в формате string 7ХХХХХХХХХХ'
   })
