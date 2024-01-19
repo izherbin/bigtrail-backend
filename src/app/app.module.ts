@@ -32,10 +32,10 @@ interface Extra {
           },
           onConnect: (context: Context<any>) => {
             const { connectionParams, extra } = context
-            console.log(
-              'connectionParams:',
-              JSON.stringify(connectionParams, null, '  ')
-            )
+            // console.log(
+            //   'connectionParams:',
+            //   JSON.stringify(connectionParams, null, '  ')
+            // )
             const tokenStr = connectionParams?.headers?.Authorization
               ? connectionParams?.headers?.Authorization
               : connectionParams?.Authorization

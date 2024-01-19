@@ -15,4 +15,10 @@ export class GetUserResponce {
     description: 'Имя пользователя'
   })
   name: string
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'Аватар пользователя (название объекта в бакете avatars)'
+  })
+  avatar: string
 }

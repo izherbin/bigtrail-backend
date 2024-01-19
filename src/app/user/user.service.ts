@@ -6,6 +6,9 @@ import { ConfigService } from '@nestjs/config'
 import { SetNameInput } from './dto/set-name.input'
 import { Readable } from 'stream'
 import { MinioClientService } from '../minio-client/minio-client.service'
+import { PubSub } from 'graphql-subscriptions'
+
+const pubSub = new PubSub()
 
 @Injectable()
 export class UserService {
@@ -16,12 +19,18 @@ export class UserService {
     private readonly minioClientService: MinioClientService
   ) {}
 
-  async getProfile(phone: string) {
+  async getProfileQuery(phone: string) {
     const user = await this.userModel.findOne({ phone })
     return {
       phone: user.phone,
-      name: user.name
+      name: user.name,
+      avatar: user.avatar
     }
+  }
+
+  getProfile() {
+    const res = pubSub.asyncIterator('profileChanged')
+    return res
   }
 
   async getUser(phone: string) {
@@ -91,14 +100,46 @@ export class UserService {
     user.name = name
     await user.save()
 
-    const res = {
+    const profile = {
       phone: user.phone,
-      name: user.name
+      name: user.name,
+      avatar: user.avatar
     }
-    return res
+    pubSub.publish('profileChanged', { getProfile: profile })
+
+    return profile
   }
 
-  async setProfileAvatar(
+  async setProfileAvatar(phone: string) {
+    const user = await this.userModel.findOne({ phone })
+    if (!user) {
+      throw new HttpException('No such user', HttpStatus.NOT_FOUND)
+    }
+
+    const filename = String(Date.now()) + '_' + phone + '.jpg'
+    console.log('We are to upload file ', filename)
+
+    this.minioClientService.listenForFileUploaded('avatars', filename).then(
+      (value) => {
+        if (value) {
+          console.log('Avatar Uploaded: ', value)
+          user.avatar = value as string
+          user.save()
+        }
+      },
+      (reason) => {
+        console.log(reason)
+      }
+    )
+
+    return await this.minioClientService.getUploadLink({
+      bucketName: 'avatars',
+      objectName: filename,
+      expiry: 300
+    })
+  }
+
+  async setProfileAvatarByUpload(
     phone: string,
     createReadStream: { (): Readable; (): string | Readable | Buffer },
     filename: string

@@ -6,6 +6,8 @@ import { ConfigService } from '@nestjs/config'
 import { UploadFileInput } from './dto/upload-file.dto'
 import { Readable } from 'stream'
 
+const FILE_UPLOAD_TIMEOUT = 60000 * 5
+
 @Injectable()
 export class MinioClientService {
   constructor(
@@ -56,6 +58,30 @@ export class MinioClientService {
         )
       })
     return link
+  }
+
+  listenForFileUploaded(bucketName: string, filename: string) {
+    const emitter = this.minioService.client.listenBucketNotification(
+      bucketName,
+      filename,
+      '',
+      ['s3:ObjectCreated:*']
+    )
+    const res = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        reject('Timeout uploading avatar')
+      }, FILE_UPLOAD_TIMEOUT)
+
+      emitter.addListener('notification', async (record) => {
+        if (filename === record.s3.object.key) {
+          emitter.removeAllListeners()
+          resolve(filename)
+        } else {
+          reject('Error uploading avatar:' + filename)
+        }
+      })
+    })
+    return res
   }
 
   async uploadFile(uploadFileInput: UploadFileInput) {

@@ -1,7 +1,7 @@
 import { InputType, Field } from '@nestjs/graphql'
 
 @InputType({
-  description: 'Объект запроса именем пользователя'
+  description: 'Объект запроса имени пользователя'
 })
 export class SetNameInput {
   @Field(() => String, {

@@ -9,9 +9,7 @@ import { UploadedObjectInfo } from '../minio-client/dto/upload-file.dto'
 import { GraphQLUpload } from 'graphql-upload'
 import { FileUpload } from '../minio-client/file.model'
 import { MinioClientService } from '../minio-client/minio-client.service'
-import { PubSub } from 'graphql-subscriptions'
 
-const pubSub = new PubSub()
 @Resolver()
 export class UserResolver {
   constructor(
@@ -20,26 +18,27 @@ export class UserResolver {
   ) {}
 
   @Query(() => GetUserResponce, {
+    name: 'getProfile',
     description: 'Получить профайл пользователя'
   })
   @UseGuards(JwtAuthGuard)
-  getProfile(@Phone() phone: string) {
-    return this.userService.getProfile(phone)
+  getProfileQuery(@Phone() phone: string) {
+    return this.userService.getProfileQuery(phone)
   }
 
   @Subscription(() => GetUserResponce, {
     description: 'Следить за профайлом пользователя',
     filter: (payload, variables, context): boolean => {
-      const res = payload.watchProfile.phone === context.req.user.phone
+      const res = payload.getProfile.phone === context.req.user.phone
       console.log('My phone:', context.req.user.phone)
-      console.log('Changed phone:', payload.watchProfile.phone)
+      console.log('Changed phone:', payload.getProfile.phone)
       return res
     }
   })
   @UseGuards(JwtAuthGuard)
-  watchProfile(@Phone() phone: string) {
+  getProfile(@Phone() phone: string) {
     console.log('phone:', phone)
-    const res = pubSub.asyncIterator('profileChanged')
+    const res = this.userService.getProfile()
     return res
   }
 
@@ -52,21 +51,34 @@ export class UserResolver {
     @Args('setnameInput') setNameInput: SetNameInput
   ) {
     const profile = await this.userService.setName(phone, setNameInput)
-    pubSub.publish('profileChanged', { watchProfile: profile })
     return profile
   }
 
+  @Mutation(() => String, {
+    description: 'Загрузить аватар пользователя'
+  })
+  @UseGuards(JwtAuthGuard)
+  setProfileAvatar(@Phone() phone: string) {
+    return this.userService.setProfileAvatar(phone)
+  }
+
   @Mutation(() => UploadedObjectInfo, {
-    name: 'setProfileAvatar',
+    name: 'setProfileAvatarByUpload',
+    deprecationReason:
+      'This mutation is based on multipart upload, use setProfileAvatar() instead',
     description: 'Загрузить файл на сервер Minio'
   })
   @UseGuards(JwtAuthGuard)
-  setProfileAvatar(
+  setProfileAvatarByUpload(
     @Phone() phone: string,
     @Args({ name: 'file', type: () => GraphQLUpload })
     { createReadStream, filename }: FileUpload
   ) {
-    return this.userService.setProfileAvatar(phone, createReadStream, filename)
+    return this.userService.setProfileAvatarByUpload(
+      phone,
+      createReadStream,
+      filename
+    )
   }
 
   @Mutation(() => String, {
