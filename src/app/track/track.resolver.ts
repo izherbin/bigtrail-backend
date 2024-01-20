@@ -13,7 +13,9 @@ import { DeleteTrackInput } from './dto/delete-track.input'
 export class TrackResolver {
   constructor(private readonly trackService: TrackService) {}
 
-  @Mutation(() => Track)
+  @Mutation(() => Track, {
+    description: 'Загрузить трек в MongoDB'
+  })
   @UseGuards(JwtAuthGuard)
   uploadTrack(
     @UserId() userId: MongooSchema.Types.ObjectId,
@@ -43,7 +45,9 @@ export class TrackResolver {
   //   return this.trackService.update(updateTrackInput.id, updateTrackInput)
   // }
 
-  @Mutation(() => Track)
+  @Mutation(() => Track, {
+    description: 'Удалить трек из MongoDB'
+  })
   deleteTrack(@Args('deleteTrackInput') deleteTrackInput: DeleteTrackInput) {
     return this.trackService.remove(deleteTrackInput)
   }
