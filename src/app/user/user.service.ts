@@ -84,7 +84,12 @@ export class UserService {
   }
 
   async setName(phone: string, setNameInput: SetNameInput) {
-    const { name } = setNameInput
+    let { name } = setNameInput
+    name = name.trim()
+    if (!this.validateName(name)) {
+      throw new HttpException('Incorrect profile name', HttpStatus.BAD_REQUEST)
+    }
+
     const user = await this.userModel.findOne({ phone })
     if (!user) {
       throw new HttpException('No such user', HttpStatus.NOT_FOUND)
@@ -181,5 +186,9 @@ export class UserService {
     user.save()
 
     return res
+  }
+
+  validateName(name: string): boolean {
+    return /^[A-Za-zа-яёA-ЯЁ ]+$/.test(name)
   }
 }
