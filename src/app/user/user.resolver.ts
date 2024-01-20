@@ -62,6 +62,14 @@ export class UserResolver {
     return this.userService.setProfileAvatar(phone)
   }
 
+  @Mutation(() => String, {
+    description: 'Удалить аватар пользователя'
+  })
+  @UseGuards(JwtAuthGuard)
+  deleteProfileAvatar(@Phone() phone: string) {
+    return this.userService.deleteProfileAvatar(phone)
+  }
+
   @Mutation(() => UploadedObjectInfo, {
     name: 'setProfileAvatarByUpload',
     deprecationReason:
