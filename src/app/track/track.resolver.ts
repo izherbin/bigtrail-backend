@@ -6,6 +6,7 @@ import { UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/jwt-auth.guards'
 import { UserId } from '../auth/user-id.decorator'
 import { Schema as MongooSchema } from 'mongoose'
+import { DeleteTrackInput } from './dto/delete-track.input'
 // import { UpdateTrackInput } from './dto/update-track.input'
 
 @Resolver(() => Track)
@@ -42,8 +43,8 @@ export class TrackResolver {
   //   return this.trackService.update(updateTrackInput.id, updateTrackInput)
   // }
 
-  // @Mutation(() => Track)
-  // removeTrack(@Args('id', { type: () => Int }) id: number) {
-  //   return this.trackService.remove(id)
-  // }
+  @Mutation(() => Track)
+  deleteTrack(@Args('deleteTrackInput') deleteTrackInput: DeleteTrackInput) {
+    return this.trackService.remove(deleteTrackInput)
+  }
 }

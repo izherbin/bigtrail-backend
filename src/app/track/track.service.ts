@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common'
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { CreateTrackInput } from './dto/create-track.input'
 import { UpdateTrackInput } from './dto/update-track.input'
 import { InjectModel } from '@nestjs/mongoose'
 import { Track, TrackDocument } from './entities/track.entity'
 import { Model, Schema as MongooSchema } from 'mongoose'
+import { DeleteTrackInput } from './dto/delete-track.input'
 
 @Injectable()
 export class TrackService {
@@ -40,7 +41,15 @@ export class TrackService {
     return `This action updates a #${id} track`
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} track`
+  async remove(deleteTrackInput: DeleteTrackInput) {
+    const { id } = deleteTrackInput
+    const track = await this.trackModel.findById(id)
+    if (!track) {
+      throw new HttpException('No such user', HttpStatus.NOT_FOUND)
+    }
+
+    await this.trackModel.findByIdAndDelete(id)
+
+    return `Успешно удален трек № ${id} `
   }
 }

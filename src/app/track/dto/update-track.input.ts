@@ -1,8 +1,9 @@
 import { CreateTrackInput } from './create-track.input'
-import { InputType, Field, Int, PartialType } from '@nestjs/graphql'
+import { InputType, Field, PartialType } from '@nestjs/graphql'
+import { Schema as MongooSchema } from 'mongoose'
 
 @InputType()
 export class UpdateTrackInput extends PartialType(CreateTrackInput) {
-  @Field(() => Int)
-  id: number
+  @Field(() => String, { description: 'Идентифкатор в MongoDB' })
+  _id: MongooSchema.Types.ObjectId
 }
