@@ -7,6 +7,7 @@ import { SetNameInput } from './dto/set-name.input'
 import { Readable } from 'stream'
 import { MinioClientService } from '../minio-client/minio-client.service'
 import { PubSub } from 'graphql-subscriptions'
+import { GetUserResponce } from './dto/get-user.response'
 
 const pubSub = new PubSub()
 
@@ -21,11 +22,8 @@ export class UserService {
 
   async getProfileQuery(phone: string) {
     const user = await this.userModel.findOne({ phone })
-    return {
-      phone: user.phone,
-      name: user.name,
-      avatar: user.avatar
-    }
+
+    return user as GetUserResponce
   }
 
   getProfile() {
@@ -105,11 +103,7 @@ export class UserService {
     user.name = name
     await user.save()
 
-    const profile = {
-      phone: user.phone,
-      name: user.name,
-      avatar: user.avatar
-    }
+    const profile = user as GetUserResponce
     pubSub.publish('profileChanged', { getProfile: profile })
 
     return profile
@@ -186,6 +180,19 @@ export class UserService {
     user.save()
 
     return res
+  }
+
+  async deleteProfileAvatar(phone: string) {
+    const user = await this.userModel.findOne({ phone })
+    if (!user) {
+      throw new HttpException('No such user', HttpStatus.NOT_FOUND)
+    }
+
+    user.avatar = null
+    user.avatarFile = null
+    this.userModel.updateOne({ phone })
+
+    return user as GetUserResponce
   }
 
   validateName(name: string): boolean {
