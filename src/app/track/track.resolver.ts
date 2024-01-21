@@ -68,6 +68,7 @@ export class TrackResolver {
   @Mutation(() => Track, {
     description: 'Удалить трек из MongoDB'
   })
+  @UseGuards(JwtAuthGuard)
   deleteTrack(
     @UserId() userId: MongooSchema.Types.ObjectId,
     @Args('deleteTrackInput') deleteTrackInput: DeleteTrackInput
