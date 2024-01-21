@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args, Query } from '@nestjs/graphql'
+import { Resolver, Mutation, Args, Query, Subscription } from '@nestjs/graphql'
 import { TrackService } from './track.service'
 import { Track } from './entities/track.entity'
 import { CreateTrackInput } from './dto/create-track.input'
@@ -24,10 +24,30 @@ export class TrackResolver {
     return this.trackService.create(userId, createTrackInput)
   }
 
-  @Query(() => [Track])
+  @Query(() => [Track], {
+    name: 'getAllTracks',
+    description: 'Получить все треки пользователя'
+  })
+  @UseGuards(JwtAuthGuard)
+  getAllTracksQuery(@UserId() userId: MongooSchema.Types.ObjectId) {
+    return this.trackService.findByUserId(userId)
+  }
+
+  @Subscription(() => [Track], {
+    description: 'Следить за всеми треками пользователя',
+    filter: (payload, variables, context): boolean => {
+      const res =
+        payload.getAllTracks[0].userId.toString() === context.req.user._id
+      console.log('My userId:', context.req.user._id)
+      console.log('Changed userId:', payload.getAllTracks[0].userId.toString())
+      return res
+    }
+  })
   @UseGuards(JwtAuthGuard)
   getAllTracks(@UserId() userId: MongooSchema.Types.ObjectId) {
-    return this.trackService.findByUserId(userId)
+    console.log('userId:', userId)
+    const res = this.trackService.getAllTracks()
+    return res
   }
 
   // @Query(() => [Track], { name: 'track' })
@@ -48,7 +68,10 @@ export class TrackResolver {
   @Mutation(() => Track, {
     description: 'Удалить трек из MongoDB'
   })
-  deleteTrack(@Args('deleteTrackInput') deleteTrackInput: DeleteTrackInput) {
-    return this.trackService.remove(deleteTrackInput)
+  deleteTrack(
+    @UserId() userId: MongooSchema.Types.ObjectId,
+    @Args('deleteTrackInput') deleteTrackInput: DeleteTrackInput
+  ) {
+    return this.trackService.remove(userId, deleteTrackInput)
   }
 }
