@@ -65,7 +65,7 @@ export class TrackService {
       throw new HttpException('No such user', HttpStatus.NOT_FOUND)
     }
 
-    if (track.userId !== userId) {
+    if (track.userId.toString() !== userId.toString()) {
       throw new HttpException(
         'Impossible to delete someone else`s track',
         HttpStatus.FORBIDDEN
