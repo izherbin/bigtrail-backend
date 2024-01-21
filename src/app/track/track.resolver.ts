@@ -65,7 +65,7 @@ export class TrackResolver {
   //   return this.trackService.update(updateTrackInput.id, updateTrackInput)
   // }
 
-  @Mutation(() => Track, {
+  @Mutation(() => String, {
     description: 'Удалить трек из MongoDB'
   })
   @UseGuards(JwtAuthGuard)
