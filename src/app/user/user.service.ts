@@ -190,8 +190,7 @@ export class UserService {
 
     user.avatar = null
     user.avatarFile = null
-    this.userModel.updateOne({ phone })
-
+    await user.save()
     return user as GetUserResponce
   }
 
