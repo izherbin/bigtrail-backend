@@ -191,7 +191,11 @@ export class UserService {
     user.avatar = null
     user.avatarFile = null
     await user.save()
-    return user as GetUserResponce
+
+    const profile = user as GetUserResponce
+    pubSub.publish('profileChanged', { getProfile: profile })
+
+    return profile
   }
 
   validateName(name: string): boolean {
