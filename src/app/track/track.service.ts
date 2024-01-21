@@ -65,6 +65,13 @@ export class TrackService {
       throw new HttpException('No such user', HttpStatus.NOT_FOUND)
     }
 
+    if (track.userId !== userId) {
+      throw new HttpException(
+        'Impossible to delete someone else`s track',
+        HttpStatus.FORBIDDEN
+      )
+    }
+
     await this.trackModel.findByIdAndDelete(id)
 
     const tracks = await this.trackModel.find({ userId })
