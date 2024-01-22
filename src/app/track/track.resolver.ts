@@ -7,6 +7,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guards'
 import { UserId } from '../auth/user-id.decorator'
 import { Schema as MongooSchema } from 'mongoose'
 import { DeleteTrackInput } from './dto/delete-track.input'
+import { SubscriptionTrackResponse } from './dto/subscription-track.response'
 // import { UpdateTrackInput } from './dto/update-track.input'
 
 @Resolver(() => Track)
@@ -33,13 +34,13 @@ export class TrackResolver {
     return this.trackService.findByUserId(userId)
   }
 
-  @Subscription(() => [Track], {
+  @Subscription(() => SubscriptionTrackResponse, {
     description: 'Следить за всеми треками пользователя',
     filter: (payload, variables, context): boolean => {
       const res =
-        payload.getAllTracks[0].userId.toString() === context.req.user._id
+        payload.getAllTracks.userId.toString() === context.req.user._id
       console.log('My userId:', context.req.user._id)
-      console.log('Changed userId:', payload.getAllTracks[0].userId.toString())
+      console.log('Changed userId:', payload.getAllTracks.userId.toString())
       return res
     }
   })

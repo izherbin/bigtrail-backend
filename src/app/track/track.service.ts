@@ -6,6 +6,7 @@ import { Track, TrackDocument } from './entities/track.entity'
 import { Model, Schema as MongooSchema } from 'mongoose'
 import { DeleteTrackInput } from './dto/delete-track.input'
 import { PubSub } from 'graphql-subscriptions'
+import { SubscriptionTrackMethod } from './dto/subscription-track.response'
 
 const pubSub = new PubSub()
 
@@ -25,8 +26,13 @@ export class TrackService {
 
     const track = await createTrack.save()
 
-    const tracks = await this.trackModel.find({ userId })
-    pubSub.publish('trackChanged', { getAllTracks: tracks })
+    const emit = {
+      function: SubscriptionTrackMethod.Add,
+      id: track._id,
+      data: track as Track,
+      userId: track.userId
+    }
+    pubSub.publish('trackChanged', { getAllTracks: emit })
 
     return track
   }
@@ -74,8 +80,12 @@ export class TrackService {
 
     await this.trackModel.findByIdAndDelete(id)
 
-    const tracks = await this.trackModel.find({ userId })
-    pubSub.publish('trackChanged', { getAllTracks: tracks })
+    const emit = {
+      function: SubscriptionTrackMethod.Delete,
+      id: track._id,
+      userId: track.userId
+    }
+    pubSub.publish('trackChanged', { getAllTracks: emit })
 
     return `Успешно удален трек № ${id} `
   }
