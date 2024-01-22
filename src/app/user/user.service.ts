@@ -115,7 +115,7 @@ export class UserService {
       throw new HttpException('No such user', HttpStatus.NOT_FOUND)
     }
 
-    const filename = String(Date.now()) + '_' + phone + '.jpg'
+    const filename = String(Date.now()) + '_' + user._id.toString() + '.jpg'
     console.log('We are to upload file ', filename)
 
     this.minioClientService.listenForFileUploaded('avatars', filename).then(
