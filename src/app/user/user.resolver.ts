@@ -29,16 +29,16 @@ export class UserResolver {
   @Subscription(() => GetUserResponce, {
     description: 'Следить за профайлом пользователя',
     filter: (payload, variables, context): boolean => {
-      const res = payload.getProfile.phone === context.req.user.phone
+      const res = payload.watchProfile.phone === context.req.user.phone
       console.log('My phone:', context.req.user.phone)
-      console.log('Changed phone:', payload.getProfile.phone)
+      console.log('Changed phone:', payload.watchProfile.phone)
       return res
     }
   })
   @UseGuards(JwtAuthGuard)
-  getProfile(@Phone() phone: string) {
+  watchProfile(@Phone() phone: string) {
     console.log('phone:', phone)
-    const res = this.userService.getProfile()
+    const res = this.userService.watchProfile()
     return res
   }
 

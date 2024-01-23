@@ -32,7 +32,7 @@ export class TrackService {
       data: track as Track,
       userId: track.userId
     }
-    pubSub.publish('trackChanged', { getAllTracks: emit })
+    pubSub.publish('trackChanged', { watchTracks: emit })
 
     return track
   }
@@ -47,7 +47,7 @@ export class TrackService {
     return tracks
   }
 
-  getAllTracks() {
+  watchTracks() {
     const res = pubSub.asyncIterator('trackChanged')
     return res
   }
@@ -85,7 +85,7 @@ export class TrackService {
       id: track._id,
       userId: track.userId
     }
-    pubSub.publish('trackChanged', { getAllTracks: emit })
+    pubSub.publish('trackChanged', { watchTracks: emit })
 
     return `Успешно удален трек № ${id} `
   }

@@ -26,7 +26,7 @@ export class UserService {
     return user as GetUserResponce
   }
 
-  getProfile() {
+  watchProfile() {
     const res = pubSub.asyncIterator('profileChanged')
     return res
   }
@@ -104,7 +104,7 @@ export class UserService {
     await user.save()
 
     const profile = user as GetUserResponce
-    pubSub.publish('profileChanged', { getProfile: profile })
+    pubSub.publish('profileChanged', { watchProfile: profile })
 
     return profile
   }
@@ -136,7 +136,7 @@ export class UserService {
             name: user.name,
             avatar: user.avatar
           }
-          pubSub.publish('profileChanged', { getProfile: profile })
+          pubSub.publish('profileChanged', { watchProfile: profile })
         }
       },
       (reason) => {
@@ -193,7 +193,7 @@ export class UserService {
     await user.save()
 
     const profile = user as GetUserResponce
-    pubSub.publish('profileChanged', { getProfile: profile })
+    pubSub.publish('profileChanged', { watchProfile: profile })
 
     return profile
   }
