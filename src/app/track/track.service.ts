@@ -6,7 +6,7 @@ import { Track, TrackDocument } from './entities/track.entity'
 import { Model, Schema as MongooSchema } from 'mongoose'
 import { DeleteTrackInput } from './dto/delete-track.input'
 import { PubSub } from 'graphql-subscriptions'
-import { SubscriptionTrackMethod } from './dto/subscription-track.response'
+import { SubscriptionTrackResponse } from './dto/subscription-track.response'
 
 const pubSub = new PubSub()
 
@@ -26,8 +26,8 @@ export class TrackService {
 
     const track = await createTrack.save()
 
-    const emit = {
-      function: SubscriptionTrackMethod.Add,
+    const emit: SubscriptionTrackResponse = {
+      function: 'ADD',
       id: track._id,
       data: track as Track,
       userId: track.userId
@@ -80,8 +80,8 @@ export class TrackService {
 
     await this.trackModel.findByIdAndDelete(id)
 
-    const emit = {
-      function: SubscriptionTrackMethod.Delete,
+    const emit: SubscriptionTrackResponse = {
+      function: 'DELETE',
       id: track._id,
       userId: track.userId
     }

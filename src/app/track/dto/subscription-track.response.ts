@@ -2,17 +2,14 @@ import { Field, ObjectType } from '@nestjs/graphql'
 import { Track } from '../entities/track.entity'
 import { Schema as MongooSchema } from 'mongoose'
 
-export enum SubscriptionTrackMethod {
-  Add,
-  Delete,
-  Update
-}
+type WatchResponseFunction = 'ADD' | 'UPDATE' | 'DELETE'
+
 @ObjectType()
 export class SubscriptionTrackResponse {
   @Field(() => String, {
     description: 'Метод изменения трека'
   })
-  function: SubscriptionTrackMethod
+  function: WatchResponseFunction
 
   @Field(() => String, {
     description: 'Идентификатор трека'
@@ -23,7 +20,7 @@ export class SubscriptionTrackResponse {
     description: 'Данные изменения трека',
     nullable: true
   })
-  data: Track
+  data?: Track
 
   userId: MongooSchema.Types.ObjectId
 }
