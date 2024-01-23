@@ -1,0 +1,227 @@
+mutation cancelAuth($signupInput: LoginPhoneInput!){
+    cancelAuth(signupInput: $signupInput)
+}
+mutation deleteProfile{
+    deleteProfile
+}
+mutation deleteProfileAvatar{
+    deleteProfileAvatar{
+        phone
+        name
+        avatar
+    }
+}
+mutation deleteTrack($deleteTrackInput: DeleteTrackInput!){
+    deleteTrack(deleteTrackInput: $deleteTrackInput)
+}
+mutation sendCode($signupInput: LoginPhoneInput!){
+    sendCode(signupInput: $signupInput){
+        phone
+        sent
+        canSendAgain
+    }
+}
+mutation setName($setnameInput: SetNameInput!){
+    setName(setnameInput: $setnameInput){
+        phone
+        name
+        avatar
+    }
+}
+mutation setProfileAvatar{
+    setProfileAvatar
+}
+mutation singleUpload($file: Upload!){
+    singleUpload(file: $file){
+        etag
+        versionId
+    }
+}
+mutation uploadFile($uploadFileInput: UploadFileInput!){
+    uploadFile(uploadFileInput: $uploadFileInput){
+        etag
+        versionId
+    }
+}
+mutation uploadTrack($createTrackInput: CreateTrackInput!){
+    uploadTrack(createTrackInput: $createTrackInput){
+        _id
+        userId
+        name
+        timestamp
+        points{
+            lat
+            lon
+            alt
+            timestamp
+            speed
+            boost
+            altSpeed
+        }
+        duration
+        distance
+        notes{
+            point{
+                lat
+                lon
+                alt
+                timestamp
+                speed
+                boost
+                altSpeed
+            }
+            id
+            description
+            photos{
+                uri
+                data
+                description
+                id
+            }
+            disabled
+        }
+        uploaded
+        address
+        disabled
+    }
+}
+mutation verifyCode($loginUserInput: LoginCodeInput!){
+    verifyCode(loginUserInput: $loginUserInput){
+        authToken
+    }
+}
+query getAllTracks{
+    getAllTracks{
+        _id
+        userId
+        name
+        timestamp
+        points{
+            lat
+            lon
+            alt
+            timestamp
+            speed
+            boost
+            altSpeed
+        }
+        duration
+        distance
+        notes{
+            point{
+                lat
+                lon
+                alt
+                timestamp
+                speed
+                boost
+                altSpeed
+            }
+            id
+            description
+            photos{
+                uri
+                data
+                description
+                id
+            }
+            disabled
+        }
+        uploaded
+        address
+        disabled
+    }
+}
+query getDownloadLink($downloadLinkInput: PresignedLinkInput!){
+    getDownloadLink(downloadLinkInput: $downloadLinkInput)
+}
+query getHello{
+    getHello
+}
+query getProfile{
+    getProfile{
+        phone
+        name
+        avatar
+    }
+}
+query getUploadLink($uploadLinkInput: PresignedLinkInput!){
+    getUploadLink(uploadLinkInput: $uploadLinkInput)
+}
+query getVersion{
+    getVersion
+}
+query listAllBuckets{
+    listAllBuckets{
+        name
+        creationDate
+    }
+}
+query listObjectsInBucket($bucketName: String!){
+    listObjectsInBucket(bucketName: $bucketName){
+        name
+        size
+        etag
+        prefix
+        lastModified
+    }
+}
+query myId{
+    myId
+}
+query whoAmI{
+    whoAmI
+}
+subscription getAllTracks{
+    getAllTracks{
+        function
+        id
+        data{
+            _id
+            userId
+            name
+            timestamp
+            points{
+                lat
+                lon
+                alt
+                timestamp
+                speed
+                boost
+                altSpeed
+            }
+            duration
+            distance
+            notes{
+                point{
+                    lat
+                    lon
+                    alt
+                    timestamp
+                    speed
+                    boost
+                    altSpeed
+                }
+                id
+                description
+                photos{
+                    uri
+                    data
+                    description
+                    id
+                }
+                disabled
+            }
+            uploaded
+            address
+            disabled
+        }
+    }
+}
+subscription getProfile{
+    getProfile{
+        phone
+        name
+        avatar
+    }
+}
