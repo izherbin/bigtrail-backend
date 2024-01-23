@@ -6,9 +6,9 @@ import { UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/jwt-auth.guards'
 import { GetUserResponce } from './dto/get-user.response'
 import { UploadedObjectInfo } from '../minio-client/dto/upload-file.dto'
-import { GraphQLUpload } from 'graphql-upload'
 import { FileUpload } from '../minio-client/file.model'
 import { MinioClientService } from '../minio-client/minio-client.service'
+import { uploadScalar } from '../minio-client/upload-scalar.util'
 
 @Resolver()
 export class UserResolver {
@@ -79,7 +79,7 @@ export class UserResolver {
   @UseGuards(JwtAuthGuard)
   setProfileAvatarByUpload(
     @Phone() phone: string,
-    @Args({ name: 'file', type: () => GraphQLUpload })
+    @Args({ name: 'file', type: uploadScalar })
     { createReadStream, filename }: FileUpload
   ) {
     return this.userService.setProfileAvatarByUpload(

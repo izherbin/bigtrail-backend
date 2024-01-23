@@ -4,7 +4,7 @@ import { BucketItem, BucketItemFromList } from './dto/minio-client.dto'
 import { PresignedLinkInput } from './dto/presigned-link.input.dto'
 import { UploadFileInput, UploadedObjectInfo } from './dto/upload-file.dto'
 import { FileUpload } from './file.model'
-import { GraphQLUpload } from 'graphql-upload'
+import { uploadScalar } from './upload-scalar.util'
 
 @Resolver()
 export class MinioClientResolver {
@@ -55,7 +55,7 @@ export class MinioClientResolver {
     description: 'Загрузить файл на сервер Minio'
   })
   async singleUpload(
-    @Args({ name: 'file', type: () => GraphQLUpload })
+    @Args({ name: 'file', type: uploadScalar })
     { createReadStream, filename }: FileUpload
   ) {
     return this.minioClientService.singleUpload(
