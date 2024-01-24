@@ -8,13 +8,14 @@ import { UserId } from '../auth/user-id.decorator'
 import { Schema as MongooSchema } from 'mongoose'
 import { DeleteTrackInput } from './dto/delete-track.input'
 import { SubscriptionTrackResponse } from './dto/subscription-track.response'
+import { UploadPhoto } from './dto/upload-photo.response'
 // import { UpdateTrackInput } from './dto/update-track.input'
 
-@Resolver(() => Track)
+@Resolver()
 export class TrackResolver {
   constructor(private readonly trackService: TrackService) {}
 
-  @Mutation(() => Track, {
+  @Mutation(() => [UploadPhoto], {
     description: 'Загрузить трек в MongoDB'
   })
   @UseGuards(JwtAuthGuard)

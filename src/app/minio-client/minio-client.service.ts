@@ -69,7 +69,7 @@ export class MinioClientService {
     )
     const res = new Promise((resolve, reject) => {
       setTimeout(() => {
-        reject('Timeout uploading avatar')
+        reject('Timeout uploading file')
       }, FILE_UPLOAD_TIMEOUT)
 
       emitter.addListener('notification', async (record) => {
@@ -77,7 +77,7 @@ export class MinioClientService {
           emitter.removeAllListeners()
           resolve(filename)
         } else {
-          reject('Error uploading avatar:' + filename)
+          reject('Error uploading file:' + filename)
         }
       })
     })
