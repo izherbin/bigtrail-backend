@@ -7,7 +7,7 @@ import { Model, Schema as MongooSchema } from 'mongoose'
 import { DeleteTrackInput } from './dto/delete-track.input'
 import { PubSub } from 'graphql-subscriptions'
 import { SubscriptionTrackResponse } from './dto/subscription-track.response'
-import { UploadPhoto } from './dto/upload-photo.response'
+import { Photo } from './dto/photo.response'
 import { MinioClientService } from '../minio-client/minio-client.service'
 
 const pubSub = new PubSub()
@@ -88,7 +88,7 @@ export class TrackService {
       objectName: filename,
       expiry: 300
     })
-    const upload: UploadPhoto = { url, id }
+    const upload: Photo = { url, id }
     return { upload, download }
   }
 

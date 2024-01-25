@@ -39,7 +39,7 @@ export class TrackPhotoInput {
     nullable: true,
     description: 'id локальный для фронта'
   })
-  id?: string // Тут id можно не валидировать тк он локальный для фронта
+  id?: string
 }
 
 @InputType()
@@ -48,7 +48,7 @@ export class TrackNoteInput {
   point: TrackPointInput
 
   @Field(() => String, { description: 'id локальный для фронта' })
-  id: string // Тут id можно не валидировать тк он локальный для фронта
+  id: string
 
   @Field(() => String, { nullable: true, description: 'Описание' })
   description?: string

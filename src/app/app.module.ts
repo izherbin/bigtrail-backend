@@ -12,6 +12,7 @@ import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose'
 import { TrackModule } from './track/track.module'
 import { MinioClientModule } from './minio-client/minio-client.module'
 import { Context } from 'graphql-ws'
+import { RouteModule } from './route/route.module'
 
 interface Extra {
   request: {
@@ -68,7 +69,8 @@ interface Extra {
     AuthModule,
     UserModule,
     TrackModule,
-    MinioClientModule
+    MinioClientModule,
+    RouteModule
   ],
   controllers: [],
   providers: [AppResolver, AppService]

@@ -10,6 +10,7 @@ import { MinioClientModule } from '../minio-client/minio-client.module'
   imports: [
     MongooseModule.forFeature([{ name: Track.name, schema: TrackSchema }]),
     MinioClientModule
-  ]
+  ],
+  exports: [TrackService]
 })
 export class TrackModule {}

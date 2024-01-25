@@ -2,7 +2,7 @@ import { Field, ObjectType } from '@nestjs/graphql'
 import { Track } from '../entities/track.entity'
 import { Schema as MongooSchema } from 'mongoose'
 
-type WatchResponseFunction = 'ADD' | 'UPDATE' | 'DELETE'
+export type WatchResponseFunction = 'ADD' | 'UPDATE' | 'DELETE'
 
 @ObjectType()
 export class SubscriptionTrackResponse {
