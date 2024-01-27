@@ -5,7 +5,7 @@ import { CreateRouteInput } from './dto/create-route.input'
 // import { UpdateRouteInput } from './dto/update-route.input'
 import { UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/jwt-auth.guards'
-import { Photo } from '../track/dto/photo.response'
+import { UploadPhoto } from '../track/dto/upload-photo.response'
 import { UserId } from '../auth/user-id.decorator'
 import { Schema as MongooSchema } from 'mongoose'
 import { SubscriptionRouteResponse } from './dto/subscription-route.response'
@@ -14,11 +14,11 @@ import { SubscriptionRouteResponse } from './dto/subscription-route.response'
 export class RouteResolver {
   constructor(private readonly routeService: RouteService) {}
 
-  @Mutation(() => [Photo], {
+  @Mutation(() => [UploadPhoto], {
     description: 'Загрузить маршрут в MongoDB'
   })
   @UseGuards(JwtAuthGuard)
-  createRoute(
+  publishRoute(
     @UserId() userId: MongooSchema.Types.ObjectId,
     @Args('createRouteInput') createRouteInput: CreateRouteInput
   ) {

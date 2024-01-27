@@ -41,6 +41,9 @@ export class TrackPhoto {
   @Prop()
   uri?: string
 
+  @Prop()
+  filename?: string
+
   @Field(() => String, { nullable: true, description: 'Данные какие-то' })
   @Prop()
   data?: string
@@ -66,7 +69,7 @@ export class TrackNote {
 
   @Field(() => String, { description: 'id локальный для фронта' })
   @Prop()
-  id: string // Тут id можно не валидировать тк он локальный для фронта
+  id: string
 
   @Field(() => String, { description: 'Описание' })
   @Prop()
@@ -92,6 +95,9 @@ export class Track {
 
   @Prop({ default: 'track' })
   type: string
+
+  @Field(() => String, { description: 'id локальный для фронта' })
+  id: string
 
   @Field(() => String, { description: 'id создателя' })
   @Prop()
@@ -123,10 +129,6 @@ export class Track {
   })
   @Prop()
   notes?: TrackNote[]
-
-  @Field(() => Boolean, { nullable: true, description: 'Загружено?' })
-  @Prop()
-  uploaded?: boolean
 
   @Field(() => String, { nullable: true, description: 'Адрес' })
   @Prop()

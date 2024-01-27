@@ -1,16 +1,13 @@
 import { InputType, Int, Field, Float } from '@nestjs/graphql'
 import { RouteDifficulty } from '../entities/route.entity'
-// import { Photo } from 'src/app/track/dto/photo.response'
 import {
   TrackNoteInput,
   TrackPointInput
 } from 'src/app/track/dto/create-track.input'
+import { SetoutPhotoInput } from './setout-photo.input'
 
 @InputType()
 export class CreateRouteInput {
-  @Field(() => String, { description: 'id маршрута' })
-  id: string
-
   @Field(() => String, { description: 'Имя маршрута' })
   name: string
 
@@ -29,8 +26,8 @@ export class CreateRouteInput {
   @Field(() => String, { description: 'Описание маршрута' })
   description: string
 
-  // @Field(() => [Photo], { description: 'Фотографии маршрута' })
-  // photos: Photo[]
+  @Field(() => [SetoutPhotoInput], { description: 'Фотографии маршрута' })
+  photos: SetoutPhotoInput[]
 
   @Field(() => Float, { description: 'Временная метка' })
   timestamp: number
@@ -49,9 +46,6 @@ export class CreateRouteInput {
     description: 'Заметки о точках маршрута'
   })
   notes?: TrackNoteInput[]
-
-  @Field(() => Boolean, { nullable: true, description: 'Загружено?' })
-  uploaded?: boolean
 
   @Field(() => String, { nullable: true, description: 'Адрес' })
   address?: string

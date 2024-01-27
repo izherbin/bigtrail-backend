@@ -7,7 +7,7 @@ import { Model, Schema as MongooSchema } from 'mongoose'
 import { DeleteTrackInput } from './dto/delete-track.input'
 import { PubSub } from 'graphql-subscriptions'
 import { SubscriptionTrackResponse } from './dto/subscription-track.response'
-import { Photo } from './dto/photo.response'
+import { UploadPhoto } from './dto/upload-photo.response'
 import { MinioClientService } from '../minio-client/minio-client.service'
 
 const pubSub = new PubSub()
@@ -42,7 +42,8 @@ export class TrackService {
       const createTrack = new this.trackModel(createTrackInput)
       createTrack.userId = userId
 
-      const track = await createTrack.save()
+      const track: Track = await createTrack.save()
+      track.id = track._id.toString()
 
       const emit: SubscriptionTrackResponse = {
         function: 'ADD',
@@ -75,6 +76,7 @@ export class TrackService {
               objectName: value as string,
               expiry: 7 * 24 * 60 * 60
             })
+            trackPhoto.filename = value as string
           }
         },
         async (reason: string) => {
@@ -88,7 +90,7 @@ export class TrackService {
       objectName: filename,
       expiry: 300
     })
-    const upload: Photo = { url, id }
+    const upload: UploadPhoto = { url, id }
     return { upload, download }
   }
 

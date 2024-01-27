@@ -26,6 +26,17 @@ export class RouteService {
   ) {
     const uploads = []
     const downloads = []
+
+    for (const sp in createRouteInput.photos) {
+      const photo = await this.trackService.uploadPhoto(
+        createRouteInput.photos[sp]
+      )
+      if (photo) {
+        uploads.push(photo.upload)
+        downloads.push(photo.download)
+      }
+    }
+
     for (const n in createRouteInput.notes) {
       for (const p in createRouteInput.notes[n].photos) {
         const photo = await this.trackService.uploadPhoto(
@@ -43,6 +54,7 @@ export class RouteService {
       createRoute.userId = userId
 
       const route = await createRoute.save()
+      route.id = route._id.toString()
 
       const emit: SubscriptionRouteResponse = {
         function: 'ADD',

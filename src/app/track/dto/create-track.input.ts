@@ -26,9 +26,6 @@ export class TrackPointInput {
 
 @InputType()
 export class TrackPhotoInput {
-  @Field(() => String, { nullable: true, description: 'Сыылка на фото' })
-  uri?: string
-
   @Field(() => String, { nullable: true, description: 'Данные какие-то' })
   data?: string
 
@@ -85,9 +82,6 @@ export class CreateTrackInput {
     description: 'Заметки о точках трека'
   })
   notes?: TrackNoteInput[]
-
-  @Field(() => Boolean, { nullable: true, description: 'Загружено?' })
-  uploaded?: boolean
 
   @Field(() => String, { nullable: true, description: 'Адрес' })
   address?: string

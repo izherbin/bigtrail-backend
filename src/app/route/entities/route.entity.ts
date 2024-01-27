@@ -1,10 +1,22 @@
 import { ObjectType, Field, Float, Int } from '@nestjs/graphql'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document, Schema as MongooSchema } from 'mongoose'
-import { Photo } from 'src/app/track/dto/photo.response'
 import { TrackNote, TrackPoint } from 'src/app/track/entities/track.entity'
 
 export type RouteDifficulty = 'easily' | 'moderately' | 'difficult'
+
+@ObjectType()
+@Schema()
+export class SetoutPhoto {
+  @Field(() => String, { description: 'Ссылка на загрузку в Minio' })
+  uri: string
+
+  @Prop()
+  filename?: string
+
+  @Field(() => String, { description: 'Совпадает с TrackPhoto.id' })
+  id: string
+}
 
 @ObjectType()
 @Schema()
@@ -15,13 +27,12 @@ export class Route {
   @Prop({ default: 'route' })
   type: string
 
+  @Field(() => String, { description: 'id локальный для фронта' })
+  id: string
+
   @Field(() => String, { description: 'id создателя' })
   @Prop()
   userId: MongooSchema.Types.ObjectId
-
-  @Field(() => String, { description: 'id маршрута' })
-  @Prop()
-  id: string
 
   @Field(() => String, { description: 'Имя маршрута' })
   @Prop()
@@ -47,9 +58,9 @@ export class Route {
   @Prop()
   description: string
 
-  @Field(() => [Photo], { description: 'Фотографии маршрута' })
+  @Field(() => [SetoutPhoto], { description: 'Фотографии маршрута' })
   @Prop()
-  photos: Photo[]
+  photos: SetoutPhoto[]
 
   @Field(() => Float, { description: 'Временная метка' })
   @Prop()
