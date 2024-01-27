@@ -54,7 +54,7 @@ export class RouteService {
       createRoute.userId = userId
 
       const route = await createRoute.save()
-      route.id = route._id.toString()
+      // route.id = route._id.toString()
 
       const emit: SubscriptionRouteResponse = {
         function: 'ADD',

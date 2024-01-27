@@ -44,10 +44,6 @@ export class TrackPhoto {
   @Prop()
   filename?: string
 
-  @Field(() => String, { nullable: true, description: 'Данные какие-то' })
-  @Prop()
-  data?: string
-
   @Field(() => String, { nullable: true, description: 'Описание' })
   @Prop()
   description?: string
@@ -57,7 +53,7 @@ export class TrackPhoto {
     description: 'id локальный для фронта'
   })
   @Prop()
-  id?: string // Тут id можно не валидировать тк он локальный для фронта
+  id?: string
 }
 
 @ObjectType()

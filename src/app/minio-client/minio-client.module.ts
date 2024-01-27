@@ -11,9 +11,12 @@ import { MinioClientResolver } from './minio-client.resolver'
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
         return {
-          endPoint: config.get('MINIO_ENDPOINT'),
-          port: parseInt(config.get('MINIO_PORT')),
-          useSSL: false,
+          // endPoint: config.get('MINIO_ENDPOINT'),
+          endPoint: 'minio.bigtrail.tech',
+          // port: parseInt(config.get('MINIO_PORT')),
+          port: 443,
+          // useSSL: false,
+          useSSL: true,
           accessKey: config.get('MINIO_ACCESS_KEY'),
           secretKey: config.get('MINIO_SECRET_KEY')
         }
