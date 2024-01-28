@@ -22,8 +22,8 @@ export class AppResolver {
     description: 'Вывод версии программы'
   })
   @UseGuards(JwtAuthGuard)
-  getVersion(): string {
-    return this.appService.getVersion()
+  getCommitInfo(): string {
+    return this.appService.getCommitInfo()
   }
 
   @Query(() => String, { description: 'Определение телефона пользователя' })

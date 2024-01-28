@@ -8,7 +8,7 @@ export class AppService {
     return 'If you read this you have been authorized successfully'
   }
 
-  getVersion(): string {
+  getCommitInfo(): string {
     const out = execSync('git show --pretty="%h %ar %s" HEAD')
       .toString()
       .split('\n')
