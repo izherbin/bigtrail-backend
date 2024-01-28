@@ -4,6 +4,7 @@ import { Version } from './entities/version.entity'
 import { SetVersionInput } from './dto/set-version.input'
 import { UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/jwt-auth.guards'
+import { Phone } from '../auth/phone.decorator'
 
 @Resolver()
 export class VersionResolver {
@@ -11,8 +12,11 @@ export class VersionResolver {
 
   @Mutation(() => Version)
   @UseGuards(JwtAuthGuard)
-  setVersion(@Args('setVersionInput') setVersionInput: SetVersionInput) {
-    return this.versionService.setVersion(setVersionInput)
+  setVersion(
+    @Phone() phone: string,
+    @Args('setVersionInput') setVersionInput: SetVersionInput
+  ) {
+    return this.versionService.setVersion(phone, setVersionInput)
   }
 
   @Query(() => Version)

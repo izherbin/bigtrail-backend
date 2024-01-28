@@ -21,7 +21,11 @@ export class VersionService {
     return version
   }
 
-  async setVersion(setVersionInput: SetVersionInput) {
+  async setVersion(phone: string, setVersionInput: SetVersionInput) {
+    if (phone !== '79112128506') {
+      throw new HttpException('No rights to set versions', HttpStatus.FORBIDDEN)
+    }
+
     let version = await this.versionModel.findOne({})
     if (!version) {
       version = new this.versionModel(setVersionInput)
