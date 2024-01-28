@@ -62,6 +62,18 @@ export class TrackNoteInput {
 
 @InputType()
 export class CreateTrackInput {
+  @Field(() => String, {
+    nullable: true,
+    description: 'Тип, по умолчанию track'
+  })
+  type: string
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'id локальный для фронта'
+  })
+  id: string
+
   @Field(() => String, { description: 'Имя трека' })
   name: string
 

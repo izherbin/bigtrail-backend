@@ -24,6 +24,7 @@ export class Route {
   @Field(() => String, { description: 'Идентифкатор в MongoDB' })
   _id: MongooSchema.Types.ObjectId
 
+  @Field(() => String, { description: 'Тип, по умолчанию route' })
   @Prop({ default: 'route' })
   type: string
 

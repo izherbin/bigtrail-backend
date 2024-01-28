@@ -8,6 +8,7 @@ import { Model, Schema as MongooSchema } from 'mongoose'
 import { TrackService } from '../track/track.service'
 import { PubSub } from 'graphql-subscriptions'
 import { SubscriptionRouteResponse } from './dto/subscription-route.response'
+import { RouteFilterInput } from './dto/route-filter.input'
 
 const pubSub = new PubSub()
 
@@ -72,9 +73,34 @@ export class RouteService {
     return `This action returns all route`
   }
 
-  async findByUserId(userId: MongooSchema.Types.ObjectId) {
+  async getRoutes(
+    userId: MongooSchema.Types.ObjectId,
+    filter: RouteFilterInput
+  ) {
+    const { transit, difficulty, category } = filter || {}
     const routes = await this.routeModel.find({ userId })
-    return routes
+    const routesFiltered = routes.filter((route) => {
+      if (transit && transit !== route.transit) return false
+      else if (difficulty && difficulty !== route.difficulty) return false
+      else if (category && category !== route.category) return false
+      else return true
+    })
+    return routesFiltered
+  }
+
+  async getRoutesCount(
+    userId: MongooSchema.Types.ObjectId,
+    filter: RouteFilterInput
+  ) {
+    const { transit, difficulty, category } = filter || {}
+    const routes = await this.routeModel.find({ userId })
+    const count = routes.reduce((count, route) => {
+      if (transit && transit !== route.transit) return count
+      else if (difficulty && difficulty !== route.difficulty) return count
+      else if (category && category !== route.category) return count
+      else return count + 1
+    }, 0)
+    return count
   }
 
   watchRoutes() {

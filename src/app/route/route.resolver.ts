@@ -1,4 +1,11 @@
-import { Resolver, Query, Mutation, Args, Subscription } from '@nestjs/graphql'
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  Subscription,
+  Int
+} from '@nestjs/graphql'
 import { RouteService } from './route.service'
 import { Route } from './entities/route.entity'
 import { CreateRouteInput } from './dto/create-route.input'
@@ -9,6 +16,7 @@ import { UploadPhoto } from '../track/dto/upload-photo.response'
 import { UserId } from '../auth/user-id.decorator'
 import { Schema as MongooSchema } from 'mongoose'
 import { SubscriptionRouteResponse } from './dto/subscription-route.response'
+import { RouteFilterInput } from './dto/route-filter.input'
 
 @Resolver(() => Route)
 export class RouteResolver {
@@ -25,10 +33,24 @@ export class RouteResolver {
     return this.routeService.create(userId, createRouteInput)
   }
 
-  @Query(() => [Route], { name: 'getAllRoutes' })
+  @Query(() => [Route])
   @UseGuards(JwtAuthGuard)
-  getAllRoutesQuery(@UserId() userId: MongooSchema.Types.ObjectId) {
-    return this.routeService.findByUserId(userId)
+  getRoutes(
+    @UserId() userId: MongooSchema.Types.ObjectId,
+    @Args('routeFilterInput', { nullable: true })
+    routeFilterInput?: RouteFilterInput
+  ) {
+    return this.routeService.getRoutes(userId, routeFilterInput)
+  }
+
+  @Query(() => Int)
+  @UseGuards(JwtAuthGuard)
+  getRoutesCount(
+    @UserId() userId: MongooSchema.Types.ObjectId,
+    @Args('routeFilterInput', { nullable: true })
+    routeFilterInput?: RouteFilterInput
+  ) {
+    return this.routeService.getRoutesCount(userId, routeFilterInput)
   }
 
   @Subscription(() => SubscriptionRouteResponse, {

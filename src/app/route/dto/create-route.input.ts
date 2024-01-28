@@ -8,6 +8,18 @@ import { SetoutPhotoInput } from './setout-photo.input'
 
 @InputType()
 export class CreateRouteInput {
+  @Field(() => String, {
+    nullable: true,
+    description: 'Тип, по умолчанию route'
+  })
+  type: string
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'id локальный для фронта'
+  })
+  id: string
+
   @Field(() => String, { description: 'Имя маршрута' })
   name: string
 
