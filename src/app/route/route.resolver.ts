@@ -33,17 +33,33 @@ export class RouteResolver {
     return this.routeService.create(userId, createRouteInput)
   }
 
-  @Query(() => [Route])
+  @Query(() => [Route], {
+    description: 'Получить все маршруты пользователя'
+  })
   @UseGuards(JwtAuthGuard)
-  getRoutes(
+  getUserRoutes(
     @UserId() userId: MongooSchema.Types.ObjectId,
     @Args('routeFilterInput', { nullable: true })
     routeFilterInput?: RouteFilterInput
   ) {
-    return this.routeService.getRoutes(userId, routeFilterInput)
+    return this.routeService.getUserRoutes(userId, routeFilterInput)
   }
 
-  @Query(() => Int)
+  @Query(() => [Route], {
+    description: 'Получить все маршруты'
+  })
+  @UseGuards(JwtAuthGuard)
+  getRoutes(
+    @Args('routeFilterInput', { nullable: true })
+    routeFilterInput?: RouteFilterInput
+  ) {
+    return this.routeService.getRoutes(routeFilterInput)
+  }
+
+  @Query(() => Int, {
+    description:
+      'Получить количество всех маршрутов пользователя, удовлетворяющих фильтру'
+  })
   @UseGuards(JwtAuthGuard)
   getRoutesCount(
     @UserId() userId: MongooSchema.Types.ObjectId,
@@ -61,6 +77,16 @@ export class RouteResolver {
       console.log('Changed userId:', payload.watchRoutes.userId.toString())
       return res
     }
+  })
+  @UseGuards(JwtAuthGuard)
+  watchUserRoutes(@UserId() userId: MongooSchema.Types.ObjectId) {
+    console.log('userId:', userId)
+    const res = this.routeService.watchRoutes()
+    return res
+  }
+
+  @Subscription(() => SubscriptionRouteResponse, {
+    description: 'Следить за всеми маршрутами'
   })
   @UseGuards(JwtAuthGuard)
   watchRoutes(@UserId() userId: MongooSchema.Types.ObjectId) {

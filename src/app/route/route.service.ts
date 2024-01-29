@@ -73,12 +73,24 @@ export class RouteService {
     return `This action returns all route`
   }
 
-  async getRoutes(
+  async getUserRoutes(
     userId: MongooSchema.Types.ObjectId,
     filter: RouteFilterInput
   ) {
     const { transit, difficulty, category } = filter || {}
     const routes = await this.routeModel.find({ userId })
+    const routesFiltered = routes.filter((route) => {
+      if (transit && transit !== route.transit) return false
+      else if (difficulty && difficulty !== route.difficulty) return false
+      else if (category && category !== route.category) return false
+      else return true
+    })
+    return routesFiltered
+  }
+
+  async getRoutes(filter: RouteFilterInput) {
+    const { transit, difficulty, category } = filter || {}
+    const routes = await this.routeModel.find({})
     const routesFiltered = routes.filter((route) => {
       if (transit && transit !== route.transit) return false
       else if (difficulty && difficulty !== route.difficulty) return false
