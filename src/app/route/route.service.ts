@@ -63,7 +63,7 @@ export class RouteService {
         data: route as Route,
         userId: route.userId
       }
-      pubSub.publish('routeChanged', { watchRoutes: emit })
+      pubSub.publish('routeChanged', { watchUserRoutes: emit })
     })
 
     return uploads
@@ -73,19 +73,9 @@ export class RouteService {
     return `This action returns all route`
   }
 
-  async getUserRoutes(
-    userId: MongooSchema.Types.ObjectId,
-    filter: RouteFilterInput
-  ) {
-    const { transit, difficulty, category } = filter || {}
+  async getUserRoutes(userId: MongooSchema.Types.ObjectId) {
     const routes = await this.routeModel.find({ userId })
-    const routesFiltered = routes.filter((route) => {
-      if (transit && transit !== route.transit) return false
-      else if (difficulty && difficulty !== route.difficulty) return false
-      else if (category && category !== route.category) return false
-      else return true
-    })
-    return routesFiltered
+    return routes
   }
 
   async getRoutes(filter: RouteFilterInput) {
@@ -100,12 +90,9 @@ export class RouteService {
     return routesFiltered
   }
 
-  async getRoutesCount(
-    userId: MongooSchema.Types.ObjectId,
-    filter: RouteFilterInput
-  ) {
+  async getRoutesCount(filter: RouteFilterInput) {
     const { transit, difficulty, category } = filter || {}
-    const routes = await this.routeModel.find({ userId })
+    const routes = await this.routeModel.find({})
     const count = routes.reduce((count, route) => {
       if (transit && transit !== route.transit) return count
       else if (difficulty && difficulty !== route.difficulty) return count
@@ -115,7 +102,7 @@ export class RouteService {
     return count
   }
 
-  watchRoutes() {
+  watchUserRoutes() {
     const res = pubSub.asyncIterator('routeChanged')
     return res
   }

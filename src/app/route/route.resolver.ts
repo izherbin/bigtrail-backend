@@ -37,12 +37,8 @@ export class RouteResolver {
     description: 'Получить все маршруты пользователя'
   })
   @UseGuards(JwtAuthGuard)
-  getUserRoutes(
-    @UserId() userId: MongooSchema.Types.ObjectId,
-    @Args('routeFilterInput', { nullable: true })
-    routeFilterInput?: RouteFilterInput
-  ) {
-    return this.routeService.getUserRoutes(userId, routeFilterInput)
+  getUserRoutes(@UserId() userId: MongooSchema.Types.ObjectId) {
+    return this.routeService.getUserRoutes(userId)
   }
 
   @Query(() => [Route], {
@@ -62,11 +58,10 @@ export class RouteResolver {
   })
   @UseGuards(JwtAuthGuard)
   getRoutesCount(
-    @UserId() userId: MongooSchema.Types.ObjectId,
     @Args('routeFilterInput', { nullable: true })
     routeFilterInput?: RouteFilterInput
   ) {
-    return this.routeService.getRoutesCount(userId, routeFilterInput)
+    return this.routeService.getRoutesCount(routeFilterInput)
   }
 
   @Subscription(() => SubscriptionRouteResponse, {
@@ -81,17 +76,7 @@ export class RouteResolver {
   @UseGuards(JwtAuthGuard)
   watchUserRoutes(@UserId() userId: MongooSchema.Types.ObjectId) {
     console.log('userId:', userId)
-    const res = this.routeService.watchRoutes()
-    return res
-  }
-
-  @Subscription(() => SubscriptionRouteResponse, {
-    description: 'Следить за всеми маршрутами'
-  })
-  @UseGuards(JwtAuthGuard)
-  watchRoutes(@UserId() userId: MongooSchema.Types.ObjectId) {
-    console.log('userId:', userId)
-    const res = this.routeService.watchRoutes()
+    const res = this.routeService.watchUserRoutes()
     return res
   }
 
