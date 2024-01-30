@@ -42,7 +42,7 @@ export class RouteResolver {
   }
 
   @Query(() => [Route], {
-    description: 'Получить все маршруты'
+    description: 'Получить все маршруты, удовлетворяющие фильтру'
   })
   @UseGuards(JwtAuthGuard)
   getRoutes(
@@ -53,8 +53,7 @@ export class RouteResolver {
   }
 
   @Query(() => Int, {
-    description:
-      'Получить количество всех маршрутов пользователя, удовлетворяющих фильтру'
+    description: 'Получить количество всех маршрутов, удовлетворяющих фильтру'
   })
   @UseGuards(JwtAuthGuard)
   getRoutesCount(

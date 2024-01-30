@@ -1,6 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql'
 
-@InputType()
+@InputType({ description: 'Данные для загрузки фото витрины маршрута' })
 export class SetoutPhotoInput {
   @Field(() => String, { nullable: true, description: 'Сыылка на фото' })
   uri?: string

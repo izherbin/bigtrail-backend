@@ -2,7 +2,7 @@ import { ObjectType, Field, Float } from '@nestjs/graphql'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document, Schema as MongooSchema } from 'mongoose'
 
-@ObjectType()
+@ObjectType({ description: 'Точка на маршруте' })
 @Schema({ _id: false })
 export class TrackPoint {
   @Field(() => Float, { description: 'Широта' })
@@ -34,7 +34,7 @@ export class TrackPoint {
   altSpeed?: number
 }
 
-@ObjectType()
+@ObjectType({ description: 'Фотография в треке' })
 @Schema({ _id: false })
 export class TrackPhoto {
   @Field(() => String, { nullable: true, description: 'Сыылка на фото' })
@@ -56,7 +56,7 @@ export class TrackPhoto {
   id?: string
 }
 
-@ObjectType()
+@ObjectType({ description: 'Заметка в треке' })
 @Schema({ _id: false })
 export class TrackNote {
   @Field(() => TrackPoint, { description: 'Точка трека' })
@@ -83,7 +83,7 @@ export class TrackNote {
   disabled?: boolean
 }
 
-@ObjectType()
+@ObjectType({ description: 'Трек' })
 @Schema()
 export class Track {
   @Field(() => String, { description: 'Идентифкатор в MongoDB' })

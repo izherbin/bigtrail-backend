@@ -6,7 +6,7 @@ import {
 } from 'src/app/track/dto/create-track.input'
 import { SetoutPhotoInput } from './setout-photo.input'
 
-@InputType()
+@InputType({ description: 'Информация для создания маршрута' })
 export class CreateRouteInput {
   @Field(() => String, {
     nullable: true,

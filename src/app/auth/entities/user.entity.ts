@@ -5,7 +5,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 type timestamp = number
 type JwtToken = string
 
-@ObjectType()
+@ObjectType({ description: 'Профайл пользователя' })
 @Schema()
 export class User {
   @Field(() => String, { description: 'Идентифкатор в MongoDB' })

@@ -1,6 +1,6 @@
 import { InputType, Field, Float } from '@nestjs/graphql'
 
-@InputType()
+@InputType({ description: 'Входящая информация о точке на треке' })
 export class TrackPointInput {
   @Field(() => Float, { description: 'Широта' })
   lat: number
@@ -24,7 +24,7 @@ export class TrackPointInput {
   altSpeed?: number
 }
 
-@InputType()
+@InputType({ description: 'Входящая информация о фото в треке' })
 export class TrackPhotoInput {
   @Field(() => String, { nullable: true, description: 'Сыылка на фото' })
   uri?: string
@@ -39,7 +39,7 @@ export class TrackPhotoInput {
   id?: string
 }
 
-@InputType()
+@InputType({ description: 'Входящая информация о заметке в треке' })
 export class TrackNoteInput {
   @Field(() => TrackPointInput, { description: 'Точка трека' })
   point: TrackPointInput
@@ -60,7 +60,7 @@ export class TrackNoteInput {
   disabled?: boolean
 }
 
-@InputType()
+@InputType({ description: 'Входящая информация о треке' })
 export class CreateTrackInput {
   @Field(() => String, {
     nullable: true,

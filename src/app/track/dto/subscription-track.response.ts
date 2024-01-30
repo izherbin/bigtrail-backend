@@ -4,7 +4,7 @@ import { Schema as MongooSchema } from 'mongoose'
 
 export type WatchResponseFunction = 'ADD' | 'UPDATE' | 'DELETE'
 
-@ObjectType()
+@ObjectType({ description: 'Ответ от подписки на изменения трека' })
 export class SubscriptionTrackResponse {
   @Field(() => String, {
     description: 'Метод изменения трека'

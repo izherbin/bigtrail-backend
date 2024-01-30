@@ -1,6 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql'
 
-@ObjectType()
+@ObjectType({ description: 'Результат загрузки фотографии' })
 export class UploadPhoto {
   @Field(() => String, { description: 'Ссылка на загрузку в Minio' })
   url: string

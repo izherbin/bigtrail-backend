@@ -10,7 +10,9 @@ import { Phone } from '../auth/phone.decorator'
 export class VersionResolver {
   constructor(private readonly versionService: VersionService) {}
 
-  @Mutation(() => Version)
+  @Mutation(() => Version, {
+    description: 'Установить версии приложений'
+  })
   @UseGuards(JwtAuthGuard)
   setVersion(
     @Phone() phone: string,
@@ -19,7 +21,9 @@ export class VersionResolver {
     return this.versionService.setVersion(phone, setVersionInput)
   }
 
-  @Query(() => Version)
+  @Query(() => Version, {
+    description: 'Получить версии приложений'
+  })
   getVersion() {
     return this.versionService.getVersion()
   }

@@ -1,7 +1,7 @@
 import { Field, InputType } from '@nestjs/graphql'
 import { RouteDifficulty } from '../entities/route.entity'
 
-@InputType()
+@InputType({ description: 'Набор фильтров маршрутов' })
 export class RouteFilterInput {
   @Field(() => String, {
     nullable: true,

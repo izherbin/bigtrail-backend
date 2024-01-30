@@ -3,7 +3,7 @@ import { Route } from '../entities/route.entity'
 import { Schema as MongooSchema } from 'mongoose'
 import { WatchResponseFunction } from 'src/app/track/dto/subscription-track.response'
 
-@ObjectType()
+@ObjectType({ description: 'Информация от подписки на изменения маршрута' })
 export class SubscriptionRouteResponse {
   @Field(() => String, {
     description: 'Метод изменения маршрута'

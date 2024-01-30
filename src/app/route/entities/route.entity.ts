@@ -5,7 +5,7 @@ import { TrackNote, TrackPoint } from 'src/app/track/entities/track.entity'
 
 export type RouteDifficulty = 'easily' | 'moderately' | 'difficult'
 
-@ObjectType()
+@ObjectType({ description: 'Маршрут' })
 @Schema()
 export class SetoutPhoto {
   @Field(() => String, { description: 'Ссылка на загрузку в Minio' })
