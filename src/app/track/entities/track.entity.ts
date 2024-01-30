@@ -67,7 +67,7 @@ export class TrackNote {
   @Prop()
   id: string
 
-  @Field(() => String, { description: 'Описание' })
+  @Field(() => String, { nullable: true, description: 'Описание' })
   @Prop()
   description?: string
 
@@ -78,7 +78,7 @@ export class TrackNote {
   @Prop()
   photos?: TrackPhoto[]
 
-  @Field(() => Boolean, { description: 'Нерабочее?' })
+  @Field(() => Boolean, { nullable: true, description: 'Нерабочее?' })
   @Prop()
   disabled?: boolean
 }

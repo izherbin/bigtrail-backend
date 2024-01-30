@@ -47,11 +47,11 @@ export class CreateRouteInput {
   @Field(() => [TrackPointInput], { description: 'Массив точек маршрута' })
   points: TrackPointInput[]
 
-  @Field(() => Float, { nullable: true, description: 'Длительность' })
-  duration?: number
+  @Field(() => Float, { description: 'Длительность' })
+  duration: number
 
-  @Field(() => Float, { nullable: true, description: 'Расстояние' })
-  distance?: number
+  @Field(() => Float, { description: 'Расстояние' })
+  distance: number
 
   @Field(() => [TrackNoteInput], {
     nullable: true,
@@ -59,6 +59,6 @@ export class CreateRouteInput {
   })
   notes?: TrackNoteInput[]
 
-  @Field(() => String, { nullable: true, description: 'Адрес' })
-  address?: string
+  @Field(() => String, { description: 'Адрес' })
+  address: string
 }

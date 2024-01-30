@@ -24,9 +24,12 @@ export class Route {
   @Field(() => String, { description: 'Идентифкатор в MongoDB' })
   _id: MongooSchema.Types.ObjectId
 
-  @Field(() => String, { description: 'Тип, по умолчанию route' })
+  @Field(() => String, {
+    nullable: true,
+    description: 'Тип, по умолчанию route'
+  })
   @Prop({ default: 'route' })
-  type: string
+  type?: string
 
   @Field(() => String, { description: 'id локальный для фронта' })
   id: string
@@ -71,24 +74,24 @@ export class Route {
   @Prop()
   points: TrackPoint[]
 
-  @Field(() => Float, { nullable: true, description: 'Длительность' })
+  @Field(() => Float, { description: 'Длительность' })
   @Prop()
   duration?: number
 
-  @Field(() => Float, { nullable: true, description: 'Расстояние' })
+  @Field(() => Float, { description: 'Расстояние' })
   @Prop()
-  distance?: number
+  distance: number
 
   @Field(() => [TrackNote], {
     nullable: true,
     description: 'Заметки о точках маршрута'
   })
   @Prop()
-  notes?: TrackNote[]
+  notes: TrackNote[]
 
-  @Field(() => String, { nullable: true, description: 'Адрес' })
+  @Field(() => String, { description: 'Адрес' })
   @Prop()
-  address?: string
+  address: string
 }
 
 export type RouteDocument = Route & Document
