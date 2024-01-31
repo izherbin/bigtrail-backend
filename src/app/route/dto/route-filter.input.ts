@@ -3,21 +3,21 @@ import { RouteDifficulty } from '../entities/route.entity'
 
 @InputType({ description: 'Набор фильтров маршрутов' })
 export class RouteFilterInput {
-  @Field(() => String, {
+  @Field(() => [String], {
     nullable: true,
     description: 'Фильтр по транзиту'
   })
-  transit?: string
+  transit?: string[]
 
-  @Field(() => String, {
+  @Field(() => [String], {
     nullable: true,
     description: 'Фильтр по категории'
   })
-  category?: string
+  category?: string[]
 
-  @Field(() => String, {
+  @Field(() => [String], {
     nullable: true,
     description: 'Фильтр по сложности'
   })
-  difficulty?: RouteDifficulty
+  difficulty?: [RouteDifficulty]
 }

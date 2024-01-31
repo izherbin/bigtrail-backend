@@ -95,9 +95,10 @@ export class RouteService {
     const { transit, difficulty, category } = filter || {}
     const routes = await this.routeModel.find({})
     const routesFiltered = routes.filter((route) => {
-      if (transit && transit !== route.transit) return false
-      else if (difficulty && difficulty !== route.difficulty) return false
-      else if (category && category !== route.category) return false
+      if (transit && !transit.includes(route.transit)) return false
+      else if (difficulty && !difficulty.includes(route.difficulty))
+        return false
+      else if (category && !category.includes(route.category)) return false
       else return true
     })
     return routesFiltered
@@ -118,9 +119,10 @@ export class RouteService {
     const { transit, difficulty, category } = filter || {}
     const routes = await this.routeModel.find({})
     const count = routes.reduce((count, route) => {
-      if (transit && transit !== route.transit) return count
-      else if (difficulty && difficulty !== route.difficulty) return count
-      else if (category && category !== route.category) return count
+      if (transit && !transit.includes(route.transit)) return count
+      else if (difficulty && !difficulty.includes(route.difficulty))
+        return count
+      else if (category && !category.includes(route.category)) return count
       else return count + 1
     }, 0)
     return count
