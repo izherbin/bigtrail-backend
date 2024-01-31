@@ -67,9 +67,10 @@ export class RouteResolver {
   @Subscription(() => SubscriptionRouteResponse, {
     description: 'Следить за всеми маршрутами пользователя',
     filter: (payload, variables, context): boolean => {
-      const res = payload.watchRoutes.userId.toString() === context.req.user._id
+      const res =
+        payload.watchUserRoutes.userId.toString() === context.req.user._id
       console.log('My userId:', context.req.user._id)
-      console.log('Changed userId:', payload.watchRoutes.userId.toString())
+      console.log('Changed userId:', payload.watchUserRoutes.userId.toString())
       return res
     }
   })

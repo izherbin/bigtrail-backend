@@ -3,12 +3,16 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Version, VersionDocument } from './entities/version.entity'
 import { Model } from 'mongoose'
 import { SetVersionInput } from './dto/set-version.input'
+import { AppLinks, AppLinksDocument } from './entities/app-links.entity'
+import { SetAppLinksInput } from './dto/set-app-links.input'
 
 @Injectable()
 export class VersionService {
   constructor(
     @InjectModel(Version.name)
-    private versionModel: Model<VersionDocument>
+    private versionModel: Model<VersionDocument>,
+    @InjectModel(AppLinks.name)
+    private appLinksModel: Model<AppLinksDocument>
   ) {}
 
   async getVersion() {
@@ -35,5 +39,21 @@ export class VersionService {
     }
 
     return { ...setVersionInput, backend: process.env.npm_package_version }
+  }
+
+  async setAppLinks(phone: string, setAppLinksInput: SetAppLinksInput) {
+    if (phone !== '79112128506') {
+      throw new HttpException('No rights to set links', HttpStatus.FORBIDDEN)
+    }
+
+    let links = await this.appLinksModel.findOne({})
+    if (!links) {
+      links = new this.appLinksModel(setAppLinksInput)
+      links.save()
+    } else {
+      links = await this.appLinksModel.findOneAndUpdate({}, SetAppLinksInput)
+    }
+
+    return links as AppLinks
   }
 }

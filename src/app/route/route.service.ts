@@ -159,7 +159,7 @@ export class RouteService {
     }
     this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
 
-    return `Успешно удален трек № ${id} `
+    return `Успешно удален маршрут № ${id} `
   }
 
   async calcUserStatistics(userId: MongooSchema.Types.ObjectId) {
