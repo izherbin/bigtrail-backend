@@ -1,24 +1,7 @@
-import { Field, ObjectType } from '@nestjs/graphql'
+import { ObjectType, OmitType } from '@nestjs/graphql'
+import { GetProfileResponse } from './get-profile.response'
 
 @ObjectType({
-  description: 'Объект ответа после запроса профайла'
+  description: 'Объект ответа после запроса чужого профайла'
 })
-export class GetUserResponce {
-  @Field(() => String, {
-    nullable: true,
-    description: 'Номер телефона в формате string 7ХХХХХХХХХХ'
-  })
-  phone: string
-
-  @Field(() => String, {
-    nullable: true,
-    description: 'Имя пользователя'
-  })
-  name: string
-
-  @Field(() => String, {
-    nullable: true,
-    description: 'Аватар пользователя (временная download-ссылка на аватар )'
-  })
-  avatar: string
-}
+export class GetUserResponse extends OmitType(GetProfileResponse, ['phone']) {}

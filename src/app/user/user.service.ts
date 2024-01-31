@@ -7,7 +7,7 @@ import { SetNameInput } from './dto/set-name.input'
 import { Readable } from 'stream'
 import { MinioClientService } from '../minio-client/minio-client.service'
 import { PubSub } from 'graphql-subscriptions'
-import { GetUserResponce } from './dto/get-user.response'
+import { GetProfileResponse } from './dto/get-profile.response'
 
 const pubSub = new PubSub()
 
@@ -23,7 +23,7 @@ export class UserService {
   async getProfileQuery(phone: string) {
     const user = await this.userModel.findOne({ phone })
 
-    return user as GetUserResponce
+    return user as GetProfileResponse
   }
 
   watchProfile() {
@@ -31,8 +31,13 @@ export class UserService {
     return res
   }
 
-  async getUser(phone: string) {
+  async getUserByPhone(phone: string) {
     const user = await this.userModel.findOne({ phone })
+    return user
+  }
+
+  async getUserById(id: string) {
+    const user = await this.userModel.findById(id)
     return user
   }
 
@@ -103,7 +108,7 @@ export class UserService {
     user.name = name
     await user.save()
 
-    const profile = user as GetUserResponce
+    const profile = user as GetProfileResponse
     pubSub.publish('profileChanged', { watchProfile: profile })
 
     return profile
@@ -192,7 +197,7 @@ export class UserService {
     user.avatarFile = null
     await user.save()
 
-    const profile = user as GetUserResponce
+    const profile = user as GetProfileResponse
     pubSub.publish('profileChanged', { watchProfile: profile })
 
     return profile

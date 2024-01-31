@@ -4,20 +4,18 @@ import { UserService } from './user.service'
 import { Phone } from '../auth/phone.decorator'
 import { UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/jwt-auth.guards'
-import { GetUserResponce } from './dto/get-user.response'
+import { GetProfileResponse } from './dto/get-profile.response'
 import { UploadedObjectInfo } from '../minio-client/dto/upload-file.dto'
 import { FileUpload } from '../minio-client/file.model'
-import { MinioClientService } from '../minio-client/minio-client.service'
 import { uploadScalar } from '../minio-client/upload-scalar.util'
+import { GetUserResponse } from './dto/get-user.response'
+import { GetUserInput } from './dto/get-user.input'
 
 @Resolver()
 export class UserResolver {
-  constructor(
-    private readonly userService: UserService,
-    private readonly minioClientService: MinioClientService
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
-  @Query(() => GetUserResponce, {
+  @Query(() => GetProfileResponse, {
     name: 'getProfile',
     description: 'Получить профайл пользователя'
   })
@@ -26,7 +24,14 @@ export class UserResolver {
     return this.userService.getProfileQuery(phone)
   }
 
-  @Subscription(() => GetUserResponce, {
+  @Query(() => GetUserResponse, {
+    description: 'Получить профайл другого пользователя'
+  })
+  getUser(@Args('getUserInput') getUserInput: GetUserInput) {
+    return this.userService.getUserById(getUserInput.id)
+  }
+
+  @Subscription(() => GetProfileResponse, {
     description: 'Следить за профайлом пользователя',
     filter: (payload, variables, context): boolean => {
       const res = payload.watchProfile.phone === context.req.user.phone
@@ -42,7 +47,7 @@ export class UserResolver {
     return res
   }
 
-  @Mutation(() => GetUserResponce, {
+  @Mutation(() => GetProfileResponse, {
     description: 'Установить имя пользователя'
   })
   @UseGuards(JwtAuthGuard)
@@ -62,7 +67,7 @@ export class UserResolver {
     return this.userService.setProfileAvatar(phone)
   }
 
-  @Mutation(() => GetUserResponce, {
+  @Mutation(() => GetProfileResponse, {
     description: 'Удалить аватар пользователя'
   })
   @UseGuards(JwtAuthGuard)

@@ -17,7 +17,7 @@ export class AuthService {
   ) {}
 
   async validateUser(phone: string, code: number) {
-    const user = await this.userService.getUser(phone)
+    const user = await this.userService.getUserByPhone(phone)
     if (!user) {
       return null
     }
@@ -43,7 +43,7 @@ export class AuthService {
 
   async login(loginUserInput: LoginCodeInput) {
     const { phone } = loginUserInput
-    const user = await this.userService.getUser(phone)
+    const user = await this.userService.getUserByPhone(phone)
     if (!user) {
       throw new HttpException('No such phone', HttpStatus.NOT_FOUND)
     }
@@ -71,7 +71,7 @@ export class AuthService {
 
   async signup(payload: LoginPhoneInput) {
     const { phone } = payload
-    let user = await this.userService.getUser(phone)
+    let user = await this.userService.getUserByPhone(phone)
 
     if (!user) {
       user = await this.userService.createUser(phone)
@@ -186,7 +186,7 @@ export class AuthService {
 
   async kill(payload: LoginPhoneInput) {
     const { phone } = payload
-    const user = await this.userService.getUser(phone)
+    const user = await this.userService.getUserByPhone(phone)
     if (!user) {
       return 'Authentication process stoped'
     }

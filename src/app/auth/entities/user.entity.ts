@@ -11,9 +11,9 @@ export class User {
   @Field(() => String, { description: 'Идентифкатор в MongoDB' })
   _id: MongooSchema.Types.ObjectId
 
-  @Field(() => String, { description: 'Имя пользователя' })
+  @Field(() => String, { nullable: true, description: 'Имя пользователя' })
   @Prop()
-  name: string
+  name?: string
 
   @Prop()
   avatar: string
