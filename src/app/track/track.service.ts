@@ -1,23 +1,31 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  forwardRef
+} from '@nestjs/common'
 import { CreateTrackInput } from './dto/create-track.input'
 import { UpdateTrackInput } from './dto/update-track.input'
 import { InjectModel } from '@nestjs/mongoose'
 import { Track, TrackDocument, TrackPhoto } from './entities/track.entity'
 import { Model, Schema as MongooSchema } from 'mongoose'
 import { DeleteTrackInput } from './dto/delete-track.input'
-import { PubSub } from 'graphql-subscriptions'
+import { PubSubEngine } from 'graphql-subscriptions'
 import { SubscriptionTrackResponse } from './dto/subscription-track.response'
 import { UploadPhoto } from './dto/upload-photo.response'
 import { MinioClientService } from '../minio-client/minio-client.service'
-
-const pubSub = new PubSub()
+import { UserService } from '../user/user.service'
 
 @Injectable()
 export class TrackService {
   constructor(
     @InjectModel(Track.name)
     private trackModel: Model<TrackDocument>,
-    private readonly minioClientService: MinioClientService
+    private readonly minioClientService: MinioClientService,
+    @Inject(forwardRef(() => UserService))
+    private readonly userService: UserService,
+    @Inject('PUB_SUB') private pubSub: PubSubEngine
   ) {}
 
   async create(
@@ -45,13 +53,16 @@ export class TrackService {
       const track: Track = await createTrack.save()
       track.id = track._id.toString()
 
+      const profile = await this.userService.getProfileById(userId)
+      this.pubSub.publish('profileChanged', { watchProfile: profile })
+
       const emit: SubscriptionTrackResponse = {
         function: 'ADD',
         id: track._id,
         data: track as Track,
         userId: track.userId
       }
-      pubSub.publish('trackChanged', { watchTracks: emit })
+      this.pubSub.publish('trackChanged', { watchTracks: emit })
     })
 
     return uploads
@@ -105,7 +116,7 @@ export class TrackService {
   }
 
   watchTracks() {
-    const res = pubSub.asyncIterator('trackChanged')
+    const res = this.pubSub.asyncIterator('trackChanged')
     return res
   }
 
@@ -137,12 +148,15 @@ export class TrackService {
 
     await this.trackModel.findByIdAndDelete(id)
 
+    const profile = await this.userService.getProfileById(userId)
+    this.pubSub.publish('profileChanged', { watchProfile: profile })
+
     const emit: SubscriptionTrackResponse = {
       function: 'DELETE',
       id: track._id,
       userId: track.userId
     }
-    pubSub.publish('trackChanged', { watchTracks: emit })
+    this.pubSub.publish('trackChanged', { watchTracks: emit })
 
     return `Успешно удален трек № ${id} `
   }

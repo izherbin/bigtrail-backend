@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { CreateRouteInput } from './dto/create-route.input'
 import { UpdateRouteInput } from './dto/update-route.input'
 import { InjectModel } from '@nestjs/mongoose'
@@ -6,9 +6,10 @@ import { Route, RouteDocument } from './entities/route.entity'
 import { MinioClientService } from '../minio-client/minio-client.service'
 import { Model, Schema as MongooSchema } from 'mongoose'
 import { TrackService } from '../track/track.service'
-import { PubSub } from 'graphql-subscriptions'
+import { PubSub, PubSubEngine } from 'graphql-subscriptions'
 import { SubscriptionRouteResponse } from './dto/subscription-route.response'
 import { RouteFilterInput } from './dto/route-filter.input'
+import { UserService } from '../user/user.service'
 
 const pubSub = new PubSub()
 
@@ -18,7 +19,10 @@ export class RouteService {
     @InjectModel(Route.name)
     private routeModel: Model<RouteDocument>,
     private readonly minioClientService: MinioClientService,
-    private readonly trackService: TrackService
+    private readonly trackService: TrackService,
+    @Inject(forwardRef(() => UserService))
+    private readonly userService: UserService,
+    @Inject('PUB_SUB') private pubSub: PubSubEngine
   ) {}
 
   async create(
@@ -56,6 +60,9 @@ export class RouteService {
 
       const route = await createRoute.save()
       // route.id = route._id.toString()
+
+      const profile = await this.userService.getProfileById(userId)
+      this.pubSub.publish('profileChanged', { watchProfile: profile })
 
       const emit: SubscriptionRouteResponse = {
         function: 'ADD',

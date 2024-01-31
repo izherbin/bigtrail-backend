@@ -1,16 +1,14 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { User, UserDocument } from './entities/user.entity'
-import { Model } from 'mongoose'
+import { Model, Schema as MongooSchema } from 'mongoose'
 import { ConfigService } from '@nestjs/config'
 import { SetNameInput } from './dto/set-name.input'
 import { Readable } from 'stream'
 import { MinioClientService } from '../minio-client/minio-client.service'
-import { PubSub } from 'graphql-subscriptions'
 import { GetProfileResponse } from './dto/get-profile.response'
 import { RouteService } from '../route/route.service'
-
-const pubSub = new PubSub()
+import { PubSubEngine } from 'graphql-subscriptions'
 
 @Injectable()
 export class UserService {
@@ -19,7 +17,8 @@ export class UserService {
     private userModel: Model<UserDocument>,
     private readonly configService: ConfigService,
     private readonly minioClientService: MinioClientService,
-    private readonly routeService: RouteService
+    private readonly routeService: RouteService,
+    @Inject('PUB_SUB') private pubSub: PubSubEngine
   ) {}
 
   async getProfileQuery(phone: string) {
@@ -30,8 +29,16 @@ export class UserService {
     return profile
   }
 
+  async getProfileById(id: MongooSchema.Types.ObjectId) {
+    const user = await this.userModel.findById(id)
+
+    const profile = user.toObject() as GetProfileResponse
+    profile.statistics = await this.routeService.calcUserStatistics(user._id)
+    return profile
+  }
+
   watchProfile() {
-    const res = pubSub.asyncIterator('profileChanged')
+    const res = this.pubSub.asyncIterator('profileChanged')
     return res
   }
 
@@ -114,7 +121,7 @@ export class UserService {
 
     const profile = user.toObject() as GetProfileResponse
     profile.statistics = await this.routeService.calcUserStatistics(user._id)
-    pubSub.publish('profileChanged', { watchProfile: profile })
+    this.pubSub.publish('profileChanged', { watchProfile: profile })
 
     return profile
   }
@@ -148,7 +155,7 @@ export class UserService {
             avatar: user.avatar,
             statistics: await this.routeService.calcUserStatistics(user._id)
           }
-          pubSub.publish('profileChanged', { watchProfile: profile })
+          this.pubSub.publish('profileChanged', { watchProfile: profile })
         }
       },
       (reason) => {
@@ -206,7 +213,7 @@ export class UserService {
 
     const profile = user.toObject() as GetProfileResponse
     profile.statistics = await this.routeService.calcUserStatistics(user._id)
-    pubSub.publish('profileChanged', { watchProfile: profile })
+    this.pubSub.publish('profileChanged', { watchProfile: profile })
 
     return profile
   }

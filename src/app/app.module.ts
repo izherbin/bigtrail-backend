@@ -13,7 +13,7 @@ import { TrackModule } from './track/track.module'
 import { MinioClientModule } from './minio-client/minio-client.module'
 import { Context } from 'graphql-ws'
 import { RouteModule } from './route/route.module'
-import { VersionModule } from './version/version.module';
+import { VersionModule } from './version/version.module'
 
 interface Extra {
   request: {

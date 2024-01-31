@@ -33,10 +33,11 @@ export class UserResolver {
 
   @Subscription(() => GetProfileResponse, {
     description: 'Следить за профайлом пользователя',
-    filter: (payload, variables, context): boolean => {
-      const res = payload.watchProfile.phone === context.req.user.phone
-      console.log('My phone:', context.req.user.phone)
-      console.log('Changed phone:', payload.watchProfile.phone)
+    filter: (payload, variables, context) => {
+      const id = payload.watchProfile._id.toString()
+      const res = id === context.req.user._id
+      console.log('My Id:', context.req.user._id)
+      console.log('Changed Id:', id)
       return res
     }
   })
