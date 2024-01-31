@@ -42,7 +42,8 @@ export class UserStatistics {
 export class GetProfileResponse extends PickType(User, [
   '_id',
   'phone',
-  'name'
+  'name',
+  'status'
 ]) {
   @Field(() => String, {
     nullable: true,

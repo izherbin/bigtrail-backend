@@ -9,6 +9,7 @@ import { MinioClientService } from '../minio-client/minio-client.service'
 import { GetProfileResponse } from './dto/get-profile.response'
 import { RouteService } from '../route/route.service'
 import { PubSubEngine } from 'graphql-subscriptions'
+import { SetStatusInput } from './dto/set-status.input'
 
 @Injectable()
 export class UserService {
@@ -120,6 +121,31 @@ export class UserService {
     }
 
     user.name = name
+    await user.save()
+
+    const profile = user.toObject() as GetProfileResponse
+    profile.statistics = await this.routeService.calcUserStatistics(user._id)
+    this.pubSub.publish('profileChanged', { watchProfile: profile })
+
+    return profile
+  }
+
+  async setProfleStatus(phone: string, setStatusInput: SetStatusInput) {
+    const { status } = setStatusInput
+
+    const user = await this.userModel.findOne({ phone })
+    if (!user) {
+      throw new HttpException('No such user', HttpStatus.NOT_FOUND)
+    }
+
+    if (user.isAdmin) {
+      throw new HttpException(
+        'Can not change this profile',
+        HttpStatus.FORBIDDEN
+      )
+    }
+
+    user.status = status
     await user.save()
 
     const profile = user.toObject() as GetProfileResponse

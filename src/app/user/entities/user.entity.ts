@@ -27,6 +27,12 @@ export class User {
   @Prop()
   phone: string
 
+  @Field(() => String, {
+    description: 'Статус пользователя'
+  })
+  @Prop()
+  status: string
+
   @Field(() => Int, {
     nullable: true,
     description: 'Код аутентификации по смс в формате number NNNNNN'

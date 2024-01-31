@@ -10,6 +10,7 @@ import { FileUpload } from '../minio-client/file.model'
 import { uploadScalar } from '../minio-client/upload-scalar.util'
 import { GetUserResponse } from './dto/get-user.response'
 import { GetUserInput } from './dto/get-user.input'
+import { SetStatusInput } from './dto/set-status.input'
 
 @Resolver()
 export class UserResolver {
@@ -57,6 +58,21 @@ export class UserResolver {
     @Args('setnameInput') setNameInput: SetNameInput
   ) {
     const profile = await this.userService.setName(phone, setNameInput)
+    return profile
+  }
+
+  @Mutation(() => GetProfileResponse, {
+    description: 'Установить статус пользователя'
+  })
+  @UseGuards(JwtAuthGuard)
+  async setProfileStatus(
+    @Phone() phone: string,
+    @Args('setStatusInput') setStatusInput: SetStatusInput
+  ) {
+    const profile = await this.userService.setProfleStatus(
+      phone,
+      setStatusInput
+    )
     return profile
   }
 
