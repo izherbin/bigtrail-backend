@@ -116,7 +116,7 @@ export class RouteService {
     return count
   }
 
-  watchRoutes() {
+  watchUserRoutes() {
     const res = pubSub.asyncIterator('routeChanged')
     return res
   }
@@ -157,7 +157,7 @@ export class RouteService {
       id: route._id,
       userId: route.userId
     }
-    this.pubSub.publish('routeChanged', { watchRoutes: emit })
+    this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
 
     return `Успешно удален трек № ${id} `
   }

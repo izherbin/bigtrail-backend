@@ -74,9 +74,9 @@ export class RouteResolver {
     }
   })
   @UseGuards(JwtAuthGuard)
-  watchRoutes(@UserId() userId: MongooSchema.Types.ObjectId) {
+  watchUserRoutes(@UserId() userId: MongooSchema.Types.ObjectId) {
     console.log('userId:', userId)
-    const res = this.routeService.watchRoutes()
+    const res = this.routeService.watchUserRoutes()
     return res
   }
 
