@@ -49,6 +49,9 @@ export class UserService {
 
   async getUserById(id: string) {
     const user = await this.userModel.findById(id)
+    if (!user) {
+      throw new HttpException('No such profile', HttpStatus.NOT_FOUND)
+    }
     return user
   }
 

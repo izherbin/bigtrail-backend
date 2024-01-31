@@ -17,6 +17,7 @@ import { SubscriptionRouteResponse } from './dto/subscription-route.response'
 import { RouteFilterInput } from './dto/route-filter.input'
 import { UserService } from '../user/user.service'
 import { DeleteRouteInput } from './dto/delete-route.input'
+import { GetRouteInput } from './dto/get-route.input'
 
 @Injectable()
 export class RouteService {
@@ -100,6 +101,17 @@ export class RouteService {
       else return true
     })
     return routesFiltered
+  }
+
+  async getRoute(getRouteInput: GetRouteInput) {
+    const { id } = getRouteInput
+    const route = await this.routeModel.findById(id)
+    if (!route) {
+      throw new HttpException('No such route', HttpStatus.NOT_FOUND)
+    }
+
+    route.id = route._id
+    return route as Route
   }
 
   async getRoutesCount(filter: RouteFilterInput) {

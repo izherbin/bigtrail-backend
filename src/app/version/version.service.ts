@@ -41,6 +41,11 @@ export class VersionService {
     return { ...setVersionInput, backend: process.env.npm_package_version }
   }
 
+  async getAppLinks() {
+    const links = this.appLinksModel.findOne({})
+    return links
+  }
+
   async setAppLinks(phone: string, setAppLinksInput: SetAppLinksInput) {
     if (phone !== '79112128506') {
       throw new HttpException('No rights to set links', HttpStatus.FORBIDDEN)
@@ -51,9 +56,9 @@ export class VersionService {
       links = new this.appLinksModel(setAppLinksInput)
       links.save()
     } else {
-      links = await this.appLinksModel.findOneAndUpdate({}, SetAppLinksInput)
+      links = await this.appLinksModel.findOneAndUpdate({}, setAppLinksInput)
     }
 
-    return links as AppLinks
+    return setAppLinksInput
   }
 }

@@ -17,6 +17,7 @@ export class AppLinks {
   googlePlay: string
 
   @Field(() => String, { description: 'Ссылка на сайт' })
+  @Prop()
   site: string
 }
 

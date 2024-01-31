@@ -18,6 +18,7 @@ import { Schema as MongooSchema } from 'mongoose'
 import { SubscriptionRouteResponse } from './dto/subscription-route.response'
 import { RouteFilterInput } from './dto/route-filter.input'
 import { DeleteRouteInput } from './dto/delete-route.input'
+import { GetRouteInput } from './dto/get-route.input'
 
 @Resolver(() => Route)
 export class RouteResolver {
@@ -45,7 +46,6 @@ export class RouteResolver {
   @Query(() => [Route], {
     description: 'Получить все маршруты, удовлетворяющие фильтру'
   })
-  @UseGuards(JwtAuthGuard)
   getRoutes(
     @Args('routeFilterInput', { nullable: true })
     routeFilterInput?: RouteFilterInput
@@ -53,10 +53,19 @@ export class RouteResolver {
     return this.routeService.getRoutes(routeFilterInput)
   }
 
+  @Query(() => Route, {
+    description: 'Получить чужой маршрут по id'
+  })
+  getRoute(
+    @Args('getRouteInput')
+    getRouteInput: GetRouteInput
+  ) {
+    return this.routeService.getRoute(getRouteInput)
+  }
+
   @Query(() => Int, {
     description: 'Получить количество всех маршрутов, удовлетворяющих фильтру'
   })
-  @UseGuards(JwtAuthGuard)
   getRoutesCount(
     @Args('routeFilterInput', { nullable: true })
     routeFilterInput?: RouteFilterInput
