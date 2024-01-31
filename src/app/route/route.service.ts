@@ -122,12 +122,9 @@ export class RouteService {
 
   async calcUserStatistics(userId: MongooSchema.Types.ObjectId) {
     const routes = await this.routeModel.find({ userId })
-    let duration = 0
-    let distance = 0
-    routes.forEach((route) => {
-      duration += route.duration
-      distance += route.distance
-    })
+
+    const { duration, distance } =
+      await this.trackService.calcUserTrackStatistics(userId)
 
     const res = {
       subscribers: 0,

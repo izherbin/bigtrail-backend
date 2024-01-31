@@ -146,4 +146,20 @@ export class TrackService {
 
     return `Успешно удален трек № ${id} `
   }
+
+  async calcUserTrackStatistics(userId: MongooSchema.Types.ObjectId) {
+    const tracks = await this.trackModel.find({ userId })
+    let duration = 0
+    let distance = 0
+    tracks.forEach((route) => {
+      duration += route.duration
+      distance += route.distance
+    })
+
+    const res = {
+      duration,
+      distance
+    }
+    return res
+  }
 }
