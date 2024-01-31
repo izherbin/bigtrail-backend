@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common'
 import { UserService } from './user.service'
 import { MongooseModule } from '@nestjs/mongoose'
-import { User, UserSchema } from '../auth/entities/user.entity'
+import { User, UserSchema } from './entities/user.entity'
 import { ConfigModule } from '@nestjs/config'
 import { UserResolver } from './user.resolver'
 import { MinioClientModule } from '../minio-client/minio-client.module'
+import { RouteModule } from '../route/route.module'
 
 @Module({
   providers: [UserService, UserResolver],
@@ -13,7 +14,8 @@ import { MinioClientModule } from '../minio-client/minio-client.module'
     ConfigModule.forRoot({
       cache: true
     }),
-    MinioClientModule
+    MinioClientModule,
+    RouteModule
   ],
   exports: [UserService]
 })

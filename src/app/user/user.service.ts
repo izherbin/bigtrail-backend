@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { User, UserDocument } from '../auth/entities/user.entity'
+import { User, UserDocument } from './entities/user.entity'
 import { Model } from 'mongoose'
 import { ConfigService } from '@nestjs/config'
 import { SetNameInput } from './dto/set-name.input'
@@ -8,6 +8,7 @@ import { Readable } from 'stream'
 import { MinioClientService } from '../minio-client/minio-client.service'
 import { PubSub } from 'graphql-subscriptions'
 import { GetProfileResponse } from './dto/get-profile.response'
+import { RouteService } from '../route/route.service'
 
 const pubSub = new PubSub()
 
@@ -17,13 +18,16 @@ export class UserService {
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
     private readonly configService: ConfigService,
-    private readonly minioClientService: MinioClientService
+    private readonly minioClientService: MinioClientService,
+    private readonly routeService: RouteService
   ) {}
 
   async getProfileQuery(phone: string) {
     const user = await this.userModel.findOne({ phone })
 
-    return user as GetProfileResponse
+    const profile = user.toObject() as GetProfileResponse
+    profile.statistics = await this.routeService.calcUserStatistics(user._id)
+    return profile
   }
 
   watchProfile() {
@@ -108,7 +112,8 @@ export class UserService {
     user.name = name
     await user.save()
 
-    const profile = user as GetProfileResponse
+    const profile = user.toObject() as GetProfileResponse
+    profile.statistics = await this.routeService.calcUserStatistics(user._id)
     pubSub.publish('profileChanged', { watchProfile: profile })
 
     return profile
@@ -137,9 +142,11 @@ export class UserService {
           user.save()
 
           const profile = {
+            _id: user._id,
             phone: user.phone,
             name: user.name,
-            avatar: user.avatar
+            avatar: user.avatar,
+            statistics: await this.routeService.calcUserStatistics(user._id)
           }
           pubSub.publish('profileChanged', { watchProfile: profile })
         }
@@ -197,7 +204,8 @@ export class UserService {
     user.avatarFile = null
     await user.save()
 
-    const profile = user as GetProfileResponse
+    const profile = user.toObject() as GetProfileResponse
+    profile.statistics = await this.routeService.calcUserStatistics(user._id)
     pubSub.publish('profileChanged', { watchProfile: profile })
 
     return profile

@@ -6,12 +6,13 @@ import { PassportModule } from '@nestjs/passport'
 import { JwtModule, JwtModuleOptions, JwtService } from '@nestjs/jwt'
 import { JwtStrategy } from './jwt.strategy'
 import { LocalStrategy } from './local.strategy'
-import { User, UserSchema } from './entities/user.entity'
+import { User, UserSchema } from '../user/entities/user.entity'
 import { HttpModule } from '@nestjs/axios'
 import { UserModule } from '../user/user.module'
 import { UserService } from '../user/user.service'
 import { MongooseModule } from '@nestjs/mongoose'
 import { MinioClientModule } from '../minio-client/minio-client.module'
+import { RouteModule } from '../route/route.module'
 
 @Module({
   providers: [
@@ -24,6 +25,7 @@ import { MinioClientModule } from '../minio-client/minio-client.module'
   ],
   imports: [
     UserModule,
+    RouteModule,
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     HttpModule,
     PassportModule,

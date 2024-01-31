@@ -12,6 +12,7 @@ import { Route, RouteSchema } from './entities/route.entity'
     MongooseModule.forFeature([{ name: Route.name, schema: RouteSchema }]),
     MinioClientModule,
     TrackModule
-  ]
+  ],
+  exports: [RouteService]
 })
 export class RouteModule {}

@@ -119,4 +119,24 @@ export class RouteService {
   remove(id: number) {
     return `This action removes a #${id} route`
   }
+
+  async calcUserStatistics(userId: MongooSchema.Types.ObjectId) {
+    const routes = await this.routeModel.find({ userId })
+    let duration = 0
+    let distance = 0
+    routes.forEach((route) => {
+      duration += route.duration
+      distance += route.distance
+    })
+
+    const res = {
+      subscribers: 0,
+      subscriptions: 0,
+      routes: routes.length,
+      duration,
+      distance,
+      points: routes.length * 50
+    }
+    return res
+  }
 }
