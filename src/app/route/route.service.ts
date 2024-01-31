@@ -1,4 +1,10 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common'
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  forwardRef
+} from '@nestjs/common'
 import { CreateRouteInput } from './dto/create-route.input'
 import { UpdateRouteInput } from './dto/update-route.input'
 import { InjectModel } from '@nestjs/mongoose'
@@ -10,6 +16,7 @@ import { PubSub, PubSubEngine } from 'graphql-subscriptions'
 import { SubscriptionRouteResponse } from './dto/subscription-route.response'
 import { RouteFilterInput } from './dto/route-filter.input'
 import { UserService } from '../user/user.service'
+import { DeleteRouteInput } from './dto/delete-route.input'
 
 const pubSub = new PubSub()
 
@@ -109,7 +116,7 @@ export class RouteService {
     return count
   }
 
-  watchUserRoutes() {
+  watchRoutes() {
     const res = pubSub.asyncIterator('routeChanged')
     return res
   }
@@ -123,8 +130,36 @@ export class RouteService {
     return `This action updates a #${id} route`
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} route`
+  async remove(
+    userId: MongooSchema.Types.ObjectId,
+    deleteTrackInput: DeleteRouteInput
+  ) {
+    const { id } = deleteTrackInput
+    const route = await this.routeModel.findById(id)
+    if (!route) {
+      throw new HttpException('No such user', HttpStatus.NOT_FOUND)
+    }
+
+    if (route.userId.toString() !== userId.toString()) {
+      throw new HttpException(
+        'Impossible to delete someone else`s track',
+        HttpStatus.FORBIDDEN
+      )
+    }
+
+    await this.routeModel.findByIdAndDelete(id)
+
+    const profile = await this.userService.getProfileById(userId)
+    this.pubSub.publish('profileChanged', { watchProfile: profile })
+
+    const emit: SubscriptionRouteResponse = {
+      function: 'DELETE',
+      id: route._id,
+      userId: route.userId
+    }
+    this.pubSub.publish('routeChanged', { watchRoutes: emit })
+
+    return `Успешно удален трек № ${id} `
   }
 
   async calcUserStatistics(userId: MongooSchema.Types.ObjectId) {

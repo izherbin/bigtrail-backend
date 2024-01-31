@@ -17,6 +17,7 @@ import { UserId } from '../auth/user-id.decorator'
 import { Schema as MongooSchema } from 'mongoose'
 import { SubscriptionRouteResponse } from './dto/subscription-route.response'
 import { RouteFilterInput } from './dto/route-filter.input'
+import { DeleteRouteInput } from './dto/delete-route.input'
 
 @Resolver(() => Route)
 export class RouteResolver {
@@ -73,9 +74,9 @@ export class RouteResolver {
     }
   })
   @UseGuards(JwtAuthGuard)
-  watchUserRoutes(@UserId() userId: MongooSchema.Types.ObjectId) {
+  watchRoutes(@UserId() userId: MongooSchema.Types.ObjectId) {
     console.log('userId:', userId)
-    const res = this.routeService.watchUserRoutes()
+    const res = this.routeService.watchRoutes()
     return res
   }
 
@@ -93,4 +94,15 @@ export class RouteResolver {
   // removeRoute(@Args('id', { type: () => Int }) id: number) {
   //   return this.routeService.remove(id)
   // }
+
+  @Mutation(() => String, {
+    description: 'Удалить маршрут из MongoDB'
+  })
+  @UseGuards(JwtAuthGuard)
+  deleteRoute(
+    @UserId() userId: MongooSchema.Types.ObjectId,
+    @Args('deleteRouteInput') deleteRouteInput: DeleteRouteInput
+  ) {
+    return this.routeService.remove(userId, deleteRouteInput)
+  }
 }
