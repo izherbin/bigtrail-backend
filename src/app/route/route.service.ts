@@ -12,13 +12,11 @@ import { Route, RouteDocument } from './entities/route.entity'
 import { MinioClientService } from '../minio-client/minio-client.service'
 import { Model, Schema as MongooSchema } from 'mongoose'
 import { TrackService } from '../track/track.service'
-import { PubSub, PubSubEngine } from 'graphql-subscriptions'
+import { PubSubEngine } from 'graphql-subscriptions'
 import { SubscriptionRouteResponse } from './dto/subscription-route.response'
 import { RouteFilterInput } from './dto/route-filter.input'
 import { UserService } from '../user/user.service'
 import { DeleteRouteInput } from './dto/delete-route.input'
-
-const pubSub = new PubSub()
 
 @Injectable()
 export class RouteService {
@@ -77,7 +75,7 @@ export class RouteService {
         data: route as Route,
         userId: route.userId
       }
-      pubSub.publish('routeChanged', { watchUserRoutes: emit })
+      this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
     })
 
     return uploads
@@ -117,7 +115,7 @@ export class RouteService {
   }
 
   watchUserRoutes() {
-    const res = pubSub.asyncIterator('routeChanged')
+    const res = this.pubSub.asyncIterator('routeChanged')
     return res
   }
 
