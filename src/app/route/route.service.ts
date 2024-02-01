@@ -95,10 +95,9 @@ export class RouteService {
     const { transit, difficulty, category } = filter || {}
     const routes = await this.routeModel.find({})
     const routesFiltered = routes.filter((route) => {
-      if (transit && !transit.includes(route.transit)) return false
-      else if (difficulty && !difficulty.includes(route.difficulty))
-        return false
-      else if (category && !category.includes(route.category)) return false
+      if (isFilterFails(transit, route.transit)) return false
+      else if (isFilterFails(difficulty, route.difficulty)) return false
+      else if (isFilterFails(category, route.category)) return false
       else return true
     })
     return routesFiltered
@@ -119,10 +118,9 @@ export class RouteService {
     const { transit, difficulty, category } = filter || {}
     const routes = await this.routeModel.find({})
     const count = routes.reduce((count, route) => {
-      if (transit && !transit.includes(route.transit)) return count
-      else if (difficulty && !difficulty.includes(route.difficulty))
-        return count
-      else if (category && !category.includes(route.category)) return count
+      if (isFilterFails(transit, route.transit)) return count
+      else if (isFilterFails(difficulty, route.difficulty)) return count
+      else if (isFilterFails(category, route.category)) return count
       else return count + 1
     }, 0)
     return count
@@ -190,4 +188,9 @@ export class RouteService {
     }
     return res
   }
+}
+
+function isFilterFails(filter: string[] | null, value: string) {
+  const isFilterEmpty = !filter || (Array.isArray(filter) && filter.length == 0)
+  return !isFilterEmpty && !(Array.isArray(filter) && filter.includes(value))
 }

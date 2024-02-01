@@ -53,7 +53,10 @@ export class UserService {
     if (!user) {
       throw new HttpException('No such profile', HttpStatus.NOT_FOUND)
     }
-    return user
+
+    const profile = user.toObject() as GetProfileResponse
+    profile.statistics = await this.routeService.calcUserStatistics(user._id)
+    return profile
   }
 
   async createUser(phone: string) {
