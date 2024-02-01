@@ -175,7 +175,7 @@ export class RouteService {
   async calcUserStatistics(userId: MongooSchema.Types.ObjectId) {
     const routes = await this.routeModel.find({ userId })
 
-    const { duration, distance } =
+    const { duration, distance, tracks } =
       await this.trackService.calcUserTrackStatistics(userId)
 
     const res = {
@@ -184,7 +184,7 @@ export class RouteService {
       routes: routes.length,
       duration,
       distance,
-      points: routes.length * 50
+      points: routes.length * 50 + tracks * 10
     }
     return res
   }

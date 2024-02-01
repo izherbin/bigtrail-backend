@@ -172,7 +172,8 @@ export class TrackService {
 
     const res = {
       duration,
-      distance
+      distance,
+      tracks: tracks.length
     }
     return res
   }
