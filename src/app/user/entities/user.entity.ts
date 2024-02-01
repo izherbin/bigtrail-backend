@@ -27,11 +27,9 @@ export class User {
   @Prop()
   phone: string
 
-  @Field(() => String, {
-    description: 'Статус пользователя'
-  })
+  @Field(() => String, { nullable: true, description: 'Статус пользователя' })
   @Prop()
-  status: string
+  status?: string
 
   @Field(() => Int, {
     nullable: true,
