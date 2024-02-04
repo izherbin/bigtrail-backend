@@ -20,7 +20,7 @@ jobs:
           username: github
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd /projects/bigtrail-backend
+            cd /projects/bigtrail-backend-dev
             sudo /home/github/scripts/dev_grant_github.sh
             git pull
             sudo /home/github/scripts/dev_grant_root.sh

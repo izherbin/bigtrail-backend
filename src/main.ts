@@ -10,7 +10,7 @@ async function bootstrap() {
     'graphql-upload/graphqlUploadExpress.mjs'
   )
   app.use(graphqlUploadExpress({ maxFileSize: 2 * 1000 * 1000 }))
-  await app.listen(8800)
+  await app.listen(8810)
   console.log(`App running at ${await app.getUrl()}`)
 }
 bootstrap()
