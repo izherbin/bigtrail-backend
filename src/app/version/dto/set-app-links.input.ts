@@ -1,11 +1,21 @@
 import { AppLinks } from '../entities/app-links.entity'
-import { InputType, PickType } from '@nestjs/graphql'
+import { InputType, OmitType } from '@nestjs/graphql'
 
 @InputType({
   description: 'Входящая информация для установки ссылок на приложения'
 })
-export class SetAppLinksInput extends PickType(
+export class SetAppLinksInput extends OmitType(
   AppLinks,
-  ['ruStore', 'appStore', 'googlePlay', 'site'],
+  [],
+  // [
+  //   'ruStore',
+  //   'appStore',
+  //   'googlePlay',
+  //   'site',
+  //   'telegram',
+  //   'viber',
+  //   'vk',
+  //   'whatsapp'
+  // ],
   InputType
 ) {}

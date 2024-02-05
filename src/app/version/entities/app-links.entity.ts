@@ -19,6 +19,22 @@ export class AppLinks {
   @Field(() => String, { description: 'Ссылка на сайт' })
   @Prop()
   site: string
+
+  @Field(() => String, { description: 'Ссылка на Telegram' })
+  @Prop()
+  telegram: string
+
+  @Field(() => String, { description: 'Ссылка на сайт' })
+  @Prop()
+  vk: string
+
+  @Field(() => String, { description: 'Ссылка на сайт' })
+  @Prop()
+  whatsapp: string
+
+  @Field(() => String, { description: 'Ссылка на сайт' })
+  @Prop()
+  viber: string
 }
 
 export type AppLinksDocument = AppLinks & Document
