@@ -190,8 +190,8 @@ export class RouteService {
       userId: MongooSchema.Types.ObjectId | null,
       value: MongooSchema.Types.ObjectId
     ) {
-      const isUserIdEmpty = !filter
-      return !isUserIdEmpty && userId.toString() !== value.toString()
+      const isUserIdEmpty = !userId
+      return !isUserIdEmpty && userId?.toString() !== value?.toString()
     }
 
     const { userId, transit, difficulty, category, similar, max } = filter || {}
