@@ -4,6 +4,12 @@ import { Schema as MongooSchema } from 'mongoose'
 
 @InputType({ description: 'Набор фильтров маршрутов' })
 export class RouteFilterInput {
+  @Field(() => String, {
+    nullable: true,
+    description: 'Фильтр по транзиту'
+  })
+  userId?: MongooSchema.Types.ObjectId
+
   @Field(() => [String], {
     nullable: true,
     description: 'Фильтр по транзиту'
@@ -31,7 +37,7 @@ export class RouteFilterInput {
 
   @Field(() => Int, {
     nullable: true,
-    description: 'Фильтр по сложности'
+    description: 'Максимальное число выдаваемых маршрутов'
   })
   max?: number
 }

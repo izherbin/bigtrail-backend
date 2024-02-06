@@ -185,7 +185,16 @@ export class RouteService {
         !isFilterEmpty && !(Array.isArray(filter) && filter.includes(value))
       )
     }
-    const { transit, difficulty, category, similar, max } = filter || {}
+
+    function isUserIdFails(
+      userId: MongooSchema.Types.ObjectId | null,
+      value: MongooSchema.Types.ObjectId
+    ) {
+      const isUserIdEmpty = !filter
+      return !isUserIdEmpty && userId.toString() !== value.toString()
+    }
+
+    const { userId, transit, difficulty, category, similar, max } = filter || {}
 
     let routesSimilar: Route[]
     if (similar) {
@@ -200,7 +209,8 @@ export class RouteService {
     }
 
     const routesFiltered = routesSimilar.filter((route) => {
-      if (isFilterFails(transit, route.transit)) return false
+      if (isUserIdFails(userId, route.userId)) return false
+      else if (isFilterFails(transit, route.transit)) return false
       else if (isFilterFails(difficulty, route.difficulty)) return false
       else if (isFilterFails(category, route.category)) return false
       else return true
