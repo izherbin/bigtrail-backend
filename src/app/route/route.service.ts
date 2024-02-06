@@ -92,14 +92,8 @@ export class RouteService {
   }
 
   async getRoutes(filter: RouteFilterInput) {
-    const { transit, difficulty, category } = filter || {}
     const routes = await this.routeModel.find({})
-    const routesFiltered = routes.filter((route) => {
-      if (isFilterFails(transit, route.transit)) return false
-      else if (isFilterFails(difficulty, route.difficulty)) return false
-      else if (isFilterFails(category, route.category)) return false
-      else return true
-    })
+    const routesFiltered = await this.filterRoutes(routes, filter)
     return routesFiltered
   }
 
@@ -115,15 +109,9 @@ export class RouteService {
   }
 
   async getRoutesCount(filter: RouteFilterInput) {
-    const { transit, difficulty, category } = filter || {}
     const routes = await this.routeModel.find({})
-    const count = routes.reduce((count, route) => {
-      if (isFilterFails(transit, route.transit)) return count
-      else if (isFilterFails(difficulty, route.difficulty)) return count
-      else if (isFilterFails(category, route.category)) return count
-      else return count + 1
-    }, 0)
-    return count
+    const routesFiltered = await this.filterRoutes(routes, filter)
+    return routesFiltered.length
   }
 
   watchUserRoutes() {
@@ -188,9 +176,49 @@ export class RouteService {
     }
     return res
   }
-}
 
-function isFilterFails(filter: string[] | null, value: string) {
-  const isFilterEmpty = !filter || (Array.isArray(filter) && filter.length == 0)
-  return !isFilterEmpty && !(Array.isArray(filter) && filter.includes(value))
+  async filterRoutes(routes: Route[], filter: RouteFilterInput) {
+    function isFilterFails(filter: string[] | null, value: string) {
+      const isFilterEmpty =
+        !filter || (Array.isArray(filter) && filter.length == 0)
+      return (
+        !isFilterEmpty && !(Array.isArray(filter) && filter.includes(value))
+      )
+    }
+    const { transit, difficulty, category, similar, max } = filter || {}
+
+    let routesSimilar: Route[]
+    if (similar) {
+      const reference = await this.routeModel.findById(similar)
+      routesSimilar = routes.sort((a: Route, b: Route) => {
+        return (
+          this.calcDistanceL2(reference, a) - this.calcDistanceL2(reference, b)
+        )
+      })
+    } else {
+      routesSimilar = routes
+    }
+
+    const routesFiltered = routesSimilar.filter((route) => {
+      if (isFilterFails(transit, route.transit)) return false
+      else if (isFilterFails(difficulty, route.difficulty)) return false
+      else if (isFilterFails(category, route.category)) return false
+      else return true
+    })
+
+    return routesFiltered.slice(
+      0,
+      max && max < routesFiltered.length ? max : routesFiltered.length
+    )
+  }
+
+  calcDistanceL2(sourceRoute: Route, targetRoute: Route) {
+    if (!sourceRoute.points[0] || !targetRoute.points[0]) return null
+
+    const distance =
+      (sourceRoute.points[0].lat - targetRoute.points[0].lat) ** 2 +
+      (sourceRoute.points[0].lon - targetRoute.points[0].lon) ** 2
+
+    return distance
+  }
 }
