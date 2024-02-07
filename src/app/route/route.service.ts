@@ -18,6 +18,9 @@ import { RouteFilterInput } from './dto/route-filter.input'
 import { UserService } from '../user/user.service'
 import { DeleteRouteInput } from './dto/delete-route.input'
 import { GetRouteInput } from './dto/get-route.input'
+import { stringSimilarity } from './string-similarity'
+
+const STRING_SIMULARITY_THRESHOLD = 0.65
 
 @Injectable()
 export class RouteService {
@@ -194,7 +197,16 @@ export class RouteService {
       return !isUserIdEmpty && userId?.toString() !== value?.toString()
     }
 
-    const { userId, transit, difficulty, category, similar, max } = filter || {}
+    function isSearchFails(search: string | null, value: string | null) {
+      const isSearchEmpty = !search
+      return (
+        !isSearchEmpty &&
+        stringSimilarity(search, value) < STRING_SIMULARITY_THRESHOLD
+      )
+    }
+
+    const { userId, search, transit, difficulty, category, similar, max } =
+      filter || {}
 
     let routesSimilar: Route[]
     if (similar) {
@@ -210,6 +222,12 @@ export class RouteService {
 
     const routesFiltered = routesSimilar.filter((route) => {
       if (isUserIdFails(userId, route.userId)) return false
+      else if (
+        isSearchFails(search, route.name) &&
+        isSearchFails(search, route.description) &&
+        isSearchFails(search, route.address)
+      )
+        return false
       else if (isFilterFails(transit, route.transit)) return false
       else if (isFilterFails(difficulty, route.difficulty)) return false
       else if (isFilterFails(category, route.category)) return false

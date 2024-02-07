@@ -10,6 +10,12 @@ export class RouteFilterInput {
   })
   userId?: MongooSchema.Types.ObjectId
 
+  @Field(() => String, {
+    nullable: true,
+    description: 'Фильтр по поисковой строке'
+  })
+  search?: string
+
   @Field(() => [String], {
     nullable: true,
     description: 'Фильтр по транзиту'
