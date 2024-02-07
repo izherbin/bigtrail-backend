@@ -19,6 +19,7 @@ import { UserService } from '../user/user.service'
 import { DeleteRouteInput } from './dto/delete-route.input'
 import { GetRouteInput } from './dto/get-route.input'
 import { stringSimilarity } from './string-similarity'
+import { simplifyPoints } from './simplify'
 
 const STRING_SIMULARITY_THRESHOLD = 0.65
 
@@ -205,8 +206,23 @@ export class RouteService {
       )
     }
 
-    const { userId, search, transit, difficulty, category, similar, max } =
-      filter || {}
+    function routesSimplify(routes: Route[], tolerance: number) {
+      for (const route of routes) {
+        route.points = simplifyPoints(route.points, tolerance, false)
+      }
+      return routes
+    }
+
+    const {
+      userId,
+      search,
+      transit,
+      difficulty,
+      category,
+      similar,
+      simplify,
+      max
+    } = filter || {}
 
     let routesSimilar: Route[]
     if (similar) {
@@ -234,7 +250,10 @@ export class RouteService {
       else return true
     })
 
-    return routesFiltered.slice(
+    const routesSimplified = simplify
+      ? routesSimplify(routesFiltered, simplify)
+      : routesFiltered
+    return routesSimplified.slice(
       0,
       max && max < routesFiltered.length ? max : routesFiltered.length
     )

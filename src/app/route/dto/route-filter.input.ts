@@ -1,4 +1,4 @@
-import { Field, InputType, Int } from '@nestjs/graphql'
+import { Field, Float, InputType, Int } from '@nestjs/graphql'
 import { RouteDifficulty } from '../entities/route.entity'
 import { Schema as MongooSchema } from 'mongoose'
 
@@ -40,6 +40,13 @@ export class RouteFilterInput {
       'Фильтр по похожести маршрутов на основе расстояния между первыми точками трека (в поле передается эталонный маршрут)'
   })
   similar?: MongooSchema.Types.ObjectId
+
+  @Field(() => Float, {
+    nullable: true,
+    description:
+      'Значение толерантности для вычисления симплифицированных точек трека маршрута'
+  })
+  simplify?: number
 
   @Field(() => Int, {
     nullable: true,
