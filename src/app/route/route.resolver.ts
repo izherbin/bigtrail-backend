@@ -19,6 +19,7 @@ import { SubscriptionRouteResponse } from './dto/subscription-route.response'
 import { RouteFilterInput } from './dto/route-filter.input'
 import { DeleteRouteInput } from './dto/delete-route.input'
 import { GetRouteInput } from './dto/get-route.input'
+import { GetElevationInput } from './dto/get-elevation.input'
 
 @Resolver(() => Route)
 export class RouteResolver {
@@ -114,5 +115,17 @@ export class RouteResolver {
     @Args('deleteRouteInput') deleteRouteInput: DeleteRouteInput
   ) {
     return this.routeService.remove(userId, deleteRouteInput)
+  }
+
+  @Query(() => String, {
+    description: 'Получить высоту по координатам'
+  })
+  async getElevation(
+    @Args('getElevationInput')
+    getElevationInput: GetElevationInput
+  ) {
+    const { lat, lon } = getElevationInput
+    const elev = await this.routeService.getElevation(lat, lon)
+    return `The elevation at (${lat.toFixed(6)},${lon.toFixed(6)}) is ${elev} m`
   }
 }

@@ -20,6 +20,7 @@ import { DeleteRouteInput } from './dto/delete-route.input'
 import { GetRouteInput } from './dto/get-route.input'
 import { stringSimilarity } from './string-similarity'
 import { simplifyPoints } from './simplify'
+import { elevation } from './elevation'
 
 const STRING_SIMULARITY_THRESHOLD = 0.65
 
@@ -267,5 +268,10 @@ export class RouteService {
       (sourceRoute.points[0].lon - targetRoute.points[0].lon) ** 2
 
     return distance
+  }
+
+  async getElevation(lat: number, lon: number) {
+    const elev = await elevation(lat, lon)
+    return elev
   }
 }
