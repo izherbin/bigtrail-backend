@@ -5,6 +5,7 @@ pipelines:
       master:
        - step:
           deployment: production
+          name: 'Deployment to figtrail-dev'
           script:
            - pipe: atlassian/ssh-run:0.8.0
              variables:
