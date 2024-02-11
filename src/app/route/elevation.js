@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { fromArrayBuffer } from 'geotiff'
+// import { fromArrayBuffer } from 'geotiff'
 
 const TILES = [
   {
@@ -65,6 +65,9 @@ function transform(a, b, M, roundToInt = false) {
 }
 
 export async function elevation(lat, lon) {
+  const geotiff = await import('geotiff')
+  const fromArrayBuffer = geotiff.fromArrayBuffer
+
   const tile = chooseTile(lat, lon)
   if (!tile) {
     throw new Error('No elevation for this coordinates')
