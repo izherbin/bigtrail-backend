@@ -11,4 +11,4 @@ pipelines:
              variables:
                SSH_USER: 'github'
                SERVER: '79.174.86.35'
-               COMMAND: '/home/github/scripts/deploy.sh'
+               COMMAND: 'sudo /home/github/scripts/deploy.sh'
