@@ -1,0 +1,14 @@
+image: node:20.11.0
+
+pipelines:
+    branches:
+      master:
+       - step:
+          deployment: production
+          name: 'Deployment to bigtrail-dev'
+          script:
+           - pipe: atlassian/ssh-run:0.8.0
+             variables:
+               SSH_USER: 'github'
+               SERVER: '79.174.86.35'
+               COMMAND: 'sudo /home/github/scripts/deploy.sh'
