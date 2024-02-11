@@ -73,7 +73,7 @@ export async function elevation(lat, lon) {
     throw new Error('No elevation for this coordinates')
   }
 
-  const file = fs.readFileSync('/code/data/' + tile).buffer
+  const file = fs.readFileSync('/geodata/srtm-250m/' + tile).buffer
   const tiff = await fromArrayBuffer(file)
   const image = await tiff.getImage()
 
