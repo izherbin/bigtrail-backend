@@ -127,4 +127,8 @@ export class MinioClientService {
 
     return res
   }
+
+  async deleteFile(bucketName: string, fileName: string) {
+    await this.minioService.client.removeObject(bucketName, fileName)
+  }
 }

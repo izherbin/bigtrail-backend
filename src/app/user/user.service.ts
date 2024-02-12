@@ -100,7 +100,11 @@ export class UserService {
       )
     }
 
+    const oldAvatarFile = userFromDB.avatarFile ? userFromDB.avatarFile : null
     await this.userModel.deleteOne({ phone })
+    if (oldAvatarFile) {
+      this.minioClientService.deleteFile('avatars', oldAvatarFile)
+    }
     return `User ${phone} успешно удален`
   }
 
@@ -176,9 +180,13 @@ export class UserService {
             objectName: value as string,
             expiry: 7 * 24 * 60 * 60
           })
+          const oldAvatarFile = user.avatarFile ? user.avatarFile : null
           user.avatar = avatar
           user.avatarFile = value as string
-          user.save()
+          await user.save()
+          if (oldAvatarFile) {
+            this.minioClientService.deleteFile('avatars', oldAvatarFile)
+          }
 
           const profile = {
             _id: user._id,
@@ -227,8 +235,12 @@ export class UserService {
       avatarName
     )
 
+    const oldAvatarFile = user.avatarFile ? user.avatarFile : null
     user.avatar = avatarName
-    user.save()
+    await user.save()
+    if (oldAvatarFile) {
+      this.minioClientService.deleteFile('avatars', oldAvatarFile)
+    }
 
     return res
   }
@@ -239,9 +251,13 @@ export class UserService {
       throw new HttpException('No such user', HttpStatus.NOT_FOUND)
     }
 
+    const oldAvatarFile = user.avatarFile ? user.avatarFile : null
     user.avatar = null
     user.avatarFile = null
     await user.save()
+    if (oldAvatarFile) {
+      this.minioClientService.deleteFile('avatars', oldAvatarFile)
+    }
 
     const profile = user.toObject() as GetProfileResponse
     profile.statistics = await this.routeService.calcUserStatistics(user._id)
