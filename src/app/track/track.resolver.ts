@@ -9,6 +9,7 @@ import { Schema as MongooSchema } from 'mongoose'
 import { DeleteTrackInput } from './dto/delete-track.input'
 import { SubscriptionTrackResponse } from './dto/subscription-track.response'
 import { UploadPhoto } from './dto/upload-photo.response'
+import { GetElevationInput } from './dto/get-elevation.input'
 // import { UpdateTrackInput } from './dto/update-track.input'
 
 @Resolver()
@@ -75,5 +76,17 @@ export class TrackResolver {
     @Args('deleteTrackInput') deleteTrackInput: DeleteTrackInput
   ) {
     return this.trackService.remove(userId, deleteTrackInput)
+  }
+
+  @Query(() => String, {
+    description: 'Получить высоту по координатам'
+  })
+  async getElevation(
+    @Args('getElevationInput')
+    getElevationInput: GetElevationInput
+  ) {
+    const { lat, lon } = getElevationInput
+    const elev = await this.trackService.getElevation(lat, lon)
+    return `The elevation at (${lat.toFixed(6)},${lon.toFixed(6)}) is ${elev} m`
   }
 }

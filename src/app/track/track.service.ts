@@ -16,6 +16,7 @@ import { SubscriptionTrackResponse } from './dto/subscription-track.response'
 import { UploadPhoto } from './dto/upload-photo.response'
 import { MinioClientService } from '../minio-client/minio-client.service'
 import { UserService } from '../user/user.service'
+import { elevation } from './elevation'
 
 @Injectable()
 export class TrackService {
@@ -176,5 +177,10 @@ export class TrackService {
       tracks: tracks.length
     }
     return res
+  }
+
+  async getElevation(lat: number, lon: number) {
+    const elev = await elevation(lat, lon)
+    return elev
   }
 }
