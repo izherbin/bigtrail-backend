@@ -70,7 +70,7 @@ export async function elevation(lat, lon) {
 
   const tile = chooseTile(lat, lon)
   if (!tile) {
-    throw new Error('No elevation for this coordinates')
+    return null
   }
 
   const file = fs.readFileSync('/geodata/srtm-250m/' + tile).buffer
@@ -86,19 +86,19 @@ export async function elevation(lat, lon) {
   const sy = -_sy // WGS-84 tiles have a "flipped" y component
 
   const pixelToGPS = [gx, sx, 0, gy, 0, sy]
-  console.log(`pixel to GPS transform matrix:`, pixelToGPS)
+  // console.log(`pixel to GPS transform matrix:`, pixelToGPS)
 
   const gpsToPixel = [-gx / sx, 1 / sx, 0, -gy / sy, 0, 1 / sy]
-  console.log(`GPS to pixel transform matrix:`, gpsToPixel)
+  // console.log(`GPS to pixel transform matrix:`, gpsToPixel)
 
   // Convert a GPS coordinate to a pixel coordinate in our tile:
   // const [gx1, gy1, gx2, gy2] = image.getBoundingBox()
   // const lat = lerp(gy1, gy2, Math.random())
   // const long = lerp(gx1, gx2, Math.random())
-  console.log(`Looking up GPS coordinate (${lat.toFixed(6)},${lon.toFixed(6)})`)
+  // console.log(`Looking up GPS coordinate (${lat.toFixed(6)},${lon.toFixed(6)})`)
 
   const [x, y] = transform(lon, lat, gpsToPixel, true)
-  console.log(`Corresponding tile pixel coordinate: [${x}][${y}]`)
+  // console.log(`Corresponding tile pixel coordinate: [${x}][${y}]`)
 
   // And as each pixel in the tile covers a geographic area, not a single
   // GPS coordinate, get the area that this pixel covers:
@@ -112,9 +112,9 @@ export async function elevation(lat, lon) {
   const rasters = await image.readRasters()
   const { width, [0]: raster } = rasters
   const elev = raster[x + y * width]
-  console.log(
-    `The elevation  at (${lat.toFixed(6)},${lon.toFixed(6)}) is ${elev}m`
-  )
+  // console.log(
+  //   `The elevation  at (${lat.toFixed(6)},${lon.toFixed(6)}) is ${elev}m`
+  // )
 
   return elev
 }
