@@ -20,7 +20,6 @@ import { DeleteRouteInput } from './dto/delete-route.input'
 import { GetRouteInput } from './dto/get-route.input'
 import { stringSimilarity } from './string-similarity'
 import { simplifyPoints } from './simplify'
-import { elevation } from './elevation'
 
 const STRING_SIMULARITY_THRESHOLD = 0.65
 
@@ -40,6 +39,22 @@ export class RouteService {
     userId: MongooSchema.Types.ObjectId,
     createRouteInput: CreateRouteInput
   ) {
+    const elevations = []
+    for (const p in createRouteInput.points) {
+      if (!createRouteInput.points[p].alt) {
+        elevations.push(
+          this.trackService
+            .getElevation(
+              createRouteInput.points[p].lat,
+              createRouteInput.points[p].lon
+            )
+            .then((elev) => {
+              createRouteInput.points[p].alt = elev
+            })
+        )
+      }
+    }
+
     const uploads = []
     const downloads = []
 
@@ -54,6 +69,21 @@ export class RouteService {
     }
 
     for (const n in createRouteInput.notes) {
+      if (createRouteInput.notes[n].point) {
+        if (!createRouteInput.notes[n].point.alt) {
+          elevations.push(
+            this.trackService
+              .getElevation(
+                createRouteInput.notes[n].point.lat,
+                createRouteInput.notes[n].point.lon
+              )
+              .then((elev) => {
+                createRouteInput.notes[n].point.alt = elev
+              })
+          )
+        }
+      }
+
       for (const p in createRouteInput.notes[n].photos) {
         const photo = await this.trackService.uploadPhoto(
           createRouteInput.notes[n].photos[p]
@@ -65,7 +95,7 @@ export class RouteService {
       }
     }
 
-    Promise.allSettled(downloads).then(async () => {
+    Promise.allSettled(downloads.concat(elevations)).then(async () => {
       const createRoute = new this.routeModel(createRouteInput)
       createRoute.userId = userId
 
@@ -268,10 +298,5 @@ export class RouteService {
       (sourceRoute.points[0].lon - targetRoute.points[0].lon) ** 2
 
     return distance
-  }
-
-  async getElevation(lat: number, lon: number) {
-    const elev = await elevation(lat, lon)
-    return elev
   }
 }

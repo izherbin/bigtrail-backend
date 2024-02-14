@@ -16,6 +16,7 @@ import { SubscriptionTrackResponse } from './dto/subscription-track.response'
 import { UploadPhoto } from './dto/upload-photo.response'
 import { MinioClientService } from '../minio-client/minio-client.service'
 import { UserService } from '../user/user.service'
+import { elevation } from './elevation'
 
 @Injectable()
 export class TrackService {
@@ -32,9 +33,36 @@ export class TrackService {
     userId: MongooSchema.Types.ObjectId,
     createTrackInput: CreateTrackInput
   ) {
+    const elevations = []
+    for (const p in createTrackInput.points) {
+      if (!createTrackInput.points[p].alt) {
+        elevations.push(
+          this.getElevation(
+            createTrackInput.points[p].lat,
+            createTrackInput.points[p].lon
+          ).then((elev) => {
+            createTrackInput.points[p].alt = elev
+          })
+        )
+      }
+    }
+
     const uploads = []
     const downloads = []
     for (const n in createTrackInput.notes) {
+      if (createTrackInput.notes[n].point) {
+        if (!createTrackInput.notes[n].point.alt) {
+          elevations.push(
+            this.getElevation(
+              createTrackInput.notes[n].point.lat,
+              createTrackInput.notes[n].point.lon
+            ).then((elev) => {
+              createTrackInput.notes[n].point.alt = elev
+            })
+          )
+        }
+      }
+
       for (const p in createTrackInput.notes[n].photos) {
         const photo = await this.uploadPhoto(
           createTrackInput.notes[n].photos[p]
@@ -46,7 +74,7 @@ export class TrackService {
       }
     }
 
-    Promise.allSettled(downloads).then(async () => {
+    Promise.allSettled(downloads.concat(elevations)).then(async () => {
       const createTrack = new this.trackModel(createTrackInput)
       createTrack.userId = userId
 
@@ -176,5 +204,10 @@ export class TrackService {
       tracks: tracks.length
     }
     return res
+  }
+
+  async getElevation(lat: number, lon: number) {
+    const elev = await elevation(lat, lon)
+    return elev
   }
 }
