@@ -19,11 +19,12 @@ export class TrackResolver {
     description: 'Загрузить трек в MongoDB'
   })
   @UseGuards(JwtAuthGuard)
-  uploadTrack(
+  async uploadTrack(
     @UserId() userId: MongooSchema.Types.ObjectId,
     @Args('createTrackInput') createTrackInput: CreateTrackInput
   ) {
-    return this.trackService.create(userId, createTrackInput)
+    const res = await this.trackService.create(userId, createTrackInput)
+    return res
   }
 
   @Query(() => [Track], {
