@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { User, UserDocument } from './entities/user.entity'
-import { Model, Schema as MongooSchema } from 'mongoose'
+import { Document, Model, Schema as MongooSchema, Types } from 'mongoose'
 import { ConfigService } from '@nestjs/config'
 import { SetNameInput } from './dto/set-name.input'
 import { Readable } from 'stream'
@@ -23,7 +23,9 @@ export class UserService {
   ) {}
 
   async getProfileQuery(phone: string) {
-    const user = await this.userModel.findOne({ phone })
+    const user = await this.renewProfileAvatar(
+      await this.userModel.findOne({ phone })
+    )
 
     const profile = user.toObject() as GetProfileResponse
     profile.statistics = await this.routeService.calcUserStatistics(user._id)
@@ -31,7 +33,9 @@ export class UserService {
   }
 
   async getProfileById(id: MongooSchema.Types.ObjectId) {
-    const user = await this.userModel.findById(id)
+    const user = await this.renewProfileAvatar(
+      await this.userModel.findById(id)
+    )
 
     const profile = user.toObject() as GetProfileResponse
     profile.statistics = await this.routeService.calcUserStatistics(user._id)
@@ -49,10 +53,14 @@ export class UserService {
   }
 
   async getUserById(id: string) {
-    const user = await this.userModel.findById(id)
+    const user = await this.renewProfileAvatar(
+      await this.userModel.findById(id)
+    )
     if (!user) {
       throw new HttpException('No such profile', HttpStatus.NOT_FOUND)
     }
+    const newAvatar = await this.minioClientService.renewLink(user.avatar)
+    if (newAvatar) user.avatar = newAvatar
 
     const profile = user.toObject() as GetProfileResponse
     profile.statistics = await this.routeService.calcUserStatistics(user._id)
@@ -115,7 +123,9 @@ export class UserService {
       throw new HttpException('Incorrect profile name', HttpStatus.BAD_REQUEST)
     }
 
-    const user = await this.userModel.findOne({ phone })
+    const user = await this.renewProfileAvatar(
+      await this.userModel.findOne({ phone })
+    )
     if (!user) {
       throw new HttpException('No such user', HttpStatus.NOT_FOUND)
     }
@@ -140,7 +150,9 @@ export class UserService {
   async setProfleStatus(phone: string, setStatusInput: SetStatusInput) {
     const { status } = setStatusInput
 
-    const user = await this.userModel.findOne({ phone })
+    const user = await this.renewProfileAvatar(
+      await this.userModel.findOne({ phone })
+    )
     if (!user) {
       throw new HttpException('No such user', HttpStatus.NOT_FOUND)
     }
@@ -264,6 +276,21 @@ export class UserService {
     this.pubSub.publish('profileChanged', { watchProfile: profile })
 
     return profile
+  }
+
+  async renewProfileAvatar(
+    user: Document<unknown, object, UserDocument> &
+      User &
+      Document<any, any, any> & { _id: Types.ObjectId }
+  ) {
+    if (user?.avatar) {
+      const newAvatar = await this.minioClientService.renewLink(user.avatar)
+      if (newAvatar) {
+        user.avatar = newAvatar
+        await user.save()
+      }
+    }
+    return user
   }
 
   validateName(name: string): boolean {

@@ -5,6 +5,7 @@ import { PresignedLinkInput } from './dto/presigned-link.input.dto'
 import { ConfigService } from '@nestjs/config'
 import { UploadFileInput } from './dto/upload-file.dto'
 import { Readable } from 'stream'
+import { isExpired, parseLink } from './is-expired'
 
 const FILE_UPLOAD_TIMEOUT = 60000 * 5
 
@@ -130,5 +131,19 @@ export class MinioClientService {
 
   async deleteFile(bucketName: string, fileName: string) {
     await this.minioService.client.removeObject(bucketName, fileName)
+  }
+
+  async renewLink(link: string): Promise<string | null> {
+    const query = parseLink(link)
+    if (!query) return null
+
+    if (isExpired(link)) {
+      const { bucketName, objectName } = query
+      const expiry = 7 * 24 * 60 * 60
+      const res = this.getDownloadLink({ bucketName, objectName, expiry })
+      return res
+    } else {
+      return null
+    }
   }
 }
