@@ -9,7 +9,7 @@ import { CreateTrackInput } from './dto/create-track.input'
 import { UpdateTrackInput } from './dto/update-track.input'
 import { InjectModel } from '@nestjs/mongoose'
 import { Track, TrackDocument, TrackPhoto } from './entities/track.entity'
-import { Model, Schema as MongooSchema } from 'mongoose'
+import { Document, Model, Schema as MongooSchema, Types } from 'mongoose'
 import { DeleteTrackInput } from './dto/delete-track.input'
 import { PubSubEngine } from 'graphql-subscriptions'
 import { SubscriptionTrackResponse } from './dto/subscription-track.response'
@@ -139,7 +139,9 @@ export class TrackService {
   }
 
   async findByUserId(userId: MongooSchema.Types.ObjectId) {
-    const tracks = await this.trackModel.find({ userId })
+    const tracks = await this.renewManyTracksPhotos(
+      await this.trackModel.find({ userId })
+    )
     return tracks
   }
 
@@ -209,5 +211,71 @@ export class TrackService {
   async getElevation(lat: number, lon: number) {
     const elev = await elevation(lat, lon)
     return elev
+  }
+
+  async renewManyTracksPhotos(
+    tracks: (Document<unknown, object, TrackDocument> &
+      Track &
+      Document<any, any, any> & { _id: Types.ObjectId })[]
+  ) {
+    const renews = []
+    const res = []
+    for (const track of tracks) {
+      renews.push(
+        this.renewOneTrackPhotos(track).then((track) => {
+          res.push(track)
+        })
+      )
+    }
+
+    await Promise.allSettled(renews)
+    return res
+  }
+
+  async renewOneTrackPhotos(
+    track: Document<unknown, object, TrackDocument> &
+      Track &
+      Document<any, any, any> & { _id: Types.ObjectId }
+  ) {
+    let shouldSave = false
+    const renews = []
+    for (const note of track?.notes) {
+      if (!note.photos) continue
+
+      for (const photo of note?.photos) {
+        if (photo?.uri) {
+          // const uri = await this.minioClientService.renewLink(photo.uri)
+          // if (!uri) continue
+          // photo.uri = uri
+          // shouldSave = true
+          renews.push(
+            this.minioClientService.renewLink(photo.uri).then((uri) => {
+              if (uri) {
+                photo.uri = uri
+                shouldSave = true
+              }
+            })
+          )
+        }
+      }
+    }
+
+    return Promise.allSettled(renews).then(() => {
+      if (shouldSave) {
+        // await this.trackModel.findByIdAndUpdate(track._id, track)
+        track.markModified('notes')
+        return track.save()
+      } else {
+        return track
+      }
+    })
+
+    if (shouldSave) {
+      // await this.trackModel.findByIdAndUpdate(track._id, track)
+      track.markModified('notes')
+      return track.save()
+    } else {
+      return track
+    }
   }
 }

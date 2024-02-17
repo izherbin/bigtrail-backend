@@ -59,8 +59,6 @@ export class UserService {
     if (!user) {
       throw new HttpException('No such profile', HttpStatus.NOT_FOUND)
     }
-    const newAvatar = await this.minioClientService.renewLink(user.avatar)
-    if (newAvatar) user.avatar = newAvatar
 
     const profile = user.toObject() as GetProfileResponse
     profile.statistics = await this.routeService.calcUserStatistics(user._id)

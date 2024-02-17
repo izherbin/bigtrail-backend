@@ -10,19 +10,24 @@ interface Query {
 }
 
 export function parseLink(link: string): Query {
-  const query = {} as Query
-  query['bucketName'] = link.match(/\/{2}.*\/(.*)\//)[1]
-  query['objectName'] = link.match(/\/([0-9a-zA-Z_.]*)\?/)[1]
-  const queryArray = link.match(/\?(.*)$/)[1].split('&')
-  for (const queryItem of queryArray) {
-    const queryPair = queryItem.split('=')
-    query[queryPair[0]] = queryPair[1]
+  try {
+    const query = {} as Query
+    query['bucketName'] = link.match(/\/{2}.*\/(.*)\//)[1]
+    query['objectName'] = link.match(/\/([0-9a-zA-Z_.]*)\?/)[1]
+    const queryArray = link.match(/\?(.*)$/)[1].split('&')
+    for (const queryItem of queryArray) {
+      const queryPair = queryItem.split('=')
+      query[queryPair[0]] = queryPair[1]
+    }
+    return query
+  } catch (err) {
+    return null
   }
-  return query
 }
 
 export function isExpired(link: string): boolean {
   const query = parseLink(link)
+  if (!query) return false
   const created = query['X-Amz-Date']
   const expires = (Number(query['X-Amz-Expires']) - 12 * 3600) * 1000
   const date = new Date(
