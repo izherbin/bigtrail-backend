@@ -244,10 +244,6 @@ export class TrackService {
 
       for (const photo of note?.photos) {
         if (photo?.uri) {
-          // const uri = await this.minioClientService.renewLink(photo.uri)
-          // if (!uri) continue
-          // photo.uri = uri
-          // shouldSave = true
           renews.push(
             this.minioClientService.renewLink(photo.uri).then((uri) => {
               if (uri) {
@@ -262,20 +258,11 @@ export class TrackService {
 
     return Promise.allSettled(renews).then(() => {
       if (shouldSave) {
-        // await this.trackModel.findByIdAndUpdate(track._id, track)
         track.markModified('notes')
         return track.save()
       } else {
         return track
       }
     })
-
-    if (shouldSave) {
-      // await this.trackModel.findByIdAndUpdate(track._id, track)
-      track.markModified('notes')
-      return track.save()
-    } else {
-      return track
-    }
   }
 }

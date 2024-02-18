@@ -10,7 +10,7 @@ import { UpdateRouteInput } from './dto/update-route.input'
 import { InjectModel } from '@nestjs/mongoose'
 import { Route, RouteDocument } from './entities/route.entity'
 import { MinioClientService } from '../minio-client/minio-client.service'
-import { Model, Schema as MongooSchema } from 'mongoose'
+import { Document, Model, Schema as MongooSchema, Types } from 'mongoose'
 import { TrackService } from '../track/track.service'
 import { PubSubEngine } from 'graphql-subscriptions'
 import { SubscriptionRouteResponse } from './dto/subscription-route.response'
@@ -122,19 +122,25 @@ export class RouteService {
   }
 
   async getUserRoutes(userId: MongooSchema.Types.ObjectId) {
-    const routes = await this.routeModel.find({ userId })
+    const routes = await this.renewManyRoutesPhotos(
+      await this.routeModel.find({ userId })
+    )
     return routes
   }
 
   async getRoutes(filter: RouteFilterInput) {
-    const routes = await this.routeModel.find({})
+    const routes = await this.renewManyRoutesPhotos(
+      await this.routeModel.find({})
+    )
     const routesFiltered = await this.filterRoutes(routes, filter)
     return routesFiltered
   }
 
   async getRoute(getRouteInput: GetRouteInput) {
     const { id } = getRouteInput
-    const route = await this.routeModel.findById(id)
+    const route = await this.renewOneRoutePhotos(
+      await this.routeModel.findById(id)
+    )
     if (!route) {
       throw new HttpException('No such route', HttpStatus.NOT_FOUND)
     }
@@ -298,5 +304,72 @@ export class RouteService {
       (sourceRoute.points[0].lon - targetRoute.points[0].lon) ** 2
 
     return distance
+  }
+
+  async renewManyRoutesPhotos(
+    routes: (Document<unknown, object, RouteDocument> &
+      Route &
+      Document<any, any, any> & { _id: Types.ObjectId })[]
+  ) {
+    const renews = []
+    const res = []
+    for (const route of routes) {
+      renews.push(
+        this.renewOneRoutePhotos(route).then((route) => {
+          res.push(route)
+        })
+      )
+    }
+
+    await Promise.allSettled(renews)
+    return res
+  }
+
+  async renewOneRoutePhotos(
+    route: Document<unknown, object, RouteDocument> &
+      Route &
+      Document<any, any, any> & { _id: Types.ObjectId }
+  ) {
+    let shouldSave = false
+    const renews = []
+    for (const photo of route?.photos) {
+      if (photo?.uri) {
+        renews.push(
+          this.minioClientService.renewLink(photo.uri).then((uri) => {
+            if (uri) {
+              photo.uri = uri
+              shouldSave = true
+            }
+          })
+        )
+      }
+    }
+
+    for (const note of route?.notes) {
+      if (!note.photos) continue
+
+      for (const photo of note?.photos) {
+        if (photo?.uri) {
+          renews.push(
+            this.minioClientService.renewLink(photo.uri).then((uri) => {
+              if (uri) {
+                photo.uri = uri
+                shouldSave = true
+              }
+            })
+          )
+        }
+      }
+    }
+
+    return Promise.allSettled(renews).then(() => {
+      if (shouldSave) {
+        route.markModified('photos')
+        route.markModified('notes')
+        return route.save()
+      } else {
+        return route
+      }
+    })
   }
 }
