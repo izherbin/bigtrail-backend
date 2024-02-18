@@ -108,12 +108,33 @@ export function simplifyPoints(
   tolerance: number,
   highestQuality: boolean
 ) {
+  if (tolerance == 1) return points.slice(0, 1)
+
   if (points.length <= 2) return points
 
-  const sqTolerance = tolerance !== undefined ? tolerance * tolerance : 1
+  const sqTolerance =
+    tolerance !== undefined ? calcSqTolerance(points, tolerance) : 1
 
   points = highestQuality ? points : simplifyRadialDist(points, sqTolerance)
   points = simplifyDouglasPeucker(points, sqTolerance)
 
   return points
+}
+
+function calcSqTolerance(points: TrackPoint[], tolerance: number): number {
+  let minLat = -90
+  let maxLat = 90
+  let minLon = -180
+  let maxLon = 180
+
+  for (const point of points) {
+    minLat = minLat > point.lat ? point.lat : minLat
+    maxLat = maxLat < point.lat ? point.lat : maxLat
+    minLon = minLon > point.lon ? point.lon : minLon
+    maxLon = maxLon < point.lon ? point.lon : maxLon
+  }
+
+  const dx = maxLon - minLon
+  const dy = maxLat - minLat
+  return (dx * dx + dy * dy) * tolerance * tolerance
 }
