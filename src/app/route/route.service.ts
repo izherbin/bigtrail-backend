@@ -331,6 +331,10 @@ export class RouteService {
       Route &
       Document<any, any, any> & { _id: Types.ObjectId }
   ) {
+    if (!route) {
+      throw new HttpException('No such route', HttpStatus.NOT_FOUND)
+    }
+
     let shouldSave = false
     const renews = []
     for (const photo of route?.photos) {

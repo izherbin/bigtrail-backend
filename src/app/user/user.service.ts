@@ -281,6 +281,10 @@ export class UserService {
       User &
       Document<any, any, any> & { _id: Types.ObjectId }
   ) {
+    if (!user) {
+      throw new HttpException('No such profile', HttpStatus.NOT_FOUND)
+    }
+
     if (user?.avatar) {
       const newAvatar = await this.minioClientService.renewLink(user.avatar)
       if (newAvatar) {
