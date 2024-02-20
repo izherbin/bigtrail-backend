@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus } from '@nestjs/common'
-import chalk from 'chalk'
 
 interface ErrorRecord {
   code: number
@@ -131,11 +130,12 @@ export class ClientException extends HttpException {
     ) as unknown as HttpException
 
     console.error(
-      chalk.red('[Client] - '),
-      chalk.white(new Date().toLocaleString('en-EN')),
-      chalk.red('ERROR'),
-      chalk.yellow('[Exception Handler]'),
-      chalk.red(error.message)
+      '\x1b[31m[Client] - \x1b[37m',
+      new Date().toLocaleString('en-EN'),
+      '\x1b[31mERROR',
+      '\x1b[33m[Exception Handler]\x1b[31m',
+      error.message,
+      '\x1b[37m'
     )
     if (details) {
       console.error(details)

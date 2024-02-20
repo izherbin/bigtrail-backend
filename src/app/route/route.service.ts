@@ -257,11 +257,16 @@ export class RouteService {
     let routesSimilar: Route[]
     if (similar) {
       const reference = await this.routeModel.findById(similar)
-      routesSimilar = routes.sort((a: Route, b: Route) => {
-        return (
-          this.calcDistanceL2(reference, a) - this.calcDistanceL2(reference, b)
-        )
-      })
+      routesSimilar = routes
+        .sort((a: Route, b: Route) => {
+          return (
+            this.calcDistanceL2(reference, a) -
+            this.calcDistanceL2(reference, b)
+          )
+        })
+        .filter((route: Route) => {
+          return route._id.toString() !== similar.toString()
+        })
     } else {
       routesSimilar = routes
     }
