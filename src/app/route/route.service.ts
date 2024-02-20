@@ -1,10 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  forwardRef
-} from '@nestjs/common'
+import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { CreateRouteInput } from './dto/create-route.input'
 import { UpdateRouteInput } from './dto/update-route.input'
 import { InjectModel } from '@nestjs/mongoose'
@@ -20,6 +14,7 @@ import { DeleteRouteInput } from './dto/delete-route.input'
 import { GetRouteInput } from './dto/get-route.input'
 import { stringSimilarity } from './string-similarity'
 import { simplifyPoints } from './simplify'
+import { ClientException } from '../client.exception'
 
 const STRING_SIMULARITY_THRESHOLD = 0.65
 
@@ -143,7 +138,7 @@ export class RouteService {
       await this.routeModel.findById(id)
     )
     if (!route) {
-      throw new HttpException('No such route', HttpStatus.NOT_FOUND)
+      throw new ClientException(40402)
     }
 
     route.id = route._id
@@ -177,14 +172,11 @@ export class RouteService {
     const { id } = deleteTrackInput
     const route = await this.routeModel.findById(id)
     if (!route) {
-      throw new HttpException('No such user', HttpStatus.NOT_FOUND)
+      throw new ClientException(40403)
     }
 
     if (route.userId.toString() !== userId.toString()) {
-      throw new HttpException(
-        'Impossible to delete someone else`s track',
-        HttpStatus.FORBIDDEN
-      )
+      throw new ClientException(40301)
     }
 
     await this.routeModel.findByIdAndDelete(id)
@@ -332,7 +324,7 @@ export class RouteService {
       Document<any, any, any> & { _id: Types.ObjectId }
   ) {
     if (!route) {
-      throw new HttpException('No such route', HttpStatus.NOT_FOUND)
+      throw new ClientException(40402)
     }
 
     let shouldSave = false

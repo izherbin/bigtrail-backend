@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { BucketItem } from 'minio'
 import { MinioService } from 'nestjs-minio-client'
 import { PresignedLinkInput } from './dto/presigned-link.input.dto'
@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config'
 import { UploadFileInput } from './dto/upload-file.dto'
 import { Readable } from 'stream'
 import { isExpired, parseLink } from './is-expired'
+import { ClientException } from '../client.exception'
 
 const FILE_UPLOAD_TIMEOUT = 60000 * 5
 
@@ -37,11 +38,7 @@ export class MinioClientService {
     const link: string = await this.minioService.client
       .presignedGetObject(bucketName, objectName, expiry)
       .catch((err) => {
-        console.log('Error calculating download link:', err)
-        throw new HttpException(
-          'Error calculating download link',
-          HttpStatus.BAD_REQUEST
-        )
+        throw new ClientException(40003, err)
       })
     return link
   }
@@ -52,11 +49,7 @@ export class MinioClientService {
     const link: string = await this.minioService.client
       .presignedPutObject(bucketName, objectName, expiry)
       .catch((err) => {
-        console.log('Error calculating upload link:', err)
-        throw new HttpException(
-          'Error calculating upload link',
-          HttpStatus.BAD_REQUEST
-        )
+        throw new ClientException(40004, err)
       })
     return link
   }
@@ -104,11 +97,7 @@ export class MinioClientService {
     const res = await this.minioService.client
       .putObject(bucketName, objectName, (await file).createReadStream())
       .catch((err) => {
-        console.log('Error calculating download link:', err)
-        throw new HttpException(
-          'Error calculating download link',
-          HttpStatus.BAD_REQUEST
-        )
+        throw new ClientException(40003, err)
       })
 
     return res
@@ -122,8 +111,7 @@ export class MinioClientService {
     const res = await this.minioService.client
       .putObject(bucketName, filename, createReadStream())
       .catch((err) => {
-        console.log('Error uploading file:', err)
-        throw new HttpException('Error uploading file', HttpStatus.BAD_REQUEST)
+        throw new ClientException(40005, err)
       })
 
     return res

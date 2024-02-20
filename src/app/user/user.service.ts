@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { User, UserDocument } from './entities/user.entity'
 import { Document, Model, Schema as MongooSchema, Types } from 'mongoose'
@@ -10,6 +10,7 @@ import { GetProfileResponse } from './dto/get-profile.response'
 import { RouteService } from '../route/route.service'
 import { PubSubEngine } from 'graphql-subscriptions'
 import { SetStatusInput } from './dto/set-status.input'
+import { ClientException } from '../client.exception'
 
 @Injectable()
 export class UserService {
@@ -57,7 +58,7 @@ export class UserService {
       await this.userModel.findById(id)
     )
     if (!user) {
-      throw new HttpException('No such profile', HttpStatus.NOT_FOUND)
+      throw new ClientException(40404)
     }
 
     const profile = user.toObject() as GetProfileResponse
@@ -68,10 +69,7 @@ export class UserService {
   async createUser(phone: string) {
     const user = await this.userModel.findOne({ phone })
     if (user) {
-      throw new HttpException(
-        'This user is already exists',
-        HttpStatus.CONFLICT
-      )
+      throw new ClientException(40902)
     }
     const res = await this.userModel.insertMany([{ phone }])
     return res[0]
@@ -80,14 +78,11 @@ export class UserService {
   async updateUser(user: User) {
     const userFromDB = await this.userModel.findOne({ phone: user.phone })
     if (!userFromDB) {
-      throw new HttpException('No such user', HttpStatus.NOT_FOUND)
+      throw new ClientException(40403)
     }
 
     if (userFromDB.isAdmin) {
-      throw new HttpException(
-        'Can not update this profile',
-        HttpStatus.FORBIDDEN
-      )
+      throw new ClientException(40303)
     }
 
     return await userFromDB.updateOne(user)
@@ -96,14 +91,11 @@ export class UserService {
   async deleteUser(phone: string) {
     const userFromDB = await this.userModel.findOne({ phone })
     if (!userFromDB) {
-      throw new HttpException('No such user', HttpStatus.NOT_FOUND)
+      throw new ClientException(40403)
     }
 
     if (userFromDB.isAdmin) {
-      throw new HttpException(
-        'Can not delete this profile',
-        HttpStatus.FORBIDDEN
-      )
+      throw new ClientException(40304)
     }
 
     const oldAvatarFile = userFromDB.avatarFile ? userFromDB.avatarFile : null
@@ -118,21 +110,18 @@ export class UserService {
     let { name } = setNameInput
     name = name.trim()
     if (!this.validateName(name)) {
-      throw new HttpException('Incorrect profile name', HttpStatus.BAD_REQUEST)
+      throw new ClientException(40006)
     }
 
     const user = await this.renewProfileAvatar(
       await this.userModel.findOne({ phone })
     )
     if (!user) {
-      throw new HttpException('No such user', HttpStatus.NOT_FOUND)
+      throw new ClientException(40403)
     }
 
     if (user.isAdmin) {
-      throw new HttpException(
-        'Can not change this profile',
-        HttpStatus.FORBIDDEN
-      )
+      throw new ClientException(40303)
     }
 
     user.name = name
@@ -152,14 +141,11 @@ export class UserService {
       await this.userModel.findOne({ phone })
     )
     if (!user) {
-      throw new HttpException('No such user', HttpStatus.NOT_FOUND)
+      throw new ClientException(40403)
     }
 
     if (user.isAdmin) {
-      throw new HttpException(
-        'Can not change this profile',
-        HttpStatus.FORBIDDEN
-      )
+      throw new ClientException(40303)
     }
 
     user.status = status
@@ -175,7 +161,7 @@ export class UserService {
   async setProfileAvatar(phone: string) {
     const user = await this.userModel.findOne({ phone })
     if (!user) {
-      throw new HttpException('No such user', HttpStatus.NOT_FOUND)
+      throw new ClientException(40403)
     }
 
     const filename = String(Date.now()) + '_' + user._id.toString() + '.jpg'
@@ -227,7 +213,7 @@ export class UserService {
   ) {
     const user = await this.userModel.findOne({ phone })
     if (!user) {
-      throw new HttpException('No such user', HttpStatus.NOT_FOUND)
+      throw new ClientException(40403)
     }
 
     const timestamp = Date.now().toString()
@@ -258,7 +244,7 @@ export class UserService {
   async deleteProfileAvatar(phone: string) {
     const user = await this.userModel.findOne({ phone })
     if (!user) {
-      throw new HttpException('No such user', HttpStatus.NOT_FOUND)
+      throw new ClientException(40403)
     }
 
     const oldAvatarFile = user.avatarFile ? user.avatarFile : null
@@ -282,7 +268,7 @@ export class UserService {
       Document<any, any, any> & { _id: Types.ObjectId }
   ) {
     if (!user) {
-      throw new HttpException('No such profile', HttpStatus.NOT_FOUND)
+      throw new ClientException(40404)
     }
 
     if (user?.avatar) {

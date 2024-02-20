@@ -1,10 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  forwardRef
-} from '@nestjs/common'
+import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { CreateTrackInput } from './dto/create-track.input'
 import { UpdateTrackInput } from './dto/update-track.input'
 import { InjectModel } from '@nestjs/mongoose'
@@ -17,6 +11,7 @@ import { UploadPhoto } from './dto/upload-photo.response'
 import { MinioClientService } from '../minio-client/minio-client.service'
 import { UserService } from '../user/user.service'
 import { elevation } from './elevation'
+import { ClientException } from '../client.exception'
 
 @Injectable()
 export class TrackService {
@@ -166,14 +161,11 @@ export class TrackService {
     const { id } = deleteTrackInput
     const track = await this.trackModel.findById(id)
     if (!track) {
-      throw new HttpException('No such user', HttpStatus.NOT_FOUND)
+      throw new ClientException(40403)
     }
 
     if (track.userId.toString() !== userId.toString()) {
-      throw new HttpException(
-        'Impossible to delete someone else`s track',
-        HttpStatus.FORBIDDEN
-      )
+      throw new ClientException(40302)
     }
 
     await this.trackModel.findByIdAndDelete(id)

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config'
 import { LoginPhoneInput } from './dto/login-phone.input'
@@ -6,6 +6,7 @@ import { LoginCodeInput } from './dto/login-code.input'
 import { catchError, lastValueFrom, map } from 'rxjs'
 import { HttpService } from '@nestjs/axios'
 import { UserService } from '../user/user.service'
+import { ClientException } from '../client.exception'
 
 @Injectable()
 export class AuthService {
@@ -45,7 +46,7 @@ export class AuthService {
     const { phone } = loginUserInput
     const user = await this.userService.getUserByPhone(phone)
     if (!user) {
-      throw new HttpException('No such phone', HttpStatus.NOT_FOUND)
+      throw new ClientException(40401)
     }
 
     const _id = user._id
@@ -94,11 +95,11 @@ export class AuthService {
       tsCheck - user.tsSMSSent <
         Number(this.configService.get<string>('NEW_SMS_TIMEOUT'))
     ) {
-      throw new HttpException('SMS too early', HttpStatus.CONFLICT)
+      throw new ClientException(40901)
     }
 
     if (!this.validatePhone(payload.phone)) {
-      throw new HttpException('Incorrect phone number', HttpStatus.BAD_REQUEST)
+      throw new ClientException(40001)
     }
 
     user.code = this.genCode()
@@ -123,17 +124,14 @@ export class AuthService {
       .pipe(map((res) => res.data.response.msg))
       .pipe(
         catchError(() => {
-          throw new HttpException(
-            'API not available',
-            HttpStatus.SERVICE_UNAVAILABLE
-          )
+          throw new ClientException(50301)
         })
       )
     const msg = await lastValueFrom(request)
 
     console.log('msg.err_code:', msg.err_code)
     if (msg.err_code !== '0') {
-      throw new HttpException(msg.text, HttpStatus.BAD_REQUEST)
+      throw new ClientException(40002, msg.text)
     }
 
     user.tsSMSSent = Date.now()
