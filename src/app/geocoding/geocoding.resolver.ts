@@ -2,13 +2,13 @@ import { Args, Query, Resolver } from '@nestjs/graphql'
 import { GeocodingInput } from './dto/geocoding.input'
 import { GeocodingService } from './geocoding.service'
 import { ReverseGeocodingInput } from './dto/reverse-geocoding.input'
-import { Feature } from 'graphql-geojson-scalar-types'
+import { Geocode } from './entity/geocode.entity'
 
 @Resolver()
 export class GeocodingResolver {
   constructor(private readonly geocodingService: GeocodingService) {}
 
-  @Query(() => [Feature])
+  @Query(() => [Geocode])
   geocoding(@Args('geocodingInput') geocodingInput: GeocodingInput) {
     return this.geocodingService.search(geocodingInput)
   }
