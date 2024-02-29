@@ -114,7 +114,12 @@ const ERRORS: ErrorRecord[] = [
   },
   {
     code: 50301,
-    message: 'API not available',
+    message: 'SMS API not available',
+    status: HttpStatus.SERVICE_UNAVAILABLE
+  },
+  {
+    code: 50302,
+    message: 'Geocoding API not available',
     status: HttpStatus.SERVICE_UNAVAILABLE
   }
 ]

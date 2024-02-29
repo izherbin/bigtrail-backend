@@ -48,7 +48,7 @@ export class GeocodingService {
       .pipe(
         catchError((err) => {
           console.log('err:', err)
-          throw new ClientException(50301)
+          throw new ClientException(50302)
         })
       )
     const features: Feature[] = await lastValueFrom(request)
@@ -74,7 +74,7 @@ export class GeocodingService {
       .pipe(
         catchError((err) => {
           console.log('err:', err)
-          throw new ClientException(50301)
+          throw new ClientException(50302)
         })
       )
     const features: Feature[] = await lastValueFrom(request)
