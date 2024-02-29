@@ -13,7 +13,7 @@ export class GeocodingResolver {
     return this.geocodingService.search(geocodingInput)
   }
 
-  @Query(() => String)
+  @Query(() => [Geocode])
   reverseGeocoding(
     @Args('reverseGeocodingInput') reverseGeocodingInput: ReverseGeocodingInput
   ) {
