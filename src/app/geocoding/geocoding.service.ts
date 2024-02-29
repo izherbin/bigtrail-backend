@@ -87,8 +87,8 @@ export class GeocodingService {
       osm_type: feature.properties.osm_type,
       osm_id: feature.properties.osm_id,
       geojson: feature,
-      lat: feature.geometry.coordinates[0],
-      lon: feature.geometry.coordinates[1],
+      lon: feature.geometry.coordinates[0],
+      lat: feature.geometry.coordinates[1],
       display_name: feature.properties.name,
       type: feature.properties.type,
       boundingbox: feature.properties.extent
