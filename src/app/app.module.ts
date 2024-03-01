@@ -15,6 +15,7 @@ import { Context } from 'graphql-ws'
 import { RouteModule } from './route/route.module'
 import { VersionModule } from './version/version.module'
 import { GeocodingModule } from './geocoding/geocoding.module';
+import { PlaceModule } from './place/place.module';
 
 interface Extra {
   request: {
@@ -74,7 +75,8 @@ interface Extra {
     MinioClientModule,
     RouteModule,
     VersionModule,
-    GeocodingModule
+    GeocodingModule,
+    PlaceModule
   ],
   controllers: [],
   providers: [AppResolver, AppService]
