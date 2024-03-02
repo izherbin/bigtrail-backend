@@ -14,8 +14,8 @@ import { MinioClientModule } from './minio-client/minio-client.module'
 import { Context } from 'graphql-ws'
 import { RouteModule } from './route/route.module'
 import { VersionModule } from './version/version.module'
-import { GeocodingModule } from './geocoding/geocoding.module';
-import { PlaceModule } from './place/place.module';
+import { GeocodingModule } from './geocoding/geocoding.module'
+import { PlaceModule } from './place/place.module'
 
 interface Extra {
   request: {

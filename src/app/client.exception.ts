@@ -84,6 +84,11 @@ const ERRORS: ErrorRecord[] = [
   },
   {
     code: 40403,
+    message: 'No such place',
+    status: HttpStatus.NOT_FOUND
+  },
+  {
+    code: 40403,
     message: 'No such user',
     status: HttpStatus.NOT_FOUND
   },

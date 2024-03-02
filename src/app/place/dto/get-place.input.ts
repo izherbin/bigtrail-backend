@@ -1,9 +1,9 @@
 import { InputType, Field } from '@nestjs/graphql'
 
 @InputType({
-  description: 'Объект запроса маршрута по его идентификатору'
+  description: 'Объект запроса интересного места по его идентификатору'
 })
-export class GetRouteInput {
+export class GetPlaceInput {
   @Field(() => String, { description: 'Идентифкатор в MongoDB' })
   id: string
 }

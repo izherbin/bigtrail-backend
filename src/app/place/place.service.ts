@@ -4,8 +4,10 @@ import { CreatePlaceInput } from './dto/create-place.input'
 import { InjectModel } from '@nestjs/mongoose'
 import { Place, PlaceDocument } from './entities/place.entity'
 import { MinioClientService } from '../minio-client/minio-client.service'
-import { Model, Schema as MongooSchema } from 'mongoose'
+import { Document, Model, Schema as MongooSchema, Types } from 'mongoose'
 import { TrackService } from '../track/track.service'
+import { GetPlaceInput } from './dto/get-place.input'
+import { ClientException } from '../client.exception'
 
 @Injectable()
 export class PlaceService {
@@ -43,6 +45,18 @@ export class PlaceService {
     return uploads
   }
 
+  async getPlace(getPlaceInput: GetPlaceInput) {
+    const { id } = getPlaceInput
+    const place = await this.renewOnePlacePhotos(
+      await this.placeModel.findById(id)
+    )
+    if (!place) {
+      throw new ClientException(40403)
+    }
+
+    return place as Place
+  }
+
   findAll() {
     return `This action returns all place`
   }
@@ -57,5 +71,39 @@ export class PlaceService {
 
   remove(id: number) {
     return `This action removes a #${id} place`
+  }
+
+  async renewOnePlacePhotos(
+    place: Document<unknown, object, PlaceDocument> &
+      Place &
+      Document<any, any, any> & { _id: Types.ObjectId }
+  ) {
+    if (!place) {
+      throw new ClientException(40403)
+    }
+
+    let shouldSave = false
+    const renews = []
+    for (const photo of place?.photos) {
+      if (photo?.uri) {
+        renews.push(
+          this.minioClientService.renewLink(photo.uri).then((uri) => {
+            if (uri) {
+              photo.uri = uri
+              shouldSave = true
+            }
+          })
+        )
+      }
+    }
+
+    return Promise.allSettled(renews).then(() => {
+      if (shouldSave) {
+        place.markModified('photos')
+        return place.save()
+      } else {
+        return place
+      }
+    })
   }
 }

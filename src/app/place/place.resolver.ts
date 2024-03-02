@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args } from '@nestjs/graphql'
+import { Resolver, Mutation, Args, Query } from '@nestjs/graphql'
 import { PlaceService } from './place.service'
 import { Place } from './entities/place.entity'
 import { CreatePlaceInput } from './dto/create-place.input'
@@ -8,6 +8,7 @@ import { Schema as MongooSchema } from 'mongoose'
 import { UploadPhoto } from '../track/dto/upload-photo.response'
 import { UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/jwt-auth.guards'
+import { GetPlaceInput } from './dto/get-place.input'
 
 @Resolver(() => Place)
 export class PlaceResolver {
@@ -24,20 +25,15 @@ export class PlaceResolver {
     return this.placeService.create(userId, createPlaceInput)
   }
 
-  // @Query(() => [Place], { name: 'place' })
-  // findAll() {
-  //   return this.placeService.findAll()
-  // }
-
-  // @Query(() => Place, { name: 'place' })
-  // findOne(@Args('id', { type: () => Int }) id: number) {
-  //   return this.placeService.findOne(id)
-  // }
-
-  // @Mutation(() => Place)
-  // updatePlace(@Args('updatePlaceInput') updatePlaceInput: UpdatePlaceInput) {
-  //   return this.placeService.update(updatePlaceInput.id, updatePlaceInput);
-  // }
+  @Query(() => Place, {
+    description: 'Получить чужое интересное место по id'
+  })
+  getPlace(
+    @Args('getPlaceInput')
+    getPlaceInput: GetPlaceInput
+  ) {
+    return this.placeService.getPlace(getPlaceInput)
+  }
 
   // @Mutation(() => Place)
   // removePlace(@Args('id', { type: () => Int }) id: number) {
