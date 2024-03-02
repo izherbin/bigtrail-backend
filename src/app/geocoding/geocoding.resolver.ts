@@ -8,12 +8,12 @@ import { Geocode } from './entity/geocode.entity'
 export class GeocodingResolver {
   constructor(private readonly geocodingService: GeocodingService) {}
 
-  @Query(() => [Geocode])
+  @Query(() => [Geocode], { description: 'Геокодинг по поисковой строке' })
   geocoding(@Args('geocodingInput') geocodingInput: GeocodingInput) {
     return this.geocodingService.search(geocodingInput)
   }
 
-  @Query(() => [Geocode])
+  @Query(() => [Geocode], { description: 'Обратный геокодинг по координатам' })
   reverseGeocoding(
     @Args('reverseGeocodingInput') reverseGeocodingInput: ReverseGeocodingInput
   ) {

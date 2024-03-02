@@ -8,6 +8,7 @@ import { Document, Model, Schema as MongooSchema, Types } from 'mongoose'
 import { TrackService } from '../track/track.service'
 import { GetPlaceInput } from './dto/get-place.input'
 import { ClientException } from '../client.exception'
+import { DeletePlaceInput } from './dto/delete-place.input'
 
 @Injectable()
 export class PlaceService {
@@ -17,6 +18,7 @@ export class PlaceService {
     private readonly minioClientService: MinioClientService,
     private readonly trackService: TrackService
   ) {}
+
   async create(
     userId: MongooSchema.Types.ObjectId,
     createPlaceInput: CreatePlaceInput
@@ -51,7 +53,7 @@ export class PlaceService {
       await this.placeModel.findById(id)
     )
     if (!place) {
-      throw new ClientException(40403)
+      throw new ClientException(40406)
     }
 
     return place as Place
@@ -69,8 +71,30 @@ export class PlaceService {
   //   return `This action updates a #${id} place`
   // }
 
-  remove(id: number) {
-    return `This action removes a #${id} place`
+  async remove(
+    userId: MongooSchema.Types.ObjectId,
+    deletePlaceInput: DeletePlaceInput
+  ) {
+    const { id } = deletePlaceInput
+    const place = await this.placeModel.findById(id)
+    if (!place) {
+      throw new ClientException(40406)
+    }
+
+    if (place.userId.toString() !== userId.toString()) {
+      throw new ClientException(40307)
+    }
+
+    await this.placeModel.findByIdAndDelete(id)
+
+    //TODO const emit: SubscriptionPlaceResponse = {
+    //TODO   function: 'DELETE',
+    //TODO   id: place._id,
+    //TODO   userId: place.userId
+    //TODO }
+    //TODO this.pubSub.publish('placeChanged', { watchUserPlaces: emit })
+
+    return `Успешно удален маршрут № ${id} `
   }
 
   async renewOnePlacePhotos(

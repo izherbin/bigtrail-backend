@@ -73,6 +73,11 @@ const ERRORS: ErrorRecord[] = [
     status: HttpStatus.FORBIDDEN
   },
   {
+    code: 40307,
+    message: 'Impossible to delete someone else`s place',
+    status: HttpStatus.FORBIDDEN
+  },
+  {
     code: 40401,
     message: 'No such phone',
     status: HttpStatus.NOT_FOUND
@@ -84,7 +89,7 @@ const ERRORS: ErrorRecord[] = [
   },
   {
     code: 40403,
-    message: 'No such place',
+    message: 'No such track',
     status: HttpStatus.NOT_FOUND
   },
   {
@@ -100,6 +105,11 @@ const ERRORS: ErrorRecord[] = [
   {
     code: 40405,
     message: 'No versions in DB',
+    status: HttpStatus.NOT_FOUND
+  },
+  {
+    code: 40406,
+    message: 'No such place',
     status: HttpStatus.NOT_FOUND
   },
   {

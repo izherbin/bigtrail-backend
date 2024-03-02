@@ -9,6 +9,7 @@ import { UploadPhoto } from '../track/dto/upload-photo.response'
 import { UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/jwt-auth.guards'
 import { GetPlaceInput } from './dto/get-place.input'
+import { DeletePlaceInput } from './dto/delete-place.input'
 
 @Resolver(() => Place)
 export class PlaceResolver {
@@ -33,6 +34,17 @@ export class PlaceResolver {
     getPlaceInput: GetPlaceInput
   ) {
     return this.placeService.getPlace(getPlaceInput)
+  }
+
+  @Mutation(() => String, {
+    description: 'Удалить интересное место из MongoDB'
+  })
+  @UseGuards(JwtAuthGuard)
+  deletePlace(
+    @UserId() userId: MongooSchema.Types.ObjectId,
+    @Args('deletePlaceInput') deletePlaceInput: DeletePlaceInput
+  ) {
+    return this.placeService.remove(userId, deletePlaceInput)
   }
 
   // @Mutation(() => Place)
