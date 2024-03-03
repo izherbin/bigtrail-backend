@@ -10,6 +10,7 @@ import { UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/jwt-auth.guards'
 import { GetPlaceInput } from './dto/get-place.input'
 import { DeletePlaceInput } from './dto/delete-place.input'
+import { PlaceFilterInput } from './dto/place-filter.input'
 
 @Resolver(() => Place)
 export class PlaceResolver {
@@ -34,6 +35,16 @@ export class PlaceResolver {
     getPlaceInput: GetPlaceInput
   ) {
     return this.placeService.getPlace(getPlaceInput)
+  }
+
+  @Query(() => [Place], {
+    description: 'Получить все интересные места, удовлетворяющие фильтру'
+  })
+  getContent(
+    @Args('placeFilterInput', { nullable: true })
+    placeFilterInput?: PlaceFilterInput
+  ) {
+    return this.placeService.getContent(placeFilterInput)
   }
 
   @Mutation(() => String, {

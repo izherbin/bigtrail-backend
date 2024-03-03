@@ -9,6 +9,7 @@ import { TrackService } from '../track/track.service'
 import { GetPlaceInput } from './dto/get-place.input'
 import { ClientException } from '../client.exception'
 import { DeletePlaceInput } from './dto/delete-place.input'
+import { PlaceFilterInput } from './dto/place-filter.input'
 
 @Injectable()
 export class PlaceService {
@@ -59,6 +60,14 @@ export class PlaceService {
     return place as Place
   }
 
+  async getContent(filter: PlaceFilterInput) {
+    const places = await this.renewManyPlacesPhotos(
+      await this.placeModel.find({})
+    )
+    const placesFiltered = await this.filterPlaces(places, filter)
+    return placesFiltered
+  }
+
   findAll() {
     return `This action returns all place`
   }
@@ -95,6 +104,79 @@ export class PlaceService {
     //TODO this.pubSub.publish('placeChanged', { watchUserPlaces: emit })
 
     return `Успешно удален маршрут № ${id} `
+  }
+
+  async filterPlaces(places: Place[], filter: PlaceFilterInput) {
+    function isFilterFails(filter: string[] | null, value: string) {
+      const isFilterEmpty =
+        !filter ||
+        (Array.isArray(filter) &&
+          (filter.length == 0 || filter.includes(undefined)))
+      return (
+        !isFilterEmpty && !(Array.isArray(filter) && filter.includes(value))
+      )
+    }
+
+    function isUserIdFails(
+      userId: MongooSchema.Types.ObjectId | null,
+      value: MongooSchema.Types.ObjectId
+    ) {
+      const isUserIdEmpty = !userId
+      return !isUserIdEmpty && userId?.toString() !== value?.toString()
+    }
+
+    const { type, userId, similar, max } = filter || {}
+
+    let placesSimilar: Place[]
+    if (similar) {
+      const reference = await this.placeModel.findById(similar)
+      placesSimilar = places
+        .sort((a: Place, b: Place) => {
+          return (
+            this.calcDistanceL2(reference, a) -
+            this.calcDistanceL2(reference, b)
+          )
+        })
+        .filter((place: Place) => {
+          return place._id.toString() !== similar.toString()
+        })
+    } else {
+      placesSimilar = places
+    }
+
+    const placesFiltered = placesSimilar.filter((place) => {
+      if (isUserIdFails(userId, place.userId)) return false
+      else if (isFilterFails([type], place.type)) return false
+      else return true
+    })
+
+    return placesFiltered.slice(
+      0,
+      max && max < placesFiltered.length ? max : placesFiltered.length
+    )
+  }
+
+  calcDistanceL2(sourcePlace: Place, targetPlace: Place) {
+    const distance =
+      (sourcePlace.lat - targetPlace.lat) ** 2 +
+      (sourcePlace.lon - targetPlace.lon) ** 2
+
+    return distance
+  }
+
+  async renewManyPlacesPhotos(places) {
+    const renews = []
+    const res = []
+    for (const place of places) {
+      renews.push(
+        this.renewOnePlacePhotos(place).then((place) => {
+          res.push(place)
+        })
+      )
+    }
+
+    await Promise.allSettled(renews)
+    return res
   }
 
   async renewOnePlacePhotos(

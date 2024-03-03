@@ -6,7 +6,7 @@ import { Schema as MongooSchema } from 'mongoose'
 export class RouteFilterInput {
   @Field(() => String, {
     nullable: true,
-    description: 'Фильтр по транзиту'
+    description: 'Фильтр по владельцу'
   })
   userId?: MongooSchema.Types.ObjectId
 
