@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { CreatePlaceInput } from './dto/create-place.input'
 // import { UpdatePlaceInput } from './dto/update-place.input'
 import { InjectModel } from '@nestjs/mongoose'
@@ -10,6 +10,8 @@ import { GetPlaceInput } from './dto/get-place.input'
 import { ClientException } from '../client.exception'
 import { DeletePlaceInput } from './dto/delete-place.input'
 import { PlaceFilterInput } from './dto/place-filter.input'
+import { PubSubEngine } from 'graphql-subscriptions'
+import { SubscriptionPlaceResponse } from './dto/subscription-place.response'
 
 @Injectable()
 export class PlaceService {
@@ -17,7 +19,8 @@ export class PlaceService {
     @InjectModel(Place.name)
     private placeModel: Model<PlaceDocument>,
     private readonly minioClientService: MinioClientService,
-    private readonly trackService: TrackService
+    private readonly trackService: TrackService,
+    @Inject('PUB_SUB') private pubSub: PubSubEngine
   ) {}
 
   async create(
@@ -42,7 +45,14 @@ export class PlaceService {
       createPlace.timestamp = Date.now()
 
       const place = await createPlace.save()
-      console.log(`Place with _id: ${place._id} successfully saved`)
+
+      const emit: SubscriptionPlaceResponse = {
+        function: 'ADD',
+        id: place._id,
+        data: place as Place,
+        userId: place.userId
+      }
+      this.pubSub.publish('placeChanged', { watchUserPlaces: emit })
     })
 
     return uploads
@@ -66,6 +76,11 @@ export class PlaceService {
     )
     const placesFiltered = await this.filterPlaces(places, filter)
     return placesFiltered
+  }
+
+  watchUserPlaces() {
+    const res = this.pubSub.asyncIterator('placeChanged')
+    return res
   }
 
   findAll() {
@@ -96,12 +111,12 @@ export class PlaceService {
 
     await this.placeModel.findByIdAndDelete(id)
 
-    //TODO const emit: SubscriptionPlaceResponse = {
-    //TODO   function: 'DELETE',
-    //TODO   id: place._id,
-    //TODO   userId: place.userId
-    //TODO }
-    //TODO this.pubSub.publish('placeChanged', { watchUserPlaces: emit })
+    const emit: SubscriptionPlaceResponse = {
+      function: 'DELETE',
+      id: place._id,
+      userId: place.userId
+    }
+    this.pubSub.publish('placeChanged', { watchUserPlaces: emit })
 
     return `Успешно удален маршрут № ${id} `
   }

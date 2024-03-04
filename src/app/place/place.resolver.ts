@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args, Query } from '@nestjs/graphql'
+import { Resolver, Mutation, Args, Query, Subscription } from '@nestjs/graphql'
 import { PlaceService } from './place.service'
 import { Place } from './entities/place.entity'
 import { CreatePlaceInput } from './dto/create-place.input'
@@ -11,6 +11,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guards'
 import { GetPlaceInput } from './dto/get-place.input'
 import { DeletePlaceInput } from './dto/delete-place.input'
 import { PlaceFilterInput } from './dto/place-filter.input'
+import { SubscriptionPlaceResponse } from './dto/subscription-place.response'
 
 @Resolver(() => Place)
 export class PlaceResolver {
@@ -45,6 +46,23 @@ export class PlaceResolver {
     placeFilterInput?: PlaceFilterInput
   ) {
     return this.placeService.getContent(placeFilterInput)
+  }
+
+  @Subscription(() => SubscriptionPlaceResponse, {
+    description: 'Следить за всеми интересными местами пользователя',
+    filter: (payload, variables, context): boolean => {
+      const res =
+        payload.watchUserPlaces.userId.toString() === context.req.user._id
+      console.log('My userId:', context.req.user._id)
+      console.log('Changed userId:', payload.watchUserPlaces.userId.toString())
+      return res
+    }
+  })
+  @UseGuards(JwtAuthGuard)
+  watchUserPlaces(@UserId() userId: MongooSchema.Types.ObjectId) {
+    console.log('userId:', userId)
+    const res = this.placeService.watchUserPlaces()
+    return res
   }
 
   @Mutation(() => String, {
