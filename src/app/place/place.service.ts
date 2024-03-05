@@ -52,7 +52,7 @@ export class PlaceService {
         data: place as Place,
         userId: place.userId
       }
-      this.pubSub.publish('placeChanged', { watchUserPlaces: emit })
+      this.pubSub.publish('placeChanged', { watchPlaces: emit })
     })
 
     return uploads
@@ -78,7 +78,7 @@ export class PlaceService {
     return placesFiltered
   }
 
-  watchUserPlaces() {
+  watchPlaces() {
     const res = this.pubSub.asyncIterator('placeChanged')
     return res
   }
@@ -116,7 +116,7 @@ export class PlaceService {
       id: place._id,
       userId: place.userId
     }
-    this.pubSub.publish('placeChanged', { watchUserPlaces: emit })
+    this.pubSub.publish('placeChanged', { watchPlaces: emit })
 
     return `Успешно удален маршрут № ${id} `
   }

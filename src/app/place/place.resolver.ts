@@ -12,6 +12,7 @@ import { GetPlaceInput } from './dto/get-place.input'
 import { DeletePlaceInput } from './dto/delete-place.input'
 import { PlaceFilterInput } from './dto/place-filter.input'
 import { SubscriptionPlaceResponse } from './dto/subscription-place.response'
+import { SubscriptionPlaceInput } from './dto/subscription-place.input'
 
 @Resolver(() => Place)
 export class PlaceResolver {
@@ -49,19 +50,28 @@ export class PlaceResolver {
   }
 
   @Subscription(() => SubscriptionPlaceResponse, {
-    description: 'Следить за всеми интересными местами пользователя',
+    description: 'Следить за всеми интересными местами заданного пользователя',
     filter: (payload, variables, context): boolean => {
-      const res =
-        payload.watchUserPlaces.userId.toString() === context.req.user._id
+      const userId = variables.subscriptionPlaceInput.userId
+        ? variables.subscriptionPlaceInput.userId.toString()
+        : context.req.user._id
+
+      const res = payload.watchPlaces.userId.toString() === userId
+      console.log('userId:', userId)
       console.log('My userId:', context.req.user._id)
-      console.log('Changed userId:', payload.watchUserPlaces.userId.toString())
+      console.log('Changed userId:', payload.watchPlaces.userId.toString())
       return res
     }
   })
   @UseGuards(JwtAuthGuard)
-  watchUserPlaces(@UserId() userId: MongooSchema.Types.ObjectId) {
-    console.log('userId:', userId)
-    const res = this.placeService.watchUserPlaces()
+  // watchUserPlaces(@UserId() userId: MongooSchema.Types.ObjectId) {
+  watchPlaces(
+    @Args('subscriptionPlaceInput')
+    subscriptionPlaceInput: SubscriptionPlaceInput
+  ) {
+    const { userId } = subscriptionPlaceInput
+    console.log('Input userId:', userId)
+    const res = this.placeService.watchPlaces()
     return res
   }
 
