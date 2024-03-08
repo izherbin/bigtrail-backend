@@ -74,6 +74,11 @@ const ERRORS: ErrorRecord[] = [
   },
   {
     code: 40307,
+    message: 'No rights to set surveys',
+    status: HttpStatus.FORBIDDEN
+  },
+  {
+    code: 40307,
     message: 'Impossible to delete someone else`s place',
     status: HttpStatus.FORBIDDEN
   },
