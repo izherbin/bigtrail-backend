@@ -118,6 +118,16 @@ const ERRORS: ErrorRecord[] = [
     status: HttpStatus.NOT_FOUND
   },
   {
+    code: 40407,
+    message: 'No such survey',
+    status: HttpStatus.NOT_FOUND
+  },
+  {
+    code: 40408,
+    message: 'No such scenario',
+    status: HttpStatus.NOT_FOUND
+  },
+  {
     code: 40901,
     message: 'SMS too early',
     status: HttpStatus.CONFLICT

@@ -5,12 +5,19 @@ import { Model, Schema as MongooSchema } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
 import { Survey, SurveyDocument } from './entities/survey.entity'
 import { ClientException } from '../client.exception'
+import {
+  SurveyResult,
+  SurveyResultDocument
+} from './entities/survey-result.entity'
+import { SurveyResultInput } from './dto/survey-result.input'
 
 @Injectable()
 export class SurveyService {
   constructor(
     @InjectModel(Survey.name)
-    private surveyModel: Model<SurveyDocument>
+    private surveyModel: Model<SurveyDocument>,
+    @InjectModel(SurveyResult.name)
+    private surveyResultModel: Model<SurveyResultDocument>
   ) {}
 
   async create(phone: string, createSurveyInput: CreateSurveyInput) {
@@ -42,5 +49,17 @@ export class SurveyService {
 
   remove(id: string) {
     return `This action removes a #${id.toString()} survey`
+  }
+
+  async storeSurveyResult(surveyResultInput: SurveyResultInput) {
+    const { surveyId } = surveyResultInput
+    const survey = this.surveyResultModel.findById(surveyId)
+    if (!survey) {
+      throw new ClientException(40407)
+    }
+
+    const surveyResult = new this.surveyResultModel(surveyResultInput)
+    await surveyResult.save()
+    return surveyResult
   }
 }
