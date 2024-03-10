@@ -10,6 +10,8 @@ import {
   SurveyResultDocument
 } from './entities/survey-result.entity'
 import { SurveyResultInput } from './dto/survey-result.input'
+import { Scenario, ScenarioDocument } from './entities/scenario.entity'
+import { CreateScenarioInput } from './dto/create-scenario.input '
 
 @Injectable()
 export class SurveyService {
@@ -17,10 +19,12 @@ export class SurveyService {
     @InjectModel(Survey.name)
     private surveyModel: Model<SurveyDocument>,
     @InjectModel(SurveyResult.name)
-    private surveyResultModel: Model<SurveyResultDocument>
+    private surveyResultModel: Model<SurveyResultDocument>,
+    @InjectModel(Scenario.name)
+    private scenarioModel: Model<ScenarioDocument>
   ) {}
 
-  async create(phone: string, createSurveyInput: CreateSurveyInput) {
+  async createSurvey(phone: string, createSurveyInput: CreateSurveyInput) {
     if (phone !== '79112128506') {
       throw new ClientException(40307)
     }
@@ -30,9 +34,27 @@ export class SurveyService {
     return survey
   }
 
-  async findAll() {
+  async createScenario(
+    phone: string,
+    createScenarioInput: CreateScenarioInput
+  ) {
+    if (phone !== '79112128506') {
+      throw new ClientException(40307)
+    }
+
+    const scenario = new this.scenarioModel(createScenarioInput)
+    await scenario.save()
+    return scenario
+  }
+
+  async getSurveys() {
     const surveys = await this.surveyModel.find()
     return surveys
+  }
+
+  async getScenarios() {
+    const scenarios = await this.scenarioModel.find()
+    return scenarios
   }
 
   async findOne(id: string) {
@@ -40,14 +62,14 @@ export class SurveyService {
     return surveys
   }
 
-  update(
+  updateSurvey(
     id: MongooSchema.Types.ObjectId,
     updateSurveyInput: UpdateSurveyInput
   ) {
     return `This action updates a #${id.toString()} survey with ${updateSurveyInput}`
   }
 
-  remove(id: string) {
+  removeSurvey(id: string) {
     return `This action removes a #${id.toString()} survey`
   }
 

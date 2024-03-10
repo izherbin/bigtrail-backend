@@ -8,23 +8,25 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guards'
 import { Phone } from '../auth/phone.decorator'
 import { SurveyResult } from './entities/survey-result.entity'
 import { SurveyResultInput } from './dto/survey-result.input'
+import { Scenario } from './entities/scenario.entity'
+import { CreateScenarioInput } from './dto/create-scenario.input '
 
 @Resolver(() => Survey)
 export class SurveyResolver {
   constructor(private readonly surveyService: SurveyService) {}
 
-  @Mutation(() => Survey, { description: '' })
+  @Mutation(() => Survey, { description: 'Создать опрос' })
   @UseGuards(JwtAuthGuard)
   setSurvey(
     @Phone() phone: string,
     @Args('createSurveyInput') createSurveyInput: CreateSurveyInput
   ) {
-    return this.surveyService.create(phone, createSurveyInput)
+    return this.surveyService.createSurvey(phone, createSurveyInput)
   }
 
-  @Query(() => [Survey], { description: '' })
+  @Query(() => [Survey], { description: 'Выдать список опросов' })
   getSurveys() {
-    return this.surveyService.findAll()
+    return this.surveyService.getSurveys()
   }
 
   // @Query(() => Survey)
@@ -39,15 +41,60 @@ export class SurveyResolver {
   //   return this.surveyService.update(updateSurveyInput.id, updateSurveyInput)
   // }
 
-  @Mutation(() => Survey, { description: '' })
-  removeSurvey(@Args('id') id: string) {
-    return this.surveyService.remove(id)
-  }
+  // @Mutation(() => Survey, { description: '' })
+  // removeSurvey(@Args('id') id: string) {
+  //   return this.surveyService.removeSurvey(id)
+  // }
 
-  @Mutation(() => SurveyResult, { description: '' })
+  @Mutation(() => SurveyResult, { description: 'Сохранить результат опроса' })
   storeSurveyResult(
     @Args('surveyResultInput') surveyResultInput: SurveyResultInput
   ) {
     return this.surveyService.storeSurveyResult(surveyResultInput)
   }
+}
+
+@Resolver(() => Scenario)
+export class ScenarioResolver {
+  constructor(private readonly surveyService: SurveyService) {}
+
+  @Mutation(() => Scenario, { description: 'Создать сценарий тестироваиия' })
+  @UseGuards(JwtAuthGuard)
+  setScenario(
+    @Phone() phone: string,
+    @Args('createScenarioInput') createScenarioInput: CreateScenarioInput
+  ) {
+    return this.surveyService.createScenario(phone, createScenarioInput)
+  }
+
+  @Query(() => [Scenario], {
+    description: 'Выдать список сценариев тестирования'
+  })
+  getScenarios() {
+    return this.surveyService.getScenarios()
+  }
+
+  // @Query(() => Survey)
+  // getSurvey(@Args('id') id: string) {
+  //   return this.surveyService.findOne(id)
+  // }
+
+  // @Mutation(() => Survey)
+  // updateSurvey(
+  //   @Args('updateSurveyInput') updateSurveyInput: UpdateSurveyInput
+  // ) {
+  //   return this.surveyService.update(updateSurveyInput.id, updateSurveyInput)
+  // }
+
+  // @Mutation(() => Survey, { description: '' })
+  // removeScenario(@Args('id') id: string) {
+  //   return this.surveyService.removeSurvey(id)
+  // }
+
+  // @Mutation(() => ScenarioResult, { description: '' })
+  // storeSurveyResult(
+  //   @Args('scenarioResultInput') scenarioResultInput: ScenarioResultInput
+  // ) {
+  //   return this.surveyService.storeSurveyResult(scenarioResultInput)
+  // }
 }

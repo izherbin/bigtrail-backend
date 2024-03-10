@@ -14,9 +14,9 @@ export class SurveyItemInput {
 
 @InputType()
 export class CreateSurveyInput {
-  @Field(() => String, { description: '' })
+  @Field(() => String, { description: 'Объект ввода при создании опроса' })
   name: string
 
-  @Field(() => [SurveyItemInput], { description: '' })
+  @Field(() => [SurveyItemInput], { description: 'Варианты ответов опроса' })
   items: SurveyItemInput[]
 }
