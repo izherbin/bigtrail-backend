@@ -12,6 +12,11 @@ import {
 import { SurveyResultInput } from './dto/survey-result.input'
 import { Scenario, ScenarioDocument } from './entities/scenario.entity'
 import { CreateScenarioInput } from './dto/create-scenario.input '
+import {
+  ScenarioResult,
+  ScenarioResultDocument
+} from './entities/scenario-result.entity'
+import { ScenarioResultInput } from './dto/scenario-result.input'
 
 @Injectable()
 export class SurveyService {
@@ -21,7 +26,9 @@ export class SurveyService {
     @InjectModel(SurveyResult.name)
     private surveyResultModel: Model<SurveyResultDocument>,
     @InjectModel(Scenario.name)
-    private scenarioModel: Model<ScenarioDocument>
+    private scenarioModel: Model<ScenarioDocument>,
+    @InjectModel(ScenarioResult.name)
+    private scenarioResultModel: Model<ScenarioResultDocument>
   ) {}
 
   async createSurvey(phone: string, createSurveyInput: CreateSurveyInput) {
@@ -75,7 +82,7 @@ export class SurveyService {
 
   async storeSurveyResult(surveyResultInput: SurveyResultInput) {
     const { surveyId } = surveyResultInput
-    const survey = this.surveyResultModel.findById(surveyId)
+    const survey = await this.surveyModel.findById(surveyId)
     if (!survey) {
       throw new ClientException(40407)
     }
@@ -83,5 +90,17 @@ export class SurveyService {
     const surveyResult = new this.surveyResultModel(surveyResultInput)
     await surveyResult.save()
     return surveyResult
+  }
+
+  async storeScenarioResult(scenarioResultInput: ScenarioResultInput) {
+    const { scenarioId } = scenarioResultInput
+    const scenario = await this.scenarioModel.findById(scenarioId)
+    if (!scenario) {
+      throw new ClientException(40408)
+    }
+
+    const scenarioResult = new this.scenarioResultModel(scenarioResultInput)
+    await scenarioResult.save()
+    return scenarioResult
   }
 }

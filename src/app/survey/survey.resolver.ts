@@ -10,6 +10,8 @@ import { SurveyResult } from './entities/survey-result.entity'
 import { SurveyResultInput } from './dto/survey-result.input'
 import { Scenario } from './entities/scenario.entity'
 import { CreateScenarioInput } from './dto/create-scenario.input '
+import { ScenarioResult } from './entities/scenario-result.entity'
+import { ScenarioResultInput } from './dto/scenario-result.input'
 
 @Resolver(() => Survey)
 export class SurveyResolver {
@@ -91,10 +93,12 @@ export class ScenarioResolver {
   //   return this.surveyService.removeSurvey(id)
   // }
 
-  // @Mutation(() => ScenarioResult, { description: '' })
-  // storeSurveyResult(
-  //   @Args('scenarioResultInput') scenarioResultInput: ScenarioResultInput
-  // ) {
-  //   return this.surveyService.storeSurveyResult(scenarioResultInput)
-  // }
+  @Mutation(() => ScenarioResult, {
+    description: 'Сщхранение результатов тестирования'
+  })
+  storeScenarioResult(
+    @Args('scenarioResultInput') scenarioResultInput: ScenarioResultInput
+  ) {
+    return this.surveyService.storeScenarioResult(scenarioResultInput)
+  }
 }

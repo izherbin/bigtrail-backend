@@ -9,6 +9,10 @@ import {
   SurveyResultSchema
 } from './entities/survey-result.entity'
 import { Scenario, ScenarioSchema } from './entities/scenario.entity'
+import {
+  ScenarioResult,
+  ScenarioResultSchema
+} from './entities/scenario-result.entity'
 
 @Module({
   providers: [SurveyResolver, ScenarioResolver, SurveyService],
@@ -16,7 +20,8 @@ import { Scenario, ScenarioSchema } from './entities/scenario.entity'
     MongooseModule.forFeature([
       { name: Survey.name, schema: SurveySchema },
       { name: SurveyResult.name, schema: SurveyResultSchema },
-      { name: Scenario.name, schema: ScenarioSchema }
+      { name: Scenario.name, schema: ScenarioSchema },
+      { name: ScenarioResult.name, schema: ScenarioResultSchema }
     ]),
     UserModule
   ]
