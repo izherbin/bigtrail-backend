@@ -1,0 +1,79 @@
+{
+	"files": [
+		{
+			"path": "src/app/user/user.service.ts",
+			"bookmarks": [
+				{
+					"line": 31,
+					"column": 15,
+					"label": "Statistics: getProfileQuery()"
+				},
+				{
+					"line": 41,
+					"column": 4,
+					"label": "Statistics: getProfileById()"
+				},
+				{
+					"line": 64,
+					"column": 5,
+					"label": "Statistics: getUserById()"
+				},
+				{
+					"line": 130,
+					"column": 6,
+					"label": "Statistics: setName()"
+				},
+				{
+					"line": 154,
+					"column": 4,
+					"label": "Statistics: setProfleStatus()"
+				},
+				{
+					"line": 191,
+					"column": 15,
+					"label": "Statistics: setProfileAvatar()"
+				},
+				{
+					"line": 258,
+					"column": 5,
+					"label": "Statistics: deleteProfileAvatar()"
+				}
+			]
+		},
+		{
+			"path": "src/app/route/route.service.ts",
+			"bookmarks": [
+				{
+					"line": 196,
+					"column": 26,
+					"label": "Statistics: calcUserStatistics()"
+				}
+			]
+		},
+		{
+			"path": "src/app/track/track.service.ts",
+			"bookmarks": [
+				{
+					"line": 185,
+					"column": 31,
+					"label": "Statistics: calcUserTrackStatistics()"
+				}
+			]
+		},
+		{
+			"path": "src/app/user/dto/get-profile.response.ts",
+			"bookmarks": [
+				{
+					"line": 6,
+					"column": 27,
+					"label": "Statistics: UserStatistics"
+				},
+				{
+					"line": 53,
+					"column": 16,
+					"label": "Statistics: GetProfileResponse"
+				}
+			]
+		}
+	]
+}
