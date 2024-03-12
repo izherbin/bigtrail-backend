@@ -5,6 +5,61 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 type timestamp = number
 type JwtToken = string
 
+@ObjectType({
+  description: 'Статистика пользователя'
+})
+@Schema({ _id: false })
+export class UserStatistics {
+  @Field(() => Int, {
+    nullable: true,
+    description: 'Количество подписчиков у данного пользователя'
+  })
+  @Prop()
+  subscribers?: number
+
+  @Field(() => Int, {
+    nullable: true,
+    description: 'Количество подписок у данного пользователя'
+  })
+  @Prop()
+  subscriptions?: number
+
+  @Field(() => Int, {
+    nullable: true,
+    description: 'Количество маршрутов у данного пользователя'
+  })
+  @Prop()
+  routes?: number
+
+  @Field(() => Int, {
+    nullable: true,
+    description: 'Количество треков у данного пользователя'
+  })
+  @Prop()
+  tracks?: number
+
+  @Field(() => Float, {
+    nullable: true,
+    description: 'Сумма duration tracks у данного пользователя'
+  })
+  @Prop()
+  duration?: number
+
+  @Field(() => Float, {
+    nullable: true,
+    description: 'Сумма distance tracks у данного пользователя'
+  })
+  @Prop()
+  distance?: number
+
+  @Field(() => Int, {
+    nullable: true,
+    description: 'Количество очков пользователя'
+  })
+  @Prop()
+  points?: number
+}
+
 @ObjectType({ description: 'Профайл пользователя' })
 @Schema()
 export class User {
@@ -52,6 +107,13 @@ export class User {
     description: 'JWT-токен для аутентификации запросов с фронтенда'
   })
   token: JwtToken
+
+  @Field(() => UserStatistics, {
+    nullable: true,
+    description: 'Статистика пользователя'
+  })
+  @Prop()
+  statistics?: UserStatistics
 }
 
 export type UserDocument = User & Document

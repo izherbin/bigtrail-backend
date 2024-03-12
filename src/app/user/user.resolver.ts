@@ -29,7 +29,7 @@ export class UserResolver {
     description: 'Получить профайл другого пользователя'
   })
   getUser(@Args('getUserInput') getUserInput: GetUserInput) {
-    return this.userService.getUserById(getUserInput.id)
+    return this.userService.getProfileById(getUserInput.id)
   }
 
   @Subscription(() => GetProfileResponse, {

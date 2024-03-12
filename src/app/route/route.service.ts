@@ -1,4 +1,4 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { CreateRouteInput } from './dto/create-route.input'
 import { UpdateRouteInput } from './dto/update-route.input'
 import { InjectModel } from '@nestjs/mongoose'
@@ -15,6 +15,7 @@ import { GetRouteInput } from './dto/get-route.input'
 import { stringSimilarity } from './string-similarity'
 import { simplifyPoints } from './simplify'
 import { ClientException } from '../client.exception'
+import { GetProfileResponse } from '../user/dto/get-profile.response'
 
 const STRING_SIMULARITY_THRESHOLD = 0.65
 
@@ -25,7 +26,6 @@ export class RouteService {
     private routeModel: Model<RouteDocument>,
     private readonly minioClientService: MinioClientService,
     private readonly trackService: TrackService,
-    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     @Inject('PUB_SUB') private pubSub: PubSubEngine
   ) {}
@@ -98,7 +98,7 @@ export class RouteService {
       const route = await createRoute.save()
       // route.id = route._id.toString()
 
-      const profile = await this.userService.getProfileById(userId)
+      const profile = await this.updateUserStatistics(userId)
       this.pubSub.publish('profileChanged', { watchProfile: profile })
 
       const emit: SubscriptionRouteResponse = {
@@ -181,7 +181,7 @@ export class RouteService {
 
     await this.routeModel.findByIdAndDelete(id)
 
-    const profile = await this.userService.getProfileById(userId)
+    const profile = await this.updateUserStatistics(userId)
     this.pubSub.publish('profileChanged', { watchProfile: profile })
 
     const emit: SubscriptionRouteResponse = {
@@ -194,21 +194,27 @@ export class RouteService {
     return `Успешно удален маршрут № ${id} `
   }
 
-  async calcUserStatistics(userId: MongooSchema.Types.ObjectId) {
+  async updateUserStatistics(userId: MongooSchema.Types.ObjectId) {
+    const user = await this.userService.getUserById(userId)
+    if (!user.statistics) {
+      user.statistics = {
+        subscribers: 0,
+        subscriptions: 0,
+        routes: 0,
+        tracks: 0,
+        duration: 0,
+        distance: 0,
+        points: 0
+      }
+    }
+
     const routes = await this.routeModel.find({ userId })
 
-    const { duration, distance, tracks } =
-      await this.trackService.calcUserTrackStatistics(userId)
+    user.statistics.routes = routes.length
+    user.statistics.points = routes.length * 50 + user.statistics.tracks * 10
 
-    const res = {
-      subscribers: 0,
-      subscriptions: 0,
-      routes: routes.length,
-      duration,
-      distance,
-      points: routes.length * 50 + tracks * 10
-    }
-    return res
+    user.save()
+    return user as GetProfileResponse
   }
 
   async filterRoutes(routes: Route[], filter: RouteFilterInput) {

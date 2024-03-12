@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common'
+import { Module } from '@nestjs/common'
 import { TrackService } from './track.service'
 import { TrackResolver } from './track.resolver'
 import { MongooseModule } from '@nestjs/mongoose'
@@ -11,7 +11,7 @@ import { UserModule } from '../user/user.module'
   imports: [
     MongooseModule.forFeature([{ name: Track.name, schema: TrackSchema }]),
     MinioClientModule,
-    forwardRef(() => UserModule)
+    UserModule
   ],
   exports: [TrackService]
 })

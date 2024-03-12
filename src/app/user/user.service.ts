@@ -7,7 +7,6 @@ import { SetNameInput } from './dto/set-name.input'
 import { Readable } from 'stream'
 import { MinioClientService } from '../minio-client/minio-client.service'
 import { GetProfileResponse } from './dto/get-profile.response'
-import { RouteService } from '../route/route.service'
 import { PubSubEngine } from 'graphql-subscriptions'
 import { SetStatusInput } from './dto/set-status.input'
 import { ClientException } from '../client.exception'
@@ -19,7 +18,6 @@ export class UserService {
     private userModel: Model<UserDocument>,
     private readonly configService: ConfigService,
     private readonly minioClientService: MinioClientService,
-    private readonly routeService: RouteService,
     @Inject('PUB_SUB') private pubSub: PubSubEngine
   ) {}
 
@@ -29,17 +27,15 @@ export class UserService {
     )
 
     const profile = user.toObject() as GetProfileResponse
-    profile.statistics = await this.routeService.calcUserStatistics(user._id)
     return profile
   }
 
-  async getProfileById(id: MongooSchema.Types.ObjectId) {
+  async getProfileById(id: string) {
     const user = await this.renewProfileAvatar(
       await this.userModel.findById(id)
     )
 
     const profile = user.toObject() as GetProfileResponse
-    profile.statistics = await this.routeService.calcUserStatistics(user._id)
     return profile
   }
 
@@ -53,17 +49,13 @@ export class UserService {
     return user
   }
 
-  async getUserById(id: string) {
-    const user = await this.renewProfileAvatar(
-      await this.userModel.findById(id)
-    )
+  async getUserById(id: MongooSchema.Types.ObjectId) {
+    const user = await this.userModel.findById(id)
     if (!user) {
-      throw new ClientException(40404)
+      throw new ClientException(40403)
     }
 
-    const profile = user.toObject() as GetProfileResponse
-    profile.statistics = await this.routeService.calcUserStatistics(user._id)
-    return profile
+    return user
   }
 
   async createUser(phone: string) {
@@ -128,7 +120,6 @@ export class UserService {
     await user.save()
 
     const profile = user.toObject() as GetProfileResponse
-    profile.statistics = await this.routeService.calcUserStatistics(user._id)
     this.pubSub.publish('profileChanged', { watchProfile: profile })
 
     return profile
@@ -152,7 +143,6 @@ export class UserService {
     await user.save()
 
     const profile = user.toObject() as GetProfileResponse
-    profile.statistics = await this.routeService.calcUserStatistics(user._id)
     this.pubSub.publish('profileChanged', { watchProfile: profile })
 
     return profile
@@ -184,13 +174,7 @@ export class UserService {
             this.minioClientService.deleteFile('avatars', oldAvatarFile)
           }
 
-          const profile = {
-            _id: user._id,
-            phone: user.phone,
-            name: user.name,
-            avatar: user.avatar,
-            statistics: await this.routeService.calcUserStatistics(user._id)
-          }
+          const profile = user.toObject() as GetProfileResponse
           this.pubSub.publish('profileChanged', { watchProfile: profile })
         }
       },
@@ -256,7 +240,6 @@ export class UserService {
     }
 
     const profile = user.toObject() as GetProfileResponse
-    profile.statistics = await this.routeService.calcUserStatistics(user._id)
     this.pubSub.publish('profileChanged', { watchProfile: profile })
 
     return profile

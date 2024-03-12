@@ -1,4 +1,4 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { CreateTrackInput } from './dto/create-track.input'
 import { UpdateTrackInput } from './dto/update-track.input'
 import { InjectModel } from '@nestjs/mongoose'
@@ -12,6 +12,7 @@ import { MinioClientService } from '../minio-client/minio-client.service'
 import { UserService } from '../user/user.service'
 import { elevation } from './elevation'
 import { ClientException } from '../client.exception'
+import { GetProfileResponse } from '../user/dto/get-profile.response'
 
 @Injectable()
 export class TrackService {
@@ -19,7 +20,6 @@ export class TrackService {
     @InjectModel(Track.name)
     private trackModel: Model<TrackDocument>,
     private readonly minioClientService: MinioClientService,
-    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     @Inject('PUB_SUB') private pubSub: PubSubEngine
   ) {}
@@ -76,7 +76,7 @@ export class TrackService {
       const track: Track = await createTrack.save()
       track.id = track._id.toString()
 
-      const profile = await this.userService.getProfileById(userId)
+      const profile = await this.updateUserStatistics(userId)
       this.pubSub.publish('profileChanged', { watchProfile: profile })
 
       const emit: SubscriptionTrackResponse = {
@@ -170,7 +170,7 @@ export class TrackService {
 
     await this.trackModel.findByIdAndDelete(id)
 
-    const profile = await this.userService.getProfileById(userId)
+    const profile = await this.updateUserStatistics(userId)
     this.pubSub.publish('profileChanged', { watchProfile: profile })
 
     const emit: SubscriptionTrackResponse = {
@@ -183,7 +183,20 @@ export class TrackService {
     return `Успешно удален трек № ${id} `
   }
 
-  async calcUserTrackStatistics(userId: MongooSchema.Types.ObjectId) {
+  async updateUserStatistics(userId: MongooSchema.Types.ObjectId) {
+    const user = await this.userService.getUserById(userId)
+    if (!user.statistics) {
+      user.statistics = {
+        subscribers: 0,
+        subscriptions: 0,
+        routes: 0,
+        tracks: 0,
+        duration: 0,
+        distance: 0,
+        points: 0
+      }
+    }
+
     const tracks = await this.trackModel.find({ userId })
     let duration = 0
     let distance = 0
@@ -192,12 +205,13 @@ export class TrackService {
       distance += route.distance
     })
 
-    const res = {
-      duration,
-      distance,
-      tracks: tracks.length
-    }
-    return res
+    user.statistics.tracks = tracks.length
+    user.statistics.duration = duration
+    user.statistics.distance = distance
+    user.statistics.points = user.statistics.routes * 50 + tracks.length * 10
+
+    user.save()
+    return user as GetProfileResponse
   }
 
   async getElevation(lat: number, lon: number) {
