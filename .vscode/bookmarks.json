@@ -9,12 +9,12 @@
 					"label": "Statistics: create()"
 				},
 				{
-					"line": 185,
+					"line": 195,
 					"column": 13,
 					"label": "Statistics: remove()"
 				},
 				{
-					"line": 198,
+					"line": 208,
 					"column": 26,
 					"label": "Statistics: updateUserStatistics()"
 				}

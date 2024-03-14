@@ -137,7 +137,17 @@ export class RouteService {
   async getRoute(getRouteInput: GetRouteInput) {
     const { id } = getRouteInput
     const route = await this.renewOneRoutePhotos(
-      await this.routeModel.findById(id)
+      await this.routeModel.findById(id).catch((error) => {
+        console.error(
+          '\x1b[31m[Nest] - \x1b[37m',
+          new Date().toLocaleString('en-EN'),
+          '\x1b[31mERROR',
+          '\x1b[33m[Exception Handler]\x1b[31m',
+          error.message,
+          '\x1b[37m'
+        )
+        throw new ClientException(40402)
+      })
     )
     if (!route) {
       throw new ClientException(40402)
