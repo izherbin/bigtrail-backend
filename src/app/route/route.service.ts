@@ -16,6 +16,7 @@ import { stringSimilarity } from './string-similarity'
 import { simplifyPoints } from './simplify'
 import { ClientException } from '../client.exception'
 import { GetProfileResponse } from '../user/dto/get-profile.response'
+import { ConfigService } from '@nestjs/config'
 
 const STRING_SIMULARITY_THRESHOLD = 0.65
 
@@ -24,6 +25,7 @@ export class RouteService {
   constructor(
     @InjectModel(Route.name)
     private routeModel: Model<RouteDocument>,
+    private readonly configService: ConfigService,
     private readonly minioClientService: MinioClientService,
     private readonly trackService: TrackService,
     private readonly userService: UserService,
@@ -200,6 +202,7 @@ export class RouteService {
       user.statistics = {
         subscribers: 0,
         subscriptions: 0,
+        places: 0,
         routes: 0,
         tracks: 0,
         duration: 0,
@@ -211,7 +214,13 @@ export class RouteService {
     const routes = await this.routeModel.find({ userId })
 
     user.statistics.routes = routes.length
-    user.statistics.points = routes.length * 50 + user.statistics.tracks * 10
+    user.statistics.points =
+      user.statistics.routes *
+        Number(this.configService.get<string>('POINTS_PER_ROUTE')) +
+      user.statistics.tracks *
+        Number(this.configService.get<string>('POINTS_PER_TRACK')) +
+      user.statistics.places *
+        Number(this.configService.get<string>('POINTS_PER_PLACE'))
 
     user.save()
     return user as GetProfileResponse

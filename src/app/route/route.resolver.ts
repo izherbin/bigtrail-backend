@@ -78,14 +78,17 @@ export class RouteResolver {
     filter: (payload, variables, context): boolean => {
       const res =
         payload.watchUserRoutes.userId.toString() === context.req.user._id
-      console.log('My userId:', context.req.user._id)
-      console.log('Changed userId:', payload.watchUserRoutes.userId.toString())
+      console.log('Watch route: My userId:', context.req.user._id)
+      console.log(
+        'Watch route: Changed userId:',
+        payload.watchUserRoutes.userId.toString()
+      )
       return res
     }
   })
   @UseGuards(JwtAuthGuard)
   watchUserRoutes(@UserId() userId: MongooSchema.Types.ObjectId) {
-    console.log('userId:', userId)
+    console.log('Watch route: Input userId:', userId)
     const res = this.routeService.watchUserRoutes()
     return res
   }

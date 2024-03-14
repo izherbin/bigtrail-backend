@@ -4,17 +4,17 @@
 			"path": "src/app/route/route.service.ts",
 			"bookmarks": [
 				{
-					"line": 100,
+					"line": 102,
 					"column": 52,
 					"label": "Statistics: create()"
 				},
 				{
-					"line": 183,
+					"line": 185,
 					"column": 13,
 					"label": "Statistics: remove()"
 				},
 				{
-					"line": 196,
+					"line": 198,
 					"column": 26,
 					"label": "Statistics: updateUserStatistics()"
 				}
@@ -24,7 +24,7 @@
 			"path": "src/app/track/track.service.ts",
 			"bookmarks": [
 				{
-					"line": 185,
+					"line": 187,
 					"column": 31,
 					"label": "Statistics: calcUserTrackStatistics()"
 				}
@@ -37,6 +37,21 @@
 					"line": 30,
 					"column": 8,
 					"label": "getUser() response must be w/o phone"
+				}
+			]
+		},
+		{
+			"path": "src/app/place/place.service.ts",
+			"bookmarks": [
+				{
+					"line": 121,
+					"column": 4,
+					"label": "Statistics: remove()"
+				},
+				{
+					"line": 134,
+					"column": 8,
+					"label": "Statistics: updateUserStatistics()"
 				}
 			]
 		}

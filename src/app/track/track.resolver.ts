@@ -41,14 +41,17 @@ export class TrackResolver {
     description: 'Следить за всеми треками пользователя',
     filter: (payload, variables, context): boolean => {
       const res = payload.watchTracks.userId.toString() === context.req.user._id
-      console.log('My userId:', context.req.user._id)
-      console.log('Changed userId:', payload.watchTracks.userId.toString())
+      console.log('Watch track: My userId:', context.req.user._id)
+      console.log(
+        'Watch track: Changed userId:',
+        payload.watchTracks.userId.toString()
+      )
       return res
     }
   })
   @UseGuards(JwtAuthGuard)
   watchTracks(@UserId() userId: MongooSchema.Types.ObjectId) {
-    console.log('userId:', userId)
+    console.log('Watch track: Input userId:', userId)
     const res = this.trackService.watchTracks()
     return res
   }

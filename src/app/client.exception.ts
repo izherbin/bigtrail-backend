@@ -78,7 +78,7 @@ const ERRORS: ErrorRecord[] = [
     status: HttpStatus.FORBIDDEN
   },
   {
-    code: 40307,
+    code: 40308,
     message: 'Impossible to delete someone else`s place',
     status: HttpStatus.FORBIDDEN
   },

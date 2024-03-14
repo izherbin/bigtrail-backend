@@ -37,14 +37,14 @@ export class UserResolver {
     filter: (payload, variables, context) => {
       const id = payload.watchProfile._id.toString()
       const res = id === context.req.user._id
-      console.log('My Id:', context.req.user._id)
-      console.log('Changed Id:', id)
+      console.log('Watch profile: My Id:', context.req.user._id)
+      console.log('Watch profile: Changed Id:', id)
       return res
     }
   })
   @UseGuards(JwtAuthGuard)
   watchProfile(@Phone() phone: string) {
-    console.log('phone:', phone)
+    console.log('Watch profile: phone:', phone)
     const res = this.userService.watchProfile()
     return res
   }

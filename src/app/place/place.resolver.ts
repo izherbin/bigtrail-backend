@@ -57,9 +57,12 @@ export class PlaceResolver {
         : context.req.user._id
 
       const res = payload.watchPlaces.userId.toString() === userId
-      console.log('userId:', userId)
-      console.log('My userId:', context.req.user._id)
-      console.log('Changed userId:', payload.watchPlaces.userId.toString())
+      console.log('Watch place: userId:', userId)
+      console.log('Watch place: My userId:', context.req.user._id)
+      console.log(
+        'Watch place: Changed userId:',
+        payload.watchPlaces.userId.toString()
+      )
       return res
     }
   })
@@ -70,7 +73,7 @@ export class PlaceResolver {
     subscriptionPlaceInput: SubscriptionPlaceInput
   ) {
     const { userId } = subscriptionPlaceInput
-    console.log('Input userId:', userId)
+    console.log('Watch place: Input userId:', userId)
     const res = this.placeService.watchPlaces()
     return res
   }

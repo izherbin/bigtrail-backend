@@ -26,6 +26,13 @@ export class UserStatistics {
 
   @Field(() => Int, {
     nullable: true,
+    description: 'Количество интересных мест у данного пользователя'
+  })
+  @Prop()
+  places?: number
+
+  @Field(() => Int, {
+    nullable: true,
     description: 'Количество маршрутов у данного пользователя'
   })
   @Prop()

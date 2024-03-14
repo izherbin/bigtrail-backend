@@ -12,6 +12,9 @@ import { DeletePlaceInput } from './dto/delete-place.input'
 import { PlaceFilterInput } from './dto/place-filter.input'
 import { PubSubEngine } from 'graphql-subscriptions'
 import { SubscriptionPlaceResponse } from './dto/subscription-place.response'
+import { UserService } from '../user/user.service'
+import { GetProfileResponse } from '../user/dto/get-profile.response'
+import { ConfigService } from '@nestjs/config'
 
 @Injectable()
 export class PlaceService {
@@ -20,6 +23,8 @@ export class PlaceService {
     private placeModel: Model<PlaceDocument>,
     private readonly minioClientService: MinioClientService,
     private readonly trackService: TrackService,
+    private readonly configService: ConfigService,
+    private readonly userService: UserService,
     @Inject('PUB_SUB') private pubSub: PubSubEngine
   ) {}
 
@@ -45,6 +50,9 @@ export class PlaceService {
       createPlace.timestamp = Date.now()
 
       const place = await createPlace.save()
+
+      const profile = await this.updateUserStatistics(userId)
+      this.pubSub.publish('profileChanged', { watchProfile: profile })
 
       const emit: SubscriptionPlaceResponse = {
         function: 'ADD',
@@ -106,10 +114,13 @@ export class PlaceService {
     }
 
     if (place.userId.toString() !== userId.toString()) {
-      throw new ClientException(40307)
+      throw new ClientException(40308)
     }
 
     await this.placeModel.findByIdAndDelete(id)
+
+    const profile = await this.updateUserStatistics(userId)
+    this.pubSub.publish('profileChanged', { watchProfile: profile })
 
     const emit: SubscriptionPlaceResponse = {
       function: 'DELETE',
@@ -119,6 +130,36 @@ export class PlaceService {
     this.pubSub.publish('placeChanged', { watchPlaces: emit })
 
     return `Успешно удален маршрут № ${id} `
+  }
+
+  async updateUserStatistics(userId: MongooSchema.Types.ObjectId) {
+    const user = await this.userService.getUserById(userId)
+    if (!user.statistics) {
+      user.statistics = {
+        subscribers: 0,
+        subscriptions: 0,
+        places: 0,
+        routes: 0,
+        tracks: 0,
+        duration: 0,
+        distance: 0,
+        points: 0
+      }
+    }
+
+    const places = await this.placeModel.find({ userId })
+
+    user.statistics.places = places.length
+    user.statistics.points =
+      user.statistics.routes *
+        Number(this.configService.get<string>('POINTS_PER_ROUTE')) +
+      user.statistics.tracks *
+        Number(this.configService.get<string>('POINTS_PER_TRACK')) +
+      user.statistics.places *
+        Number(this.configService.get<string>('POINTS_PER_PLACE'))
+
+    user.save()
+    return user as GetProfileResponse
   }
 
   async filterPlaces(places: Place[], filter: PlaceFilterInput) {
