@@ -12,6 +12,7 @@ import { Scenario } from './entities/scenario.entity'
 import { CreateScenarioInput } from './dto/create-scenario.input '
 import { ScenarioResult } from './entities/scenario-result.entity'
 import { ScenarioResultInput } from './dto/scenario-result.input'
+import { ScenarioFilterInput } from './dto/scenario-filter.input'
 
 @Resolver(() => Survey)
 export class SurveyResolver {
@@ -70,10 +71,13 @@ export class ScenarioResolver {
   }
 
   @Query(() => [Scenario], {
-    description: 'Выдать список сценариев тестирования'
+    description: 'Выдать список сценариев тестирования, удовлетворяющих фильтру'
   })
-  getScenarios() {
-    return this.surveyService.getScenarios()
+  getScenarios(
+    @Args('scenarioFilterInput', { nullable: true })
+    scenarioFilterInput: ScenarioFilterInput
+  ) {
+    return this.surveyService.getScenarios(scenarioFilterInput)
   }
 
   // @Query(() => Survey)

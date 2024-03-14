@@ -17,6 +17,7 @@ import {
   ScenarioResultDocument
 } from './entities/scenario-result.entity'
 import { ScenarioResultInput } from './dto/scenario-result.input'
+import { ScenarioFilterInput } from './dto/scenario-filter.input'
 
 @Injectable()
 export class SurveyService {
@@ -59,8 +60,23 @@ export class SurveyService {
     return surveys
   }
 
-  async getScenarios() {
+  async getScenarios(filter: ScenarioFilterInput) {
     const scenarios = await this.scenarioModel.find()
+    const scenariosFiltered = this.filterScenarios(scenarios, filter)
+    return scenariosFiltered
+  }
+
+  filterScenarios(scenarios: Scenario[], filter: ScenarioFilterInput) {
+    const { id } = filter || {}
+
+    if (id) {
+      const scenariosFiltered = scenarios.filter((s) => {
+        const isFound = s._id.toString() === id
+        return isFound
+      })
+      return scenariosFiltered
+    }
+
     return scenarios
   }
 
