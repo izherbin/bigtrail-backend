@@ -94,7 +94,7 @@ export class ScenarioResolver {
   // }
 
   @Mutation(() => ScenarioResult, {
-    description: 'Сщхранение результатов тестирования'
+    description: 'Сохранение результатов тестирования'
   })
   storeScenarioResult(
     @Args('scenarioResultInput') scenarioResultInput: ScenarioResultInput

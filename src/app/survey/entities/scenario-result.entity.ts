@@ -21,6 +21,13 @@ export class ScenarioResult {
   @Prop()
   suggestion?: string
 
+  @Field(() => String, {
+    nullable: true,
+    description: 'Информация об устройстве'
+  })
+  @Prop()
+  deviceInfo?: string
+
   @Field(() => String, { nullable: true, description: 'Обнаруженные баги' })
   @Prop()
   bugs?: string
@@ -29,7 +36,10 @@ export class ScenarioResult {
   @Prop()
   friendly?: string
 
-  @Field(() => String, { description: 'Невозможность воспроизвести баг' })
+  @Field(() => String, {
+    nullable: true,
+    description: 'Невозможность воспроизвести баг'
+  })
   @Prop()
   reproduce?: string
 }
