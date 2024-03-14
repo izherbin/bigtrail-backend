@@ -5,6 +5,13 @@ import { Schema as MongooSchema } from 'mongoose'
 export class PlaceFilterInput {
   @Field(() => String, {
     nullable: true,
+    description:
+      'Фильтр по id интересного места, если назначен то остальные фильтры игнорируются'
+  })
+  id?: string
+
+  @Field(() => String, {
+    nullable: true,
     description: 'Фильтр по типу'
   })
   type?: string

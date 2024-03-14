@@ -69,7 +69,17 @@ export class PlaceService {
   async getPlace(getPlaceInput: GetPlaceInput) {
     const { id } = getPlaceInput
     const place = await this.renewOnePlacePhotos(
-      await this.placeModel.findById(id)
+      await this.placeModel.findById(id).catch((error) => {
+        console.error(
+          '\x1b[31m[Nest] - \x1b[37m',
+          new Date().toLocaleString('en-EN'),
+          '\x1b[31mERROR',
+          '\x1b[33m[Exception Handler]\x1b[31m',
+          error.message,
+          '\x1b[37m'
+        )
+        throw new ClientException(40406)
+      })
     )
     if (!place) {
       throw new ClientException(40406)
@@ -181,7 +191,12 @@ export class PlaceService {
       return !isUserIdEmpty && userId?.toString() !== value?.toString()
     }
 
-    const { type, userId, similar, max } = filter || {}
+    const { id, type, userId, similar, max } = filter || {}
+
+    if (id) {
+      const place = await this.getPlace({ id })
+      return [place]
+    }
 
     let placesSimilar: Place[]
     if (similar) {
@@ -220,7 +235,11 @@ export class PlaceService {
     return distance
   }
 
-  async renewManyPlacesPhotos(places) {
+  async renewManyPlacesPhotos(
+    places: (Document<unknown, object, PlaceDocument> &
+      Place &
+      Document<any, any, any> & { _id: Types.ObjectId })[]
+  ) {
     const renews = []
     const res = []
     for (const place of places) {
@@ -241,7 +260,7 @@ export class PlaceService {
       Document<any, any, any> & { _id: Types.ObjectId }
   ) {
     if (!place) {
-      throw new ClientException(40403)
+      throw new ClientException(40406)
     }
 
     let shouldSave = false

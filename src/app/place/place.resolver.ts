@@ -2,17 +2,17 @@ import { Resolver, Mutation, Args, Query, Subscription } from '@nestjs/graphql'
 import { PlaceService } from './place.service'
 import { Place } from './entities/place.entity'
 import { CreatePlaceInput } from './dto/create-place.input'
-// import { UpdatePlaceInput } from './dto/update-place.input'
+//? import { UpdatePlaceInput } from './dto/update-place.input'
 import { UserId } from '../auth/user-id.decorator'
 import { Schema as MongooSchema } from 'mongoose'
 import { UploadPhoto } from '../track/dto/upload-photo.response'
 import { UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/jwt-auth.guards'
-import { GetPlaceInput } from './dto/get-place.input'
 import { DeletePlaceInput } from './dto/delete-place.input'
 import { PlaceFilterInput } from './dto/place-filter.input'
 import { SubscriptionPlaceResponse } from './dto/subscription-place.response'
 import { SubscriptionPlaceInput } from './dto/subscription-place.input'
+import { GetPlaceInput } from './dto/get-place.input'
 
 @Resolver(() => Place)
 export class PlaceResolver {
@@ -30,6 +30,8 @@ export class PlaceResolver {
   }
 
   @Query(() => Place, {
+    deprecationReason:
+      'This query is deprecated, use getContent({filter: id}) instead',
     description: 'Получить чужое интересное место по id'
   })
   getPlace(
@@ -67,7 +69,6 @@ export class PlaceResolver {
     }
   })
   @UseGuards(JwtAuthGuard)
-  // watchUserPlaces(@UserId() userId: MongooSchema.Types.ObjectId) {
   watchPlaces(
     @Args('subscriptionPlaceInput')
     subscriptionPlaceInput: SubscriptionPlaceInput
@@ -88,9 +89,4 @@ export class PlaceResolver {
   ) {
     return this.placeService.remove(userId, deletePlaceInput)
   }
-
-  // @Mutation(() => Place)
-  // removePlace(@Args('id', { type: () => Int }) id: number) {
-  //   return this.placeService.remove(id)
-  // }
 }
