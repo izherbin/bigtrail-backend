@@ -269,6 +269,7 @@ export class RouteService {
     }
 
     const {
+      id,
       userId,
       search,
       transit,
@@ -278,6 +279,12 @@ export class RouteService {
       simplify,
       max
     } = filter || {}
+
+    if (id) {
+      //? const place = await this.getRoute({ id })
+      const routesFiltered = routes.filter((r) => r._id.toString() === id)
+      return routesFiltered
+    }
 
     let routesSimilar: Route[]
     if (similar) {

@@ -54,6 +54,8 @@ export class RouteResolver {
   }
 
   @Query(() => Route, {
+    deprecationReason:
+      'This query is deprecated, use getRoutes({filter: id}) instead',
     description: 'Получить чужой маршрут по id'
   })
   getRoute(
