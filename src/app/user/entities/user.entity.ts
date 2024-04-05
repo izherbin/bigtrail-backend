@@ -1,5 +1,5 @@
 import { ObjectType, Field, Int, Float } from '@nestjs/graphql'
-import { Document, Schema as MongooSchema } from 'mongoose'
+import { Document, Schema as MongooSchema, Types } from 'mongoose'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 
 type timestamp = number
@@ -121,6 +121,9 @@ export class User {
   })
   @Prop()
   statistics?: UserStatistics
+
+  @Prop()
+  favorites?: Types.ObjectId[]
 }
 
 export type UserDocument = User & Document

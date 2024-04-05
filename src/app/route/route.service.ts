@@ -17,6 +17,7 @@ import { simplifyPoints } from './simplify'
 import { ClientException } from '../client.exception'
 import { GetProfileResponse } from '../user/dto/get-profile.response'
 import { ConfigService } from '@nestjs/config'
+import { FavoritesService } from '../favorites/favorites.service'
 
 const STRING_SIMULARITY_THRESHOLD = 0.65
 
@@ -28,6 +29,7 @@ export class RouteService {
     private readonly configService: ConfigService,
     private readonly minioClientService: MinioClientService,
     private readonly trackService: TrackService,
+    private readonly favoritesService: FavoritesService,
     private readonly userService: UserService,
     @Inject('PUB_SUB') private pubSub: PubSubEngine
   ) {}
@@ -193,6 +195,8 @@ export class RouteService {
 
     await this.routeModel.findByIdAndDelete(id)
 
+    await this.favoritesService.remove(userId, { id: id.toString() })
+
     const profile = await this.updateUserStatistics(userId)
     this.pubSub.publish('profileChanged', { watchProfile: profile })
 
@@ -203,7 +207,7 @@ export class RouteService {
     }
     this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
 
-    return `Успешно удален маршрут № ${id} `
+    return `Успешно удалено интересное место ${id} `
   }
 
   async updateUserStatistics(userId: MongooSchema.Types.ObjectId) {

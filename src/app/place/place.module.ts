@@ -7,6 +7,7 @@ import { MinioClientModule } from '../minio-client/minio-client.module'
 import { TrackModule } from '../track/track.module'
 import { UserModule } from '../user/user.module'
 import { ConfigModule } from '@nestjs/config'
+import { FavoritesModule } from '../favorites/favorites.module'
 
 @Module({
   providers: [PlaceResolver, PlaceService],
@@ -16,6 +17,7 @@ import { ConfigModule } from '@nestjs/config'
       cache: true
     }),
     MinioClientModule,
+    FavoritesModule,
     TrackModule,
     UserModule
   ]

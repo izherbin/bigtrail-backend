@@ -15,6 +15,7 @@ import { SubscriptionPlaceResponse } from './dto/subscription-place.response'
 import { UserService } from '../user/user.service'
 import { GetProfileResponse } from '../user/dto/get-profile.response'
 import { ConfigService } from '@nestjs/config'
+import { FavoritesService } from '../favorites/favorites.service'
 
 @Injectable()
 export class PlaceService {
@@ -24,6 +25,7 @@ export class PlaceService {
     private readonly minioClientService: MinioClientService,
     private readonly trackService: TrackService,
     private readonly configService: ConfigService,
+    private readonly favoritesService: FavoritesService,
     private readonly userService: UserService,
     @Inject('PUB_SUB') private pubSub: PubSubEngine
   ) {}
@@ -128,6 +130,8 @@ export class PlaceService {
     }
 
     await this.placeModel.findByIdAndDelete(id)
+
+    await this.favoritesService.remove(userId, { id: id.toString() })
 
     const profile = await this.updateUserStatistics(userId)
     this.pubSub.publish('profileChanged', { watchProfile: profile })

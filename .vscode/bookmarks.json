@@ -4,17 +4,17 @@
 			"path": "src/app/route/route.service.ts",
 			"bookmarks": [
 				{
-					"line": 102,
+					"line": 104,
 					"column": 52,
 					"label": "Statistics: create()"
 				},
 				{
-					"line": 195,
+					"line": 199,
 					"column": 13,
 					"label": "Statistics: remove()"
 				},
 				{
-					"line": 208,
+					"line": 212,
 					"column": 26,
 					"label": "Statistics: updateUserStatistics()"
 				}
@@ -44,12 +44,12 @@
 			"path": "src/app/place/place.service.ts",
 			"bookmarks": [
 				{
-					"line": 131,
+					"line": 135,
 					"column": 4,
 					"label": "Statistics: remove()"
 				},
 				{
-					"line": 144,
+					"line": 148,
 					"column": 8,
 					"label": "Statistics: updateUserStatistics()"
 				}

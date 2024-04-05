@@ -60,6 +60,12 @@ export class Place {
   })
   @Prop()
   photos?: TrackPhoto[]
+
+  @Field(() => Boolean, {
+    nullable: true,
+    description: 'Находится ли в списке избранного?'
+  })
+  favorite: boolean
 }
 
 export type PlaceDocument = Place & Document

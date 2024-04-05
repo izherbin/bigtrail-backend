@@ -7,6 +7,7 @@ import { TrackModule } from '../track/track.module'
 import { Route, RouteSchema } from './entities/route.entity'
 import { UserModule } from '../user/user.module'
 import { ConfigModule } from '@nestjs/config'
+import { FavoritesModule } from '../favorites/favorites.module'
 
 @Module({
   providers: [RouteResolver, RouteService],
@@ -15,6 +16,7 @@ import { ConfigModule } from '@nestjs/config'
     ConfigModule.forRoot({
       cache: true
     }),
+    FavoritesModule,
     MinioClientModule,
     TrackModule,
     UserModule

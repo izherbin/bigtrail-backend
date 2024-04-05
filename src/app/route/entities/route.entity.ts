@@ -92,6 +92,12 @@ export class Route {
   @Field(() => String, { description: 'Адрес' })
   @Prop()
   address: string
+
+  @Field(() => Boolean, {
+    nullable: true,
+    description: 'Находится ли в списке избранного?'
+  })
+  favorite?: boolean
 }
 
 export type RouteDocument = Route & Document
