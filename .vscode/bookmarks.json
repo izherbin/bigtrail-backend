@@ -24,7 +24,7 @@
 			"path": "src/app/track/track.service.ts",
 			"bookmarks": [
 				{
-					"line": 187,
+					"line": 206,
 					"column": 31,
 					"label": "Statistics: calcUserTrackStatistics()"
 				}

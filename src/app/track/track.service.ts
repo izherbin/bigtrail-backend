@@ -14,6 +14,7 @@ import { elevation } from './elevation'
 import { ClientException } from '../client.exception'
 import { GetProfileResponse } from '../user/dto/get-profile.response'
 import { ConfigService } from '@nestjs/config'
+import { simplifyPoints } from './simplify'
 
 @Injectable()
 export class TrackService {
@@ -84,7 +85,10 @@ export class TrackService {
       const emit: SubscriptionTrackResponse = {
         function: 'ADD',
         id: track._id,
-        data: track as Track,
+        data: this.tracksSimplify(
+          [track],
+          Number(this.configService.get('TRACK_SIMPLIFY_COEFFICIENT'))
+        )[0] as Track,
         userId: track.userId
       }
       this.pubSub.publish('trackChanged', { watchTracks: emit })
@@ -139,7 +143,10 @@ export class TrackService {
     const tracks = await this.renewManyTracksPhotos(
       await this.trackModel.find({ userId })
     )
-    return tracks
+    return this.tracksSimplify(
+      tracks,
+      Number(this.configService.get('TRACK_SIMPLIFY_COEFFICIENT'))
+    )
   }
 
   watchTracks() {
@@ -183,6 +190,18 @@ export class TrackService {
     this.pubSub.publish('trackChanged', { watchTracks: emit })
 
     return `Успешно удален трек № ${id} `
+  }
+
+  tracksSimplify(tracks: Track[], tolerance: number) {
+    for (const track of tracks) {
+      const pointsBefore = track.points.length
+      track.points = simplifyPoints(track.points, tolerance, false)
+      const pointsAfter = track.points.length
+      console.log(
+        `[TRACK SIMPLIFY STATISTICS]   Points before: ${pointsBefore}   Points after: ${pointsAfter}`
+      )
+    }
+    return tracks
   }
 
   async updateUserStatistics(userId: MongooSchema.Types.ObjectId) {

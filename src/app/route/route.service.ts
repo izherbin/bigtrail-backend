@@ -13,7 +13,7 @@ import { UserService } from '../user/user.service'
 import { DeleteRouteInput } from './dto/delete-route.input'
 import { GetRouteInput } from './dto/get-route.input'
 import { stringSimilarity } from './string-similarity'
-import { simplifyPoints } from './simplify'
+import { simplifyPoints } from '../track/simplify'
 import { ClientException } from '../client.exception'
 import { GetProfileResponse } from '../user/dto/get-profile.response'
 import { ConfigService } from '@nestjs/config'
@@ -287,7 +287,10 @@ export class RouteService {
     if (id) {
       //? const place = await this.getRoute({ id })
       const routesFiltered = routes.filter((r) => r._id.toString() === id)
-      return routesFiltered
+      const routesSimplified = simplify
+        ? routesSimplify(routesFiltered, simplify)
+        : routesFiltered
+      return routesSimplified
     }
 
     let routesSimilar: Route[]

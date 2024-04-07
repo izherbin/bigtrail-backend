@@ -7,7 +7,7 @@ export class RouteFilterInput {
   @Field(() => String, {
     nullable: true,
     description:
-      'Фильтр по id маршрута, если назначен то остальные фильтры игнорируются'
+      'Фильтр по id маршрута, если назначен то остальные фильтры игнорируются, кроме simplify'
   })
   id?: string
 
