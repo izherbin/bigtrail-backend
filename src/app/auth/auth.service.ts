@@ -7,6 +7,7 @@ import { catchError, lastValueFrom, map } from 'rxjs'
 import { HttpService } from '@nestjs/axios'
 import { UserService } from '../user/user.service'
 import { ClientException } from '../client.exception'
+import { LoginPasswordInput } from './dto/login-password.input'
 
 @Injectable()
 export class AuthService {
@@ -42,7 +43,18 @@ export class AuthService {
     return null
   }
 
-  async login(loginUserInput: LoginCodeInput) {
+  async validateAdmin(login: string, password: string) {
+    if (login === 'admin' && password === 'qwert') {
+      return {
+        phone: 'N/A',
+        _id: login
+      }
+    } else {
+      return null
+    }
+  }
+
+  async loginUser(loginUserInput: LoginCodeInput) {
     const { phone } = loginUserInput
     const user = await this.userService.getUserByPhone(phone)
     if (!user) {
@@ -70,7 +82,22 @@ export class AuthService {
     }
   }
 
-  async signup(payload: LoginPhoneInput) {
+  async loginAdmin(loginPasswordInput: LoginPasswordInput) {
+    const { login } = loginPasswordInput
+    const user = {
+      phone: 'N/A',
+      _id: login
+    }
+    return {
+      user,
+      authToken: this.jwtService.sign(user, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+        expiresIn: this.configService.get<string>('JWT_EXPIRES_IN')
+      })
+    }
+  }
+
+  async signupUser(payload: LoginPhoneInput) {
     const { phone } = payload
     let user = await this.userService.getUserByPhone(phone)
 

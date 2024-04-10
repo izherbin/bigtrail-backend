@@ -5,7 +5,7 @@ import { AuthService } from './auth.service'
 import { ClientException } from '../client.exception'
 
 @Injectable()
-export class LocalStrategy extends PassportStrategy(Strategy) {
+export class PhoneStrategy extends PassportStrategy(Strategy, 'phone') {
   constructor(private authService: AuthService) {
     super({
       usernameField: 'phone',

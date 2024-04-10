@@ -5,7 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { PassportModule } from '@nestjs/passport'
 import { JwtModule, JwtModuleOptions, JwtService } from '@nestjs/jwt'
 import { JwtStrategy } from './jwt.strategy'
-import { LocalStrategy } from './local.strategy'
+import { PhoneStrategy } from './phone.strategy'
+import { PasswordStrategy } from './password.strategy'
 import { User, UserSchema } from '../user/entities/user.entity'
 import { HttpModule } from '@nestjs/axios'
 import { UserModule } from '../user/user.module'
@@ -20,7 +21,8 @@ import { RouteModule } from '../route/route.module'
     AuthResolver,
     JwtService,
     JwtStrategy,
-    LocalStrategy,
+    PasswordStrategy,
+    PhoneStrategy,
     UserService
   ],
   imports: [

@@ -6,6 +6,8 @@ import { GqlAuthGuard } from './gql-auth.guards'
 import { LoginPhoneInput } from './dto/login-phone.input'
 import { LoginCodeInput } from './dto/login-code.input'
 import { LoginCodeResponce } from './dto/login-code.response'
+import { LoginPasswordInput } from './dto/login-password.input'
+import { GqlAuthAdminGuard } from './gql-auth-admin.guards'
 
 @Resolver()
 export class AuthResolver {
@@ -20,7 +22,19 @@ export class AuthResolver {
     @Args('loginUserInput') loginUserInput: LoginCodeInput,
     @Context() context: any
   ) {
-    return this.authService.login(context.user)
+    return this.authService.loginUser(context.user)
+  }
+
+  @Mutation(() => LoginUserResponce, {
+    name: 'verifyPassword',
+    description: 'Отправить пароль администратора'
+  })
+  @UseGuards(GqlAuthAdminGuard)
+  loginAdmin(
+    @Args('loginPasswordInput') loginPasswordInput: LoginPasswordInput,
+    @Context() context: any
+  ) {
+    return this.authService.loginAdmin(context.user)
   }
 
   @Mutation(() => LoginCodeResponce, {
@@ -28,7 +42,7 @@ export class AuthResolver {
     description: 'Отправить номер телефона для аутентификации'
   })
   signup(@Args('signupInput') signupInput: LoginPhoneInput) {
-    return this.authService.signup(signupInput)
+    return this.authService.signupUser(signupInput)
   }
 
   @Mutation(() => String, {
