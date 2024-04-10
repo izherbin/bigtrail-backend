@@ -10,6 +10,7 @@ import { DeleteTrackInput } from './dto/delete-track.input'
 import { SubscriptionTrackResponse } from './dto/subscription-track.response'
 import { UploadPhoto } from './dto/upload-photo.response'
 import { GetElevationInput } from './dto/get-elevation.input'
+import { TrackFilterInput } from './dto/track-filter.input'
 // import { UpdateTrackInput } from './dto/update-track.input'
 
 @Resolver()
@@ -29,12 +30,15 @@ export class TrackResolver {
   }
 
   @Query(() => [Track], {
-    name: 'getAllTracks',
-    description: 'Получить все треки пользователя'
+    name: 'getTracks',
+    description: 'Получить все треки пользователя в соответствии с фильтром'
   })
   @UseGuards(JwtAuthGuard)
-  getAllTracksQuery(@UserId() userId: MongooSchema.Types.ObjectId) {
-    return this.trackService.findByUserId(userId)
+  getAllTracksQuery(
+    @UserId() userId: MongooSchema.Types.ObjectId,
+    @Args('trackFilterInput') trackFilterInput: TrackFilterInput
+  ) {
+    return this.trackService.findByUserId(userId, trackFilterInput)
   }
 
   @Subscription(() => SubscriptionTrackResponse, {

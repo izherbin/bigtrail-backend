@@ -15,6 +15,7 @@ import { ClientException } from '../client.exception'
 import { GetProfileResponse } from '../user/dto/get-profile.response'
 import { ConfigService } from '@nestjs/config'
 import { simplifyPoints } from './simplify'
+import { TrackFilterInput } from './dto/track-filter.input'
 
 @Injectable()
 export class TrackService {
@@ -139,13 +140,26 @@ export class TrackService {
     return tracks
   }
 
-  async findByUserId(userId: MongooSchema.Types.ObjectId) {
+  async findByUserId(
+    userId: MongooSchema.Types.ObjectId,
+    trackFilterInput: TrackFilterInput
+  ) {
+    const { id, simplify } = trackFilterInput
+
     const tracks = await this.renewManyTracksPhotos(
       await this.trackModel.find({ userId })
     )
+
+    let tracksFiltered: Track[]
+    if (id) {
+      tracksFiltered = tracks.filter((t) => t._id.toString() === id)
+    } else {
+      tracksFiltered = tracks
+    }
+
     return this.tracksSimplify(
-      tracks,
-      Number(this.configService.get('TRACK_SIMPLIFY_COEFFICIENT'))
+      tracksFiltered,
+      Number(simplify || this.configService.get('TRACK_SIMPLIFY_COEFFICIENT'))
     )
   }
 
