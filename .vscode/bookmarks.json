@@ -9,12 +9,12 @@
 					"label": "Statistics: create()"
 				},
 				{
-					"line": 199,
+					"line": 222,
 					"column": 13,
 					"label": "Statistics: remove()"
 				},
 				{
-					"line": 212,
+					"line": 235,
 					"column": 26,
 					"label": "Statistics: updateUserStatistics()"
 				}
@@ -44,12 +44,12 @@
 			"path": "src/app/place/place.service.ts",
 			"bookmarks": [
 				{
-					"line": 135,
+					"line": 151,
 					"column": 4,
 					"label": "Statistics: remove()"
 				},
 				{
-					"line": 148,
+					"line": 164,
 					"column": 8,
 					"label": "Statistics: updateUserStatistics()"
 				}

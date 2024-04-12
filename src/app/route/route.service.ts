@@ -122,17 +122,38 @@ export class RouteService {
   }
 
   async getUserRoutes(userId: MongooSchema.Types.ObjectId) {
-    const routes = await this.renewManyRoutesPhotos(
+    const routes: Route[] = await this.renewManyRoutesPhotos(
       await this.routeModel.find({ userId })
     )
+
+    const favorites = await this.favoritesService.findAll(userId)
+    routes.forEach((route) => {
+      const isFavorite = !!favorites.find(
+        (f) => f.id.toString() === route.id.toString()
+      )
+      route.favorite = isFavorite
+    })
+
     return routes
   }
 
-  async getRoutes(filter: RouteFilterInput) {
+  async getRoutes(
+    userId: MongooSchema.Types.ObjectId,
+    filter: RouteFilterInput
+  ) {
     const routes = await this.renewManyRoutesPhotos(
       await this.routeModel.find({})
     )
     const routesFiltered = await this.filterRoutes(routes, filter)
+
+    const favorites = userId ? await this.favoritesService.findAll(userId) : []
+    routesFiltered.forEach((route) => {
+      const isFavorite = !!favorites.find(
+        (f) => f.id.toString() === route.id.toString()
+      )
+      route.favorite = isFavorite
+    })
+
     return routesFiltered
   }
 
@@ -156,6 +177,10 @@ export class RouteService {
     }
 
     route.id = route._id
+    route.favorite = await this.favoritesService.isFavorite(
+      route.userId,
+      route._id
+    )
     return route as Route
   }
 
@@ -195,8 +220,6 @@ export class RouteService {
 
     await this.routeModel.findByIdAndDelete(id)
 
-    await this.favoritesService.remove(userId, { id: id.toString() })
-
     const profile = await this.updateUserStatistics(userId)
     this.pubSub.publish('profileChanged', { watchProfile: profile })
 
@@ -207,7 +230,7 @@ export class RouteService {
     }
     this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
 
-    return `Успешно удалено интересное место ${id} `
+    return `Успешно удален мвршрут ${id} `
   }
 
   async updateUserStatistics(userId: MongooSchema.Types.ObjectId) {

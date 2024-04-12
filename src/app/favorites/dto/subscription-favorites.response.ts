@@ -1,6 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql'
 import { Schema as MongooSchema } from 'mongoose'
 import { WatchResponseFunction } from 'src/app/track/dto/subscription-track.response'
+import { Favorite } from 'src/app/user/entities/user.entity'
 
 @ObjectType({
   description: 'Информация от подписки на изменения списка избранного'
@@ -11,10 +12,10 @@ export class SubscriptionFavoriteResponse {
   })
   function: WatchResponseFunction
 
-  @Field(() => String, {
-    description: 'Идентификатор избранного'
+  @Field(() => Favorite, {
+    description: 'Элемент списка избранного'
   })
-  id: string
+  data: Favorite
 
   userId: MongooSchema.Types.ObjectId
 }
