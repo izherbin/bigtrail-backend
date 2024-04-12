@@ -6,4 +6,7 @@ import { InputType, Field } from '@nestjs/graphql'
 export class AddFavoriteInput {
   @Field(() => String, { description: 'Идентификатор избранного контента' })
   id: string
+
+  @Field(() => String, { description: 'Тип контента' })
+  type: string
 }

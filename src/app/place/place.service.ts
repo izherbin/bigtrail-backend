@@ -68,7 +68,10 @@ export class PlaceService {
     return uploads
   }
 
-  async getPlace(getPlaceInput: GetPlaceInput) {
+  async getPlace(
+    userId: MongooSchema.Types.ObjectId,
+    getPlaceInput: GetPlaceInput
+  ) {
     const { id } = getPlaceInput
     const place = await this.renewOnePlacePhotos(
       await this.placeModel.findById(id).catch((error) => {
@@ -87,14 +90,27 @@ export class PlaceService {
       throw new ClientException(40406)
     }
 
+    place.favorite =
+      userId && (await this.favoritesService.isFavorite(userId, id))
+
     return place as Place
   }
 
-  async getContent(filter: PlaceFilterInput) {
+  async getContent(
+    userId: MongooSchema.Types.ObjectId,
+    filter: PlaceFilterInput
+  ) {
     const places = await this.renewManyPlacesPhotos(
       await this.placeModel.find({})
     )
-    const placesFiltered = await this.filterPlaces(places, filter)
+    const placesFiltered = await this.filterPlaces(userId, places, filter)
+    const favorites = userId ? await this.favoritesService.findAll(userId) : []
+    placesFiltered.forEach((place) => {
+      const isFavorite = !!favorites.find(
+        (f) => f.id.toString() === place._id.toString()
+      )
+      place.favorite = isFavorite
+    })
     return placesFiltered
   }
 
@@ -176,7 +192,11 @@ export class PlaceService {
     return user as GetProfileResponse
   }
 
-  async filterPlaces(places: Place[], filter: PlaceFilterInput) {
+  async filterPlaces(
+    currentId: MongooSchema.Types.ObjectId,
+    places: Place[],
+    filter: PlaceFilterInput
+  ) {
     function isFilterFails(filter: string[] | null, value: string) {
       const isFilterEmpty =
         !filter ||
@@ -198,7 +218,7 @@ export class PlaceService {
     const { id, type, userId, similar, max } = filter || {}
 
     if (id) {
-      const place = await this.getPlace({ id })
+      const place = await this.getPlace(currentId, { id })
       return [place]
     }
 

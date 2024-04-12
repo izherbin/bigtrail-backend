@@ -19,6 +19,7 @@ import { SubscriptionRouteResponse } from './dto/subscription-route.response'
 import { RouteFilterInput } from './dto/route-filter.input'
 import { DeleteRouteInput } from './dto/delete-route.input'
 import { GetRouteInput } from './dto/get-route.input'
+import { JwtFreeGuard } from '../auth/jwt-free.guards'
 
 @Resolver(() => Route)
 export class RouteResolver {
@@ -46,11 +47,13 @@ export class RouteResolver {
   @Query(() => [Route], {
     description: 'Получить все маршруты, удовлетворяющие фильтру'
   })
+  @UseGuards(JwtFreeGuard)
   getRoutes(
+    @UserId() userId: MongooSchema.Types.ObjectId,
     @Args('routeFilterInput', { nullable: true })
     routeFilterInput?: RouteFilterInput
   ) {
-    return this.routeService.getRoutes(routeFilterInput)
+    return this.routeService.getRoutes(userId, routeFilterInput)
   }
 
   @Query(() => Route, {

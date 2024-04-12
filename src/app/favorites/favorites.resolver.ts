@@ -7,6 +7,7 @@ import { UseGuards } from '@nestjs/common'
 import { UserId } from '../auth/user-id.decorator'
 import { JwtAuthGuard } from '../auth/jwt-auth.guards'
 import { SubscriptionFavoriteResponse } from './dto/subscription-favorites.response'
+import { Favorite } from '../user/entities/user.entity'
 
 @Resolver()
 export class FavoritesResolver {
@@ -21,7 +22,7 @@ export class FavoritesResolver {
     return this.favoritesService.addFavorite(userId, addFavoriteInput)
   }
 
-  @Query(() => [String])
+  @Query(() => [Favorite])
   @UseGuards(JwtAuthGuard)
   getFavorites(@UserId() userId: MongooSchema.Types.ObjectId) {
     return this.favoritesService.findAll(userId)

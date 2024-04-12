@@ -13,6 +13,7 @@ import { PlaceFilterInput } from './dto/place-filter.input'
 import { SubscriptionPlaceResponse } from './dto/subscription-place.response'
 import { SubscriptionPlaceInput } from './dto/subscription-place.input'
 import { GetPlaceInput } from './dto/get-place.input'
+import { JwtFreeGuard } from '../auth/jwt-free.guards'
 
 @Resolver(() => Place)
 export class PlaceResolver {
@@ -34,21 +35,24 @@ export class PlaceResolver {
       'This query is deprecated, use getContent({filter: id}) instead',
     description: 'Получить чужое интересное место по id'
   })
+  @UseGuards(JwtFreeGuard)
   getPlace(
-    @Args('getPlaceInput')
-    getPlaceInput: GetPlaceInput
+    @UserId() userId: MongooSchema.Types.ObjectId,
+    @Args('getPlaceInput') getPlaceInput: GetPlaceInput
   ) {
-    return this.placeService.getPlace(getPlaceInput)
+    return this.placeService.getPlace(userId, getPlaceInput)
   }
 
   @Query(() => [Place], {
     description: 'Получить все интересные места, удовлетворяющие фильтру'
   })
+  @UseGuards(JwtFreeGuard)
   getContent(
+    @UserId() userId: MongooSchema.Types.ObjectId,
     @Args('placeFilterInput', { nullable: true })
     placeFilterInput?: PlaceFilterInput
   ) {
-    return this.placeService.getContent(placeFilterInput)
+    return this.placeService.getContent(userId, placeFilterInput)
   }
 
   @Subscription(() => SubscriptionPlaceResponse, {

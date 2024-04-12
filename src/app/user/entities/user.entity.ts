@@ -67,6 +67,18 @@ export class UserStatistics {
   points?: number
 }
 
+@ObjectType({ description: 'Список избранного' })
+@Schema({ _id: false })
+export class Favorite {
+  @Field(() => String, { description: 'Идентификатор контента' })
+  @Prop()
+  id: Types.ObjectId
+
+  @Field(() => String, { description: 'Тип контента' })
+  @Prop()
+  type: string
+}
+
 @ObjectType({ description: 'Профайл пользователя' })
 @Schema()
 export class User {
@@ -123,7 +135,7 @@ export class User {
   statistics?: UserStatistics
 
   @Prop()
-  favorites?: Types.ObjectId[]
+  favorites?: Favorite[]
 }
 
 export type UserDocument = User & Document

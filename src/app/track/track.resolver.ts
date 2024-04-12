@@ -36,7 +36,8 @@ export class TrackResolver {
   @UseGuards(JwtAuthGuard)
   getAllTracksQuery(
     @UserId() userId: MongooSchema.Types.ObjectId,
-    @Args('trackFilterInput') trackFilterInput: TrackFilterInput
+    @Args('trackFilterInput', { nullable: true })
+    trackFilterInput: TrackFilterInput
   ) {
     return this.trackService.findByUserId(userId, trackFilterInput)
   }

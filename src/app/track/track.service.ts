@@ -144,7 +144,7 @@ export class TrackService {
     userId: MongooSchema.Types.ObjectId,
     trackFilterInput: TrackFilterInput
   ) {
-    const { id, simplify } = trackFilterInput
+    const { id, simplify } = trackFilterInput || {}
 
     const tracks = await this.renewManyTracksPhotos(
       await this.trackModel.find({ userId })
