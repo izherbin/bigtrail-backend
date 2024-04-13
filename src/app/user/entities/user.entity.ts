@@ -5,6 +5,13 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 type timestamp = number
 type JwtToken = string
 
+export enum Role {
+  Admin = 'admin',
+  Superuser = 'superuser',
+  User = 'user',
+  Guest = 'guest'
+}
+
 @ObjectType({
   description: 'Статистика пользователя'
 })
@@ -101,6 +108,15 @@ export class User {
   @Prop()
   phone: string
 
+  @Field(() => String, {
+    description: 'Имя администратора'
+  })
+  @Prop()
+  login: string
+
+  @Prop()
+  password?: string
+
   @Field(() => String, { nullable: true, description: 'Статус пользователя' })
   @Prop()
   status?: string
@@ -117,6 +133,9 @@ export class User {
   })
   @Prop()
   tsSMSSent: timestamp
+
+  @Prop()
+  roles: string[]
 
   @Prop({ default: false })
   isAdmin: boolean

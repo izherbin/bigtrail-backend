@@ -5,15 +5,12 @@ import {
 } from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
 import { AuthGuard } from '@nestjs/passport'
+import { Role } from '../user/entities/user.entity'
 
 @Injectable()
 export class JwtFreeGuard extends AuthGuard('jwt') {
   getRequest(context: ExecutionContext) {
     const ctx = GqlExecutionContext.create(context)
-    // console.log(
-    //   'ctx.getContext().req:',
-    //   JSON.stringify(ctx.getContext().req, null, '  ')
-    // )
     return ctx.getContext().req
   }
 
@@ -25,7 +22,9 @@ export class JwtFreeGuard extends AuthGuard('jwt') {
     if (!user) {
       return {
         _id: null,
-        phone: 'N/A'
+        phone: 'N/A',
+        login: 'N/A',
+        roles: [Role.Guest]
       }
     }
 

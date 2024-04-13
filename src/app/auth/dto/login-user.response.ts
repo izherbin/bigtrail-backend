@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql'
 
 @ObjectType({
-  description: 'Объект ответа после отправки кода аутентификации'
+  description: 'Объект ответа после отправки кода аутентификации или пароля'
 })
 export class LoginUserResponce {
   @Field(() => String, {

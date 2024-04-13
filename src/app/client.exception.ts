@@ -38,6 +38,16 @@ const ERRORS: ErrorRecord[] = [
     status: HttpStatus.BAD_REQUEST
   },
   {
+    code: 40007,
+    message: 'Incorrect login',
+    status: HttpStatus.BAD_REQUEST
+  },
+  {
+    code: 40008,
+    message: 'Incorrect password',
+    status: HttpStatus.BAD_REQUEST
+  },
+  {
     code: 40101,
     message: 'Code is incorrect',
     status: HttpStatus.UNAUTHORIZED
@@ -128,6 +138,11 @@ const ERRORS: ErrorRecord[] = [
     status: HttpStatus.NOT_FOUND
   },
   {
+    code: 40409,
+    message: 'No such admin',
+    status: HttpStatus.NOT_FOUND
+  },
+  {
     code: 40901,
     message: 'SMS too early',
     status: HttpStatus.CONFLICT
@@ -135,6 +150,11 @@ const ERRORS: ErrorRecord[] = [
   {
     code: 40902,
     message: 'This user is already exists',
+    status: HttpStatus.CONFLICT
+  },
+  {
+    code: 40903,
+    message: 'This admin is already exists',
     status: HttpStatus.CONFLICT
   },
   {

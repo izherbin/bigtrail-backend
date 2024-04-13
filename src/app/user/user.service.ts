@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { User, UserDocument } from './entities/user.entity'
+import { Role, User, UserDocument } from './entities/user.entity'
 import { Document, Model, Schema as MongooSchema, Types } from 'mongoose'
 import { ConfigService } from '@nestjs/config'
 import { SetNameInput } from './dto/set-name.input'
@@ -10,6 +10,7 @@ import { GetProfileResponse } from './dto/get-profile.response'
 import { PubSubEngine } from 'graphql-subscriptions'
 import { SetStatusInput } from './dto/set-status.input'
 import { ClientException } from '../client.exception'
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class UserService {
@@ -49,6 +50,11 @@ export class UserService {
     return user
   }
 
+  async getUserByLogin(login: string) {
+    const user = await this.userModel.findOne({ login })
+    return user
+  }
+
   async getUserById(id: MongooSchema.Types.ObjectId) {
     const user = await this.userModel.findById(id)
     if (!user) {
@@ -63,8 +69,23 @@ export class UserService {
     if (user) {
       throw new ClientException(40902)
     }
-    const res = await this.userModel.insertMany([{ phone }])
+    const res = await this.userModel.insertMany([{ phone, roles: [Role.User] }])
     return res[0]
+  }
+
+  async createAdmin(login: string, passwd: string): Promise<string> {
+    const admin = await this.userModel.findOne({ login })
+    if (admin) {
+      throw new ClientException(40903)
+    }
+    const password = await bcrypt.hash(
+      passwd,
+      Number(this.configService.get('SALT_ROUND'))
+    )
+    await this.userModel.insertMany([
+      { login, password, phone: 'N/A', roles: [Role.Admin] }
+    ])
+    return `Админ ${login} успешно создан`
   }
 
   async updateUser(user: User) {
@@ -98,6 +119,20 @@ export class UserService {
     return `User ${phone} успешно удален`
   }
 
+  async deleteAdmin(login: string) {
+    const adminFromDB = await this.userModel.findOne({ login })
+    if (!adminFromDB) {
+      throw new ClientException(40409)
+    }
+
+    const oldAvatarFile = adminFromDB.avatarFile ? adminFromDB.avatarFile : null
+    await this.userModel.deleteOne({ login })
+    if (oldAvatarFile) {
+      this.minioClientService.deleteFile('avatars', oldAvatarFile)
+    }
+    return `Admin ${login} успешно удален`
+  }
+
   async setName(phone: string, setNameInput: SetNameInput) {
     let { name } = setNameInput
     name = name.trim()
@@ -123,6 +158,18 @@ export class UserService {
     this.pubSub.publish('profileChanged', { watchProfile: profile })
 
     return profile
+  }
+
+  async setAdminPassword(login: string, password: string): Promise<string> {
+    const admin = await this.getUserByLogin(login)
+    if (!admin) {
+      throw new ClientException(40409)
+    }
+
+    admin.password = password
+    await admin.save()
+
+    return `Пароль администратора ${login} успешно изменен`
   }
 
   async setProfleStatus(phone: string, setStatusInput: SetStatusInput) {

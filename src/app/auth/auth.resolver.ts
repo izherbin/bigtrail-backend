@@ -8,6 +8,11 @@ import { LoginCodeInput } from './dto/login-code.input'
 import { LoginCodeResponce } from './dto/login-code.response'
 import { LoginPasswordInput } from './dto/login-password.input'
 import { GqlAuthAdminGuard } from './gql-auth-admin.guards'
+import { Login } from './login.decorator'
+import { JwtAuthGuard } from './jwt-auth.guards'
+import { RolesGuard } from './roles.guards'
+import { Role } from '../user/entities/user.entity'
+import { RequiredRoles } from './required-roles.decorator'
 
 @Resolver()
 export class AuthResolver {
@@ -43,6 +48,25 @@ export class AuthResolver {
   })
   signup(@Args('signupInput') signupInput: LoginPhoneInput) {
     return this.authService.signupUser(signupInput)
+  }
+
+  @Mutation(() => String, {
+    name: 'addAdmin',
+    description: 'Отправить данные для регистрации администратора'
+  })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RequiredRoles(Role.Superuser)
+  signupAdmin(@Args('signupInput') signupInput: LoginPasswordInput) {
+    return this.authService.signupAdmin(signupInput)
+  }
+
+  @Mutation(() => String, {
+    description: 'Установить пароль администратора'
+  })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RequiredRoles(Role.Admin)
+  setAdminPassword(@Login() login: string, @Args('password') password: string) {
+    return this.authService.setAdminPassword(login, password)
   }
 
   @Mutation(() => String, {

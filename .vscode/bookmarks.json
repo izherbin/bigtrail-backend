@@ -1,57 +1,92 @@
 {
 	"files": [
 		{
-			"path": "src/app/route/route.service.ts",
+			"path": "src/app/user/entities/user.entity.ts",
 			"bookmarks": [
 				{
-					"line": 104,
-					"column": 52,
-					"label": "Statistics: create()"
-				},
-				{
-					"line": 199,
-					"column": 13,
-					"label": "Statistics: remove()"
-				},
-				{
-					"line": 212,
-					"column": 26,
-					"label": "Statistics: updateUserStatistics()"
+					"line": 140,
+					"column": 0,
+					"label": "Admin: User"
 				}
 			]
 		},
 		{
-			"path": "src/app/track/track.service.ts",
+			"path": "src/app/user/user.service.ts",
 			"bookmarks": [
 				{
-					"line": 225,
-					"column": 31,
-					"label": "Statistics: calcUserTrackStatistics()"
-				}
-			]
-		},
-		{
-			"path": "src/app/user/user.resolver.ts",
-			"bookmarks": [
-				{
-					"line": 30,
-					"column": 8,
-					"label": "getUser() response must be w/o phone"
-				}
-			]
-		},
-		{
-			"path": "src/app/place/place.service.ts",
-			"bookmarks": [
-				{
-					"line": 135,
-					"column": 4,
-					"label": "Statistics: remove()"
+					"line": 96,
+					"column": 0,
+					"label": "Admin: updateUser"
 				},
 				{
-					"line": 148,
-					"column": 8,
-					"label": "Statistics: updateUserStatistics()"
+					"line": 109,
+					"column": 0,
+					"label": "Admin: deleteUser"
+				},
+				{
+					"line": 149,
+					"column": 0,
+					"label": "Admin: setName"
+				},
+				{
+					"line": 184,
+					"column": 0,
+					"label": "Admin: setProfileStatus"
+				}
+			]
+		},
+		{
+			"path": "src/app/auth/auth.service.ts",
+			"bookmarks": [
+				{
+					"line": 36,
+					"column": 0,
+					"label": "Admin: validateUser"
+				},
+				{
+					"line": 74,
+					"column": 0,
+					"label": "Admin: loginUser"
+				},
+				{
+					"line": 127,
+					"column": 0,
+					"label": "Admin: signupUser"
+				},
+				{
+					"line": 273,
+					"column": 0,
+					"label": "Admin: kill"
+				}
+			]
+		},
+		{
+			"path": "src/app/survey/survey.service.ts",
+			"bookmarks": [
+				{
+					"line": 36,
+					"column": 0,
+					"label": "Superuser: createSurvey"
+				},
+				{
+					"line": 49,
+					"column": 0,
+					"label": "Superuser: createScenario"
+				}
+			]
+		},
+		{
+			"path": "src/app/version/version.service.ts",
+			"bookmarks": [
+				{
+					"line": 29,
+					"column": 0,
+					"label": "Superuser: setVersion"
+				},
+				{
+					"line": 50,
+					"column": 0,
+					"label": "Superuser: setAppLinks"
 				}
 			]
 		}

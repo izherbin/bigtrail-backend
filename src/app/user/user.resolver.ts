@@ -11,6 +11,9 @@ import { uploadScalar } from '../minio-client/upload-scalar.util'
 import { GetUserResponse } from './dto/get-user.response'
 import { GetUserInput } from './dto/get-user.input'
 import { SetStatusInput } from './dto/set-status.input'
+import { RolesGuard } from '../auth/roles.guards'
+import { RequiredRoles } from '../auth/required-roles.decorator'
+import { Role } from './entities/user.entity'
 
 @Resolver()
 export class UserResolver {
@@ -117,5 +120,14 @@ export class UserResolver {
   @UseGuards(JwtAuthGuard)
   deleteProfile(@Phone() phone: string) {
     return this.userService.deleteUser(phone)
+  }
+
+  @Mutation(() => String, {
+    description: 'Удалить профайл администратора'
+  })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RequiredRoles(Role.Superuser)
+  deleteAdmin(@Args('login') login: string) {
+    return this.userService.deleteAdmin(login)
   }
 }

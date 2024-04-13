@@ -8,6 +8,8 @@ import { HttpService } from '@nestjs/axios'
 import { UserService } from '../user/user.service'
 import { ClientException } from '../client.exception'
 import { LoginPasswordInput } from './dto/login-password.input'
+import { Role } from '../user/entities/user.entity'
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class AuthService {
@@ -44,14 +46,22 @@ export class AuthService {
   }
 
   async validateAdmin(login: string, password: string) {
-    if (login === 'admin' && password === 'qwert') {
-      return {
-        phone: 'N/A',
-        _id: login
-      }
-    } else {
+    const admin = await this.userService.getUserByLogin(login)
+    if (!admin) {
       return null
     }
+
+    if (!password || !admin.password) {
+      return null
+    }
+
+    const isMatch = await bcrypt.compare(password, admin.password)
+
+    if (isMatch) {
+      return admin
+    }
+
+    return null
   }
 
   async loginUser(loginUserInput: LoginCodeInput) {
@@ -72,7 +82,9 @@ export class AuthService {
       authToken: this.jwtService.sign(
         {
           phone,
-          _id
+          _id,
+          login: 'N/A',
+          roles: user.roles ? user.roles : [Role.User]
         },
         {
           secret: this.configService.get<string>('JWT_SECRET'),
@@ -84,9 +96,17 @@ export class AuthService {
 
   async loginAdmin(loginPasswordInput: LoginPasswordInput) {
     const { login } = loginPasswordInput
+    const admin = await this.userService.getUserByLogin(login)
+    if (!admin) {
+      throw new ClientException(40409)
+    }
+
+    const _id = admin._id
     const user = {
+      login,
+      _id,
       phone: 'N/A',
-      _id: login
+      roles: [Role.Admin]
     }
     return {
       user,
@@ -174,8 +194,43 @@ export class AuthService {
     }
   }
 
+  async signupAdmin(payload: LoginPasswordInput): Promise<string> {
+    const { login, password } = payload
+
+    if (!this.validateLogin(login)) {
+      throw new ClientException(40007)
+    }
+
+    if (!this.validatePassword(password)) {
+      throw new ClientException(40008)
+    }
+
+    return await this.userService.createAdmin(login, password)
+  }
+
+  async setAdminPassword(login: string, password: string): Promise<string> {
+    if (!this.validatePassword(password)) {
+      throw new ClientException(40006)
+    }
+
+    const hash = await bcrypt.hash(
+      password,
+      Number(this.configService.get<string>('SALT_ROUNDS'))
+    )
+
+    return await this.userService.setAdminPassword(login, hash)
+  }
+
   validatePhone(phone: string): boolean {
     return /^7\d{10}/.test(phone)
+  }
+
+  validateLogin(login: string): boolean {
+    return /.*/.test(login)
+  }
+
+  validatePassword(password: string): boolean {
+    return /.*/.test(password)
   }
 
   genCode(): number {

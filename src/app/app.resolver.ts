@@ -5,6 +5,9 @@ import { JwtAuthGuard } from './auth/jwt-auth.guards'
 import { Phone } from './auth/phone.decorator'
 import { Schema as MongooSchema } from 'mongoose'
 import { UserId } from './auth/user-id.decorator'
+import { RolesGuard } from './auth/roles.guards'
+import { RequiredRoles } from './auth/required-roles.decorator'
+import { Role } from './user/entities/user.entity'
 
 @Resolver()
 export class AppResolver {
@@ -33,7 +36,8 @@ export class AppResolver {
   }
 
   @Query(() => String, { description: 'Определение id пользователя' })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RequiredRoles(Role.Superuser, Role.Admin)
   myId(@UserId() _id: MongooSchema.Types.ObjectId): string {
     return this.appService.myId(_id)
   }
