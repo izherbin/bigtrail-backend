@@ -2,7 +2,7 @@ import { Field, ObjectType, PickType } from '@nestjs/graphql'
 import { User } from 'src/app/user/entities/user.entity'
 
 @ObjectType({
-  description: 'Объект ответа после запроса своего профайла'
+  description: 'Объект ответа после запроса своего профайла с телефоном'
 })
 export class GetProfileResponse extends PickType(User, [
   '_id',

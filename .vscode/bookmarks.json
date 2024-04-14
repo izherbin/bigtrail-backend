@@ -14,22 +14,22 @@
 			"path": "src/app/user/user.service.ts",
 			"bookmarks": [
 				{
-					"line": 96,
+					"line": 110,
 					"column": 0,
 					"label": "Admin: updateUser"
 				},
 				{
-					"line": 109,
+					"line": 123,
 					"column": 0,
 					"label": "Admin: deleteUser"
 				},
 				{
-					"line": 149,
+					"line": 163,
 					"column": 0,
 					"label": "Admin: setName"
 				},
 				{
-					"line": 184,
+					"line": 198,
 					"column": 0,
 					"label": "Admin: setProfileStatus"
 				}

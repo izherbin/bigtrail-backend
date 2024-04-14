@@ -40,6 +40,19 @@ export class UserService {
     return profile
   }
 
+  async getUsers(): Promise<GetProfileResponse[]> {
+    const users = await this.renewProfileAvatarMany(
+      await this.userModel.find({
+        $or: [
+          { roles: { $exists: false } },
+          { roles: { $size: 0 } },
+          { roles: { $size: 1, $in: ['user'] } }
+        ]
+      })
+    )
+    return users
+  }
+
   watchProfile() {
     const res = this.pubSub.asyncIterator('profileChanged')
     return res
@@ -290,6 +303,15 @@ export class UserService {
     this.pubSub.publish('profileChanged', { watchProfile: profile })
 
     return profile
+  }
+
+  async renewProfileAvatarMany(
+    users: (Document<unknown, object, UserDocument> &
+      User &
+      Document<any, any, any> & { _id: Types.ObjectId })[]
+  ) {
+    const promises = users.map((user) => this.renewProfileAvatar(user))
+    return Promise.all(promises)
   }
 
   async renewProfileAvatar(

@@ -35,6 +35,15 @@ export class UserResolver {
     return this.userService.getProfileById(getUserInput.id)
   }
 
+  @Query(() => [GetUserResponse], {
+    description: 'Получить профайл другого пользователя'
+  })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RequiredRoles(Role.Admin)
+  getUsers() {
+    return this.userService.getUsers()
+  }
+
   @Subscription(() => GetProfileResponse, {
     description: 'Следить за профайлом пользователя',
     filter: (payload, variables, context) => {
