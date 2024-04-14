@@ -62,10 +62,19 @@ export class SurveyService {
     return surveysFiltered
   }
 
+  async getSurveyResults() {
+    const surveyResults = await this.surveyResultModel.find()
+    return surveyResults
+  }
   async getScenarios(filter: ScenarioFilterInput) {
     const scenarios = await this.scenarioModel.find()
     const scenariosFiltered = this.filterScenarios(scenarios, filter)
     return scenariosFiltered
+  }
+
+  async getScenarioResults() {
+    const scenarioResults = await this.scenarioResultModel.find()
+    return scenarioResults
   }
 
   filterSurveys(surveys: Survey[], filter: SurveyFilterInput) {

@@ -38,6 +38,13 @@ export class SurveyResolver {
     return this.surveyService.getSurveys(surveyFilterInput)
   }
 
+  @Query(() => [SurveyResult], {
+    description: 'Выдать список результатов опроса'
+  })
+  getSurveyResults() {
+    return this.surveyService.getSurveyResults()
+  }
+
   // @Query(() => Survey)
   // getSurvey(@Args('id') id: string) {
   //   return this.surveyService.findOne(id)
@@ -84,6 +91,13 @@ export class ScenarioResolver {
     scenarioFilterInput: ScenarioFilterInput
   ) {
     return this.surveyService.getScenarios(scenarioFilterInput)
+  }
+
+  @Query(() => [ScenarioResult], {
+    description: 'Выдать список результатов сценария тестирования'
+  })
+  getScenarioResults() {
+    return this.surveyService.getScenarioResults()
   }
 
   // @Query(() => Survey)
