@@ -46,7 +46,12 @@ export class AuthResolver {
     name: 'sendCode',
     description: 'Отправить номер телефона для аутентификации'
   })
-  signup(@Args('signupInput') signupInput: LoginPhoneInput) {
+  signup(
+    @Context() context: any,
+    @Args('signupInput') signupInput: LoginPhoneInput
+  ) {
+    console.log('IP:', context.req.ip)
+    console.log('X-Forwarded-For:', context.req.headers['x-forwarded-for'])
     return this.authService.signupUser(signupInput)
   }
 
