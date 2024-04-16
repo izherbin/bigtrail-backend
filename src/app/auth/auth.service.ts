@@ -117,12 +117,12 @@ export class AuthService {
     }
   }
 
-  async signupUser(payload: LoginPhoneInput) {
+  async signupUser(payload: LoginPhoneInput, ip: string) {
     const { phone } = payload
     let user = await this.userService.getUserByPhone(phone)
 
     if (!user) {
-      user = await this.userService.createUser(phone)
+      user = await this.userService.createUser(phone, ip)
     }
 
     if (user.isAdmin) {

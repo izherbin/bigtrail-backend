@@ -109,6 +109,18 @@ export class User {
   phone: string
 
   @Field(() => String, {
+    description: 'IP адрес пользователя в момент создания профайла'
+  })
+  @Prop()
+  ip?: string
+
+  @Field(() => Float, {
+    description: 'Время создания профайла пользователя в формате timestamp'
+  })
+  @Prop()
+  tsCreated: timestamp
+
+  @Field(() => String, {
     description: 'Имя администратора'
   })
   @Prop()

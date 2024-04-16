@@ -7,6 +7,8 @@ import { User } from 'src/app/user/entities/user.entity'
 export class GetProfileResponse extends PickType(User, [
   '_id',
   'phone',
+  'ip',
+  'tsCreated',
   'name',
   'status',
   'statistics'

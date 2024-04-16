@@ -50,9 +50,9 @@ export class AuthResolver {
     @Context() context: any,
     @Args('signupInput') signupInput: LoginPhoneInput
   ) {
-    console.log('IP:', context.req.ip)
-    console.log('X-Forwarded-For:', context.req.headers['x-forwarded-for'])
-    return this.authService.signupUser(signupInput)
+    const ip = context.req.headers['x-forwarded-for'] || ''
+    console.log('X-Forwarded-For:', ip)
+    return this.authService.signupUser(signupInput, ip)
   }
 
   @Mutation(() => String, {

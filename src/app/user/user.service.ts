@@ -77,12 +77,15 @@ export class UserService {
     return user
   }
 
-  async createUser(phone: string) {
+  async createUser(phone: string, ip: string) {
     const user = await this.userModel.findOne({ phone })
     if (user) {
       throw new ClientException(40902)
     }
-    const res = await this.userModel.insertMany([{ phone, roles: [Role.User] }])
+    const tsCreated = new Date().getTime()
+    const res = await this.userModel.insertMany([
+      { phone, ip, tsCreated, roles: [Role.User] }
+    ])
     return res[0]
   }
 
