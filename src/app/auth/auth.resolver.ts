@@ -19,7 +19,7 @@ export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
   @Mutation(() => LoginUserResponce, {
-    name: 'userLogin',
+    name: 'verifyCode',
     description: 'Отправить код аутентификации, полученный по смс'
   })
   @UseGuards(GqlAuthGuard)
@@ -43,7 +43,7 @@ export class AuthResolver {
   }
 
   @Mutation(() => LoginCodeResponce, {
-    name: 'userSendCode',
+    name: 'sendCode',
     description: 'Отправить номер телефона для аутентификации'
   })
   signup(@Args('signupInput') signupInput: LoginPhoneInput) {
