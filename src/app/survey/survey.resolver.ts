@@ -14,14 +14,18 @@ import { ScenarioResult } from './entities/scenario-result.entity'
 import { ScenarioResultInput } from './dto/scenario-result.input'
 import { ScenarioFilterInput } from './dto/scenario-filter.input'
 import { SurveyFilterInput } from './dto/survey-filter.input'
+import { RolesGuard } from '../auth/roles.guards'
+import { Role } from '../user/entities/user.entity'
+import { RequiredRoles } from '../auth/required-roles.decorator'
 
 @Resolver(() => Survey)
 export class SurveyResolver {
   constructor(private readonly surveyService: SurveyService) {}
 
   @Mutation(() => Survey, { description: 'Создать опрос' })
-  @UseGuards(JwtAuthGuard)
-  setSurvey(
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RequiredRoles(Role.Admin)
+  adminSetSurvey(
     @Phone() phone: string,
     @Args('createSurveyInput') createSurveyInput: CreateSurveyInput
   ) {
@@ -31,7 +35,9 @@ export class SurveyResolver {
   @Query(() => [Survey], {
     description: 'Выдать список опросов, удовлетворяющих фильтру'
   })
-  getSurveys(
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RequiredRoles(Role.Admin)
+  adminGetSurveys(
     @Args('surveyFilterInput', { nullable: true })
     surveyFilterInput: SurveyFilterInput
   ) {
@@ -41,7 +47,9 @@ export class SurveyResolver {
   @Query(() => [SurveyResult], {
     description: 'Выдать список результатов опроса'
   })
-  getSurveyResults() {
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RequiredRoles(Role.Admin)
+  adminGetSurveyResults() {
     return this.surveyService.getSurveyResults()
   }
 
@@ -75,8 +83,9 @@ export class ScenarioResolver {
   constructor(private readonly surveyService: SurveyService) {}
 
   @Mutation(() => Scenario, { description: 'Создать сценарий тестироваиия' })
-  @UseGuards(JwtAuthGuard)
-  setScenario(
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RequiredRoles(Role.Admin)
+  adminSetScenario(
     @Phone() phone: string,
     @Args('createScenarioInput') createScenarioInput: CreateScenarioInput
   ) {
@@ -86,7 +95,9 @@ export class ScenarioResolver {
   @Query(() => [Scenario], {
     description: 'Выдать список сценариев тестирования, удовлетворяющих фильтру'
   })
-  getScenarios(
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RequiredRoles(Role.Admin)
+  adminGetScenarios(
     @Args('scenarioFilterInput', { nullable: true })
     scenarioFilterInput: ScenarioFilterInput
   ) {
@@ -96,7 +107,9 @@ export class ScenarioResolver {
   @Query(() => [ScenarioResult], {
     description: 'Выдать список результатов сценария тестирования'
   })
-  getScenarioResults() {
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RequiredRoles(Role.Admin)
+  adminGetScenarioResults() {
     return this.surveyService.getScenarioResults()
   }
 

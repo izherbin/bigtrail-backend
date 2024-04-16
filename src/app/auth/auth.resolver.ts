@@ -19,7 +19,7 @@ export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
   @Mutation(() => LoginUserResponce, {
-    name: 'verifyCode',
+    name: 'userLogin',
     description: 'Отправить код аутентификации, полученный по смс'
   })
   @UseGuards(GqlAuthGuard)
@@ -31,8 +31,8 @@ export class AuthResolver {
   }
 
   @Mutation(() => LoginUserResponce, {
-    name: 'verifyPassword',
-    description: 'Отправить пароль администратора'
+    name: 'adminLogin',
+    description: 'Вход администратора'
   })
   @UseGuards(GqlAuthAdminGuard)
   loginAdmin(
@@ -43,7 +43,7 @@ export class AuthResolver {
   }
 
   @Mutation(() => LoginCodeResponce, {
-    name: 'sendCode',
+    name: 'userSendCode',
     description: 'Отправить номер телефона для аутентификации'
   })
   signup(@Args('signupInput') signupInput: LoginPhoneInput) {

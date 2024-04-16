@@ -35,12 +35,12 @@ export class UserResolver {
     return this.userService.getProfileById(getUserInput.id)
   }
 
-  @Query(() => [GetUserResponse], {
-    description: 'Получить профайл другого пользователя'
+  @Query(() => [GetProfileResponse], {
+    description: 'Получить список пользователей (для админа)'
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @RequiredRoles(Role.Admin)
-  getUsers() {
+  adminGetUsersList() {
     return this.userService.getUsers()
   }
 
