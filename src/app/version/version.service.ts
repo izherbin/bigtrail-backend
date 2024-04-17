@@ -26,11 +26,7 @@ export class VersionService {
     return version
   }
 
-  async setVersion(phone: string, setVersionInput: SetVersionInput) {
-    if (phone !== '79112128506') {
-      throw new ClientException(40305)
-    }
-
+  async setVersion(setVersionInput: SetVersionInput) {
     let version = await this.versionModel.findOne({})
     if (!version) {
       version = new this.versionModel(setVersionInput)
@@ -47,11 +43,7 @@ export class VersionService {
     return links
   }
 
-  async setAppLinks(phone: string, setAppLinksInput: SetAppLinksInput) {
-    if (phone !== '79112128506') {
-      throw new ClientException(40306)
-    }
-
+  async setAppLinks(setAppLinksInput: SetAppLinksInput) {
     let links = await this.appLinksModel.findOne({})
     if (!links) {
       links = new this.appLinksModel(setAppLinksInput)

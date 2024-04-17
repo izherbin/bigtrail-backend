@@ -34,7 +34,7 @@ export class AuthService {
 
     const tsCheck = Date.now()
     const isValid =
-      user.isAdmin ||
+      user.roles.includes(Role.Admin) ||
       tsCheck - user.tsSMSSent <
         Number(this.configService.get<string>('CODE_EXPIRES_IN'))
 
@@ -72,7 +72,7 @@ export class AuthService {
     }
 
     const _id = user._id
-    if (!user.isAdmin) {
+    if (!user.roles.includes(Role.Admin)) {
       user.code = null
       user.save()
     }
@@ -125,7 +125,7 @@ export class AuthService {
       user = await this.userService.createUser(phone, ip)
     }
 
-    if (user.isAdmin) {
+    if (user.roles.includes(Role.Admin)) {
       return {
         phone,
         sent: '1000000000000',
@@ -271,7 +271,7 @@ export class AuthService {
       return 'Authentication process stoped'
     }
 
-    if (user.isAdmin) {
+    if (user.roles.includes(Role.Admin)) {
       return 'Can not stop authentication process'
     }
 

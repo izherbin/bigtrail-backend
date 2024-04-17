@@ -110,7 +110,7 @@ export class UserService {
       throw new ClientException(40403)
     }
 
-    if (userFromDB.isAdmin) {
+    if (userFromDB.roles.includes(Role.Admin)) {
       throw new ClientException(40303)
     }
 
@@ -123,7 +123,7 @@ export class UserService {
       throw new ClientException(40403)
     }
 
-    if (userFromDB.isAdmin) {
+    if (userFromDB.roles.includes(Role.Admin)) {
       throw new ClientException(40304)
     }
 
@@ -163,7 +163,7 @@ export class UserService {
       throw new ClientException(40403)
     }
 
-    if (user.isAdmin) {
+    if (user.roles.includes(Role.Admin)) {
       throw new ClientException(40303)
     }
 
@@ -198,7 +198,7 @@ export class UserService {
       throw new ClientException(40403)
     }
 
-    if (user.isAdmin) {
+    if (user.roles.includes(Role.Admin)) {
       throw new ClientException(40303)
     }
 

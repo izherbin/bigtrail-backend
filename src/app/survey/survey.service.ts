@@ -33,24 +33,13 @@ export class SurveyService {
     private scenarioResultModel: Model<ScenarioResultDocument>
   ) {}
 
-  async createSurvey(phone: string, createSurveyInput: CreateSurveyInput) {
-    if (phone !== '79112128506') {
-      throw new ClientException(40307)
-    }
-
+  async createSurvey(createSurveyInput: CreateSurveyInput) {
     const survey = new this.surveyModel(createSurveyInput)
     await survey.save()
     return survey
   }
 
-  async createScenario(
-    phone: string,
-    createScenarioInput: CreateScenarioInput
-  ) {
-    if (phone !== '79112128506') {
-      throw new ClientException(40307)
-    }
-
+  async createScenario(createScenarioInput: CreateScenarioInput) {
     const scenario = new this.scenarioModel(createScenarioInput)
     await scenario.save()
     return scenario

@@ -59,36 +59,6 @@
 					"label": "Admin: kill"
 				}
 			]
-		},
-		{
-			"path": "src/app/survey/survey.service.ts",
-			"bookmarks": [
-				{
-					"line": 36,
-					"column": 0,
-					"label": "Superuser: createSurvey"
-				},
-				{
-					"line": 49,
-					"column": 0,
-					"label": "Superuser: createScenario"
-				}
-			]
-		},
-		{
-			"path": "src/app/version/version.service.ts",
-			"bookmarks": [
-				{
-					"line": 29,
-					"column": 0,
-					"label": "Superuser: setVersion"
-				},
-				{
-					"line": 50,
-					"column": 0,
-					"label": "Superuser: setAppLinks"
-				}
-			]
 		}
 	]
 }

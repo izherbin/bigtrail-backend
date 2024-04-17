@@ -5,7 +5,6 @@ import { CreateSurveyInput } from './dto/create-survey.input'
 // import { UpdateSurveyInput } from './dto/update-survey.input'
 import { UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/jwt-auth.guards'
-import { Phone } from '../auth/phone.decorator'
 import { SurveyResult } from './entities/survey-result.entity'
 import { SurveyResultInput } from './dto/survey-result.input'
 import { Scenario } from './entities/scenario.entity'
@@ -26,10 +25,9 @@ export class SurveyResolver {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @RequiredRoles(Role.Admin)
   adminSetSurvey(
-    @Phone() phone: string,
     @Args('createSurveyInput') createSurveyInput: CreateSurveyInput
   ) {
-    return this.surveyService.createSurvey(phone, createSurveyInput)
+    return this.surveyService.createSurvey(createSurveyInput)
   }
 
   @Query(() => [Survey], {
@@ -87,10 +85,9 @@ export class ScenarioResolver {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @RequiredRoles(Role.Admin)
   adminSetScenario(
-    @Phone() phone: string,
     @Args('createScenarioInput') createScenarioInput: CreateScenarioInput
   ) {
-    return this.surveyService.createScenario(phone, createScenarioInput)
+    return this.surveyService.createScenario(createScenarioInput)
   }
 
   @Query(() => [Scenario], {
