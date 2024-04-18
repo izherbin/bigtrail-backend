@@ -134,6 +134,9 @@ export class PlaceService {
   ) {
     const { id } = editPlaceInput
     const place = await this.placeModel.findById(id)
+    if (!place) {
+      throw new ClientException(40406)
+    }
     if (place.userId.toString() !== userId.toString()) {
       throw new ClientException(40309)
     }

@@ -98,6 +98,11 @@ const ERRORS: ErrorRecord[] = [
     status: HttpStatus.FORBIDDEN
   },
   {
+    code: 40310,
+    message: 'Impossible to edit someone else`s route',
+    status: HttpStatus.FORBIDDEN
+  },
+  {
     code: 40401,
     message: 'No such phone',
     status: HttpStatus.NOT_FOUND

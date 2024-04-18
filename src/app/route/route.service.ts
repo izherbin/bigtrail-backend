@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { CreateRouteInput } from './dto/create-route.input'
-import { UpdateRouteInput } from './dto/update-route.input'
+import { EditRouteInput } from './dto/edit-route.input'
 import { InjectModel } from '@nestjs/mongoose'
 import { Route, RouteDocument } from './entities/route.entity'
 import { MinioClientService } from '../minio-client/minio-client.service'
@@ -199,9 +199,95 @@ export class RouteService {
     return `This action returns a #${id} route`
   }
 
-  update(id: number, updateRouteInput: UpdateRouteInput) {
-    console.log('updateRouteInput:', updateRouteInput)
-    return `This action updates a #${id} route`
+  async edit(
+    userId: MongooSchema.Types.ObjectId,
+    editRouteInput: EditRouteInput
+  ) {
+    const { id } = editRouteInput
+    const route = await this.routeModel.findById(id)
+    if (!route) {
+      throw new ClientException(40402)
+    }
+    if (route.userId.toString() !== userId.toString()) {
+      throw new ClientException(40310)
+    }
+
+    const elevations = []
+    for (const p in editRouteInput.points) {
+      if (!editRouteInput.points[p].alt) {
+        elevations.push(
+          this.trackService
+            .getElevation(
+              editRouteInput.points[p].lat,
+              editRouteInput.points[p].lon
+            )
+            .then((elev) => {
+              editRouteInput.points[p].alt = elev
+            })
+        )
+      }
+    }
+
+    const uploads = []
+    const downloads = []
+
+    for (const sp in editRouteInput.photos) {
+      const photo = await this.trackService.uploadPhoto(
+        editRouteInput.photos[sp]
+      )
+      if (photo) {
+        uploads.push(photo.upload)
+        downloads.push(photo.download)
+      }
+    }
+
+    for (const n in editRouteInput.notes) {
+      if (editRouteInput.notes[n].point) {
+        if (!editRouteInput.notes[n].point.alt) {
+          elevations.push(
+            this.trackService
+              .getElevation(
+                editRouteInput.notes[n].point.lat,
+                editRouteInput.notes[n].point.lon
+              )
+              .then((elev) => {
+                editRouteInput.notes[n].point.alt = elev
+              })
+          )
+        }
+      }
+
+      for (const p in editRouteInput.notes[n].photos) {
+        const photo = await this.trackService.uploadPhoto(
+          editRouteInput.notes[n].photos[p]
+        )
+        if (photo) {
+          uploads.push(photo.upload)
+          downloads.push(photo.download)
+        }
+      }
+    }
+
+    Promise.allSettled(downloads.concat(elevations)).then(async () => {
+      const route = await this.routeModel.findByIdAndUpdate(
+        id,
+        editRouteInput,
+        { new: true }
+      )
+
+      const profile = await this.updateUserStatistics(userId)
+      this.pubSub.publish('profileChanged', { watchProfile: profile })
+
+      const emit: SubscriptionRouteResponse = {
+        function: 'UPDATE',
+        id: route._id,
+        data: route as Route,
+        userId: route.userId
+      }
+      this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
+    })
+
+    return uploads
   }
 
   async remove(

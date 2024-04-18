@@ -20,6 +20,7 @@ import { RouteFilterInput } from './dto/route-filter.input'
 import { DeleteRouteInput } from './dto/delete-route.input'
 import { GetRouteInput } from './dto/get-route.input'
 import { JwtFreeGuard } from '../auth/jwt-free.guards'
+import { EditRouteInput } from './dto/edit-route.input'
 
 @Resolver(() => Route)
 export class RouteResolver {
@@ -34,6 +35,17 @@ export class RouteResolver {
     @Args('createRouteInput') createRouteInput: CreateRouteInput
   ) {
     return this.routeService.create(userId, createRouteInput)
+  }
+
+  @Mutation(() => [UploadPhoto], {
+    description: 'Редактировать маршрут в MongoDB'
+  })
+  @UseGuards(JwtAuthGuard)
+  editRoute(
+    @UserId() userId: MongooSchema.Types.ObjectId,
+    @Args('editRouteInput') editRouteInput: EditRouteInput
+  ) {
+    return this.routeService.edit(userId, editRouteInput)
   }
 
   @Query(() => [Route], {
