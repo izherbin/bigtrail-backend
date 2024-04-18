@@ -16,6 +16,7 @@ import { UserService } from '../user/user.service'
 import { GetProfileResponse } from '../user/dto/get-profile.response'
 import { ConfigService } from '@nestjs/config'
 import { FavoritesService } from '../favorites/favorites.service'
+import { EditPlaceInput } from './dto/edit-place.input'
 
 @Injectable()
 export class PlaceService {
@@ -127,9 +128,49 @@ export class PlaceService {
     return `This action returns a #${id} place`
   }
 
-  // update(id: number, updatePlaceInput: UpdatePlaceInput) {
-  //   return `This action updates a #${id} place`
-  // }
+  async edit(
+    userId: MongooSchema.Types.ObjectId,
+    editPlaceInput: EditPlaceInput
+  ) {
+    const { id } = editPlaceInput
+    const place = await this.placeModel.findById(id)
+    if (place.userId.toString() !== userId.toString()) {
+      throw new ClientException(40309)
+    }
+
+    const uploads = []
+    const downloads = []
+    for (const p in editPlaceInput.photos) {
+      const photo = await this.trackService.uploadPhoto(
+        editPlaceInput.photos[p]
+      )
+      if (photo) {
+        uploads.push(photo.upload)
+        downloads.push(photo.download)
+      }
+    }
+
+    Promise.allSettled(downloads).then(async () => {
+      const place = await this.placeModel.findByIdAndUpdate(
+        id,
+        editPlaceInput,
+        { new: true }
+      )
+
+      const profile = await this.updateUserStatistics(userId)
+      this.pubSub.publish('profileChanged', { watchProfile: profile })
+
+      const emit: SubscriptionPlaceResponse = {
+        function: 'UPDATE',
+        id: place._id,
+        data: place as Place,
+        userId: place.userId
+      }
+      this.pubSub.publish('placeChanged', { watchPlaces: emit })
+    })
+
+    return uploads
+  }
 
   async remove(
     userId: MongooSchema.Types.ObjectId,

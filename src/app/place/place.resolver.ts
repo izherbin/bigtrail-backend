@@ -14,13 +14,14 @@ import { SubscriptionPlaceResponse } from './dto/subscription-place.response'
 import { SubscriptionPlaceInput } from './dto/subscription-place.input'
 import { GetPlaceInput } from './dto/get-place.input'
 import { JwtFreeGuard } from '../auth/jwt-free.guards'
+import { EditPlaceInput } from './dto/edit-place.input'
 
 @Resolver(() => Place)
 export class PlaceResolver {
   constructor(private readonly placeService: PlaceService) {}
 
   @Mutation(() => [UploadPhoto], {
-    description: 'Загрузить трек в MongoDB'
+    description: 'Загрузить интересное место в MongoDB'
   })
   @UseGuards(JwtAuthGuard)
   publishPlace(
@@ -28,6 +29,17 @@ export class PlaceResolver {
     @Args('createPlaceInput') createPlaceInput: CreatePlaceInput
   ) {
     return this.placeService.create(userId, createPlaceInput)
+  }
+
+  @Mutation(() => [UploadPhoto], {
+    description: 'Редактировать интересное место из MongoDB'
+  })
+  @UseGuards(JwtAuthGuard)
+  editPlace(
+    @UserId() userId: MongooSchema.Types.ObjectId,
+    @Args('editPlaceInput') editPlaceInput: EditPlaceInput
+  ) {
+    return this.placeService.edit(userId, editPlaceInput)
   }
 
   @Query(() => Place, {

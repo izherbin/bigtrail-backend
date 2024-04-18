@@ -93,6 +93,11 @@ const ERRORS: ErrorRecord[] = [
     status: HttpStatus.FORBIDDEN
   },
   {
+    code: 40309,
+    message: 'Impossible to edit someone else`s place',
+    status: HttpStatus.FORBIDDEN
+  },
+  {
     code: 40401,
     message: 'No such phone',
     status: HttpStatus.NOT_FOUND
