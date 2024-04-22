@@ -39,17 +39,22 @@ const ERRORS: ErrorRecord[] = [
   },
   {
     code: 40007,
-    message: 'Incorrect login',
+    message: 'Login does not meet requirements',
     status: HttpStatus.BAD_REQUEST
   },
   {
     code: 40008,
-    message: 'Incorrect password',
+    message: 'Password does not meet requirements',
     status: HttpStatus.BAD_REQUEST
   },
   {
     code: 40101,
     message: 'Code is incorrect',
+    status: HttpStatus.UNAUTHORIZED
+  },
+  {
+    code: 40102,
+    message: 'Password is incorrect',
     status: HttpStatus.UNAUTHORIZED
   },
   {

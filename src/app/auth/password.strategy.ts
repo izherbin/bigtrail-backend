@@ -17,7 +17,7 @@ export class PasswordStrategy extends PassportStrategy(Strategy, 'password') {
     const user = await this.authService.validateAdmin(login, password)
 
     if (!user) {
-      throw new ClientException(40101)
+      throw new ClientException(40102)
     }
 
     return user
