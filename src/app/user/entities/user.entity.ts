@@ -116,10 +116,11 @@ export class User {
   ip?: string
 
   @Field(() => Float, {
+    nullable: true,
     description: 'Время создания профайла пользователя в формате timestamp'
   })
   @Prop()
-  tsCreated: timestamp
+  tsCreated?: timestamp
 
   @Field(() => String, {
     description: 'Имя администратора'
