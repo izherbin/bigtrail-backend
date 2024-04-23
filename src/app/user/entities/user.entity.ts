@@ -109,6 +109,7 @@ export class User {
   phone: string
 
   @Field(() => String, {
+    nullable: true,
     description: 'IP адрес пользователя в момент создания профайла'
   })
   @Prop()
