@@ -18,6 +18,7 @@ import { GeocodingModule } from './geocoding/geocoding.module'
 import { PlaceModule } from './place/place.module'
 import { SurveyModule } from './survey/survey.module'
 import { FavoritesModule } from './favorites/favorites.module'
+import { AdminModule } from './admin/admin.module';
 
 interface Extra {
   request: {
@@ -80,7 +81,8 @@ interface Extra {
     GeocodingModule,
     PlaceModule,
     SurveyModule,
-    FavoritesModule
+    FavoritesModule,
+    AdminModule
   ],
   controllers: [],
   providers: [AppResolver, AppService]

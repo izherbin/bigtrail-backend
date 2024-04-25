@@ -349,6 +349,10 @@ export class RouteService {
     return user as GetProfileResponse
   }
 
+  async getAdminStatistics() {
+    return await this.routeModel.countDocuments()
+  }
+
   async filterRoutes(routes: Route[], filter: RouteFilterInput) {
     function isFilterFails(filter: string[] | null, value: string) {
       const isFilterEmpty =

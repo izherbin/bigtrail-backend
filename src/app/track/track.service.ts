@@ -276,6 +276,10 @@ export class TrackService {
     return user as GetProfileResponse
   }
 
+  async getAdminStatistics() {
+    return await this.trackModel.countDocuments()
+  }
+
   async getElevation(lat: number, lon: number) {
     const elev = await elevation(lat, lon)
     return elev

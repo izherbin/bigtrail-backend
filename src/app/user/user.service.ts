@@ -77,6 +77,14 @@ export class UserService {
     return user
   }
 
+  async getAdminStatistics() {
+    return await this.userModel
+      .countDocuments({
+        $or: [{ roles: { $exists: false } }, { roles: { $in: ['user'] } }]
+      })
+      .exec()
+  }
+
   async createUser(phone: string, ip: string) {
     const user = await this.userModel.findOne({ phone })
     if (user) {

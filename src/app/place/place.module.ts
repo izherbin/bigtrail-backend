@@ -20,6 +20,7 @@ import { FavoritesModule } from '../favorites/favorites.module'
     FavoritesModule,
     TrackModule,
     UserModule
-  ]
+  ],
+  exports: [PlaceService]
 })
 export class PlaceModule {}

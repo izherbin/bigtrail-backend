@@ -236,6 +236,10 @@ export class PlaceService {
     return user as GetProfileResponse
   }
 
+  async getAdminStatistics() {
+    return await this.placeModel.countDocuments()
+  }
+
   async filterPlaces(
     currentId: MongooSchema.Types.ObjectId,
     places: Place[],
