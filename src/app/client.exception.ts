@@ -123,11 +123,6 @@ const ERRORS: ErrorRecord[] = [
     status: HttpStatus.NOT_FOUND
   },
   {
-    code: 40403,
-    message: 'No such user',
-    status: HttpStatus.NOT_FOUND
-  },
-  {
     code: 40404,
     message: 'No such profile',
     status: HttpStatus.NOT_FOUND
@@ -155,6 +150,11 @@ const ERRORS: ErrorRecord[] = [
   {
     code: 40409,
     message: 'No such admin',
+    status: HttpStatus.NOT_FOUND
+  },
+  {
+    code: 40410,
+    message: 'No such user',
     status: HttpStatus.NOT_FOUND
   },
   {

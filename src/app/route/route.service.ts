@@ -297,7 +297,7 @@ export class RouteService {
     const { id } = deleteTrackInput
     const route = await this.routeModel.findById(id)
     if (!route) {
-      throw new ClientException(40403)
+      throw new ClientException(40402)
     }
 
     if (route.userId.toString() !== userId.toString()) {

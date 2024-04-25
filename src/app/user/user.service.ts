@@ -71,7 +71,7 @@ export class UserService {
   async getUserById(id: MongooSchema.Types.ObjectId) {
     const user = await this.userModel.findById(id)
     if (!user) {
-      throw new ClientException(40403)
+      throw new ClientException(40410)
     }
 
     return user
@@ -107,7 +107,7 @@ export class UserService {
   async updateUser(user: User) {
     const userFromDB = await this.userModel.findOne({ phone: user.phone })
     if (!userFromDB) {
-      throw new ClientException(40403)
+      throw new ClientException(40410)
     }
 
     if (userFromDB.roles.includes(Role.Admin)) {
@@ -120,7 +120,7 @@ export class UserService {
   async deleteUser(phone: string) {
     const userFromDB = await this.userModel.findOne({ phone })
     if (!userFromDB) {
-      throw new ClientException(40403)
+      throw new ClientException(40410)
     }
 
     if (userFromDB.roles.includes(Role.Admin)) {
@@ -160,7 +160,7 @@ export class UserService {
       await this.userModel.findOne({ phone })
     )
     if (!user) {
-      throw new ClientException(40403)
+      throw new ClientException(40410)
     }
 
     if (user.roles.includes(Role.Admin)) {
@@ -195,7 +195,7 @@ export class UserService {
       await this.userModel.findOne({ phone })
     )
     if (!user) {
-      throw new ClientException(40403)
+      throw new ClientException(40410)
     }
 
     if (user.roles.includes(Role.Admin)) {
@@ -214,7 +214,7 @@ export class UserService {
   async setProfileAvatar(phone: string) {
     const user = await this.userModel.findOne({ phone })
     if (!user) {
-      throw new ClientException(40403)
+      throw new ClientException(40410)
     }
 
     const filename = String(Date.now()) + '_' + user._id.toString() + '.jpg'
@@ -260,7 +260,7 @@ export class UserService {
   ) {
     const user = await this.userModel.findOne({ phone })
     if (!user) {
-      throw new ClientException(40403)
+      throw new ClientException(40410)
     }
 
     const timestamp = Date.now().toString()
@@ -291,7 +291,7 @@ export class UserService {
   async deleteProfileAvatar(phone: string) {
     const user = await this.userModel.findOne({ phone })
     if (!user) {
-      throw new ClientException(40403)
+      throw new ClientException(40410)
     }
 
     const oldAvatarFile = user.avatarFile ? user.avatarFile : null
