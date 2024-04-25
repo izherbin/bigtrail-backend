@@ -12,6 +12,9 @@ import { UploadPhoto } from './dto/upload-photo.response'
 import { GetElevationInput } from './dto/get-elevation.input'
 import { TrackFilterInput } from './dto/track-filter.input'
 import { TrackAdminFilterInput } from './dto/track-admin-filter.input'
+import { RolesGuard } from '../auth/roles.guards'
+import { RequiredRoles } from '../auth/required-roles.decorator'
+import { Role } from '../user/entities/user.entity'
 // import { UpdateTrackInput } from './dto/update-track.input'
 
 @Resolver()
@@ -47,7 +50,8 @@ export class TrackResolver {
     name: 'adminGetTracks',
     description: 'Получить все треки в соответствии с фильтром (администратор)'
   })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RequiredRoles(Role.Admin)
   adminGetAllTracksQuery(
     @Args('trackAdminFilterInput', { nullable: true })
     trackAdminFilterInput: TrackAdminFilterInput
