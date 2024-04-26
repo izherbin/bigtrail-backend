@@ -77,6 +77,7 @@ export class TrackService {
     Promise.allSettled(downloads.concat(elevations)).then(async () => {
       const createTrack = new this.trackModel(createTrackInput)
       createTrack.userId = userId
+      createTrack.tsCreated = new Date().getTime()
 
       const track: Track = await createTrack.save()
       track.id = track._id.toString()

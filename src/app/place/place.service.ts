@@ -50,7 +50,8 @@ export class PlaceService {
     Promise.allSettled(downloads).then(async () => {
       const createPlace = new this.placeModel(createPlaceInput)
       createPlace.userId = userId
-      createPlace.timestamp = Date.now()
+      createPlace.timestamp = Date.now() //TODO Delete this if timestamp is not needed
+      createPlace.tsCreated = new Date().getTime()
 
       const place = await createPlace.save()
 

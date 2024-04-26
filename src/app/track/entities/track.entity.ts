@@ -104,9 +104,17 @@ export class Track {
   @Prop()
   name: string
 
+  //TODO Delete this if timestamp is not needed
   @Field(() => Float, { description: 'Временная метка' })
   @Prop()
   timestamp: number
+
+  @Field(() => Float, {
+    nullable: true,
+    description: 'Время создания трека в формате timestamp'
+  })
+  @Prop()
+  tsCreated?: number
 
   @Field(() => [TrackPoint], { description: 'Массив точек трека' })
   @Prop()

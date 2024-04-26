@@ -97,8 +97,8 @@ export class RouteService {
     Promise.allSettled(downloads.concat(elevations)).then(async () => {
       const createRoute = new this.routeModel(createRouteInput)
       createRoute.userId = userId
-      createRoute.timestamp = Date.now()
-
+      createRoute.timestamp = Date.now() //TODO Delete this if timestamp is not needed
+      createRoute.tsCreated = new Date().getTime()
       const route = await createRoute.save()
       // route.id = route._id.toString()
 

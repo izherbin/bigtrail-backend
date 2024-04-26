@@ -22,9 +22,17 @@ export class Place {
   @Prop({ default: 'place' })
   type: 'place'
 
+  //TODO Delete this if timestamp is not needed
   @Field(() => Float, { description: 'Временная метка создания' })
   @Prop()
   timestamp: number
+
+  @Field(() => Float, {
+    nullable: true,
+    description: 'Время создания интересного места в формате timestamp'
+  })
+  @Prop()
+  tsCreated?: number
 
   @Field(() => String, { description: 'Индетификатор создателя в MongoDB' })
   @Prop()

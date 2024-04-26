@@ -66,9 +66,17 @@ export class Route {
   @Prop()
   photos: SetoutPhoto[]
 
+  //TODO Delete this if timestamp is not needed
   @Field(() => Float, { description: 'Временная метка' })
   @Prop()
   timestamp: number
+
+  @Field(() => Float, {
+    nullable: true,
+    description: 'Время создания маршрута в формате timestamp'
+  })
+  @Prop()
+  tsCreated?: number
 
   @Field(() => [TrackPoint], { description: 'Массив точек маршрута' })
   @Prop()
