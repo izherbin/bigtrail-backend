@@ -354,12 +354,25 @@ export class RouteService {
   }
 
   async filterRoutes(routes: Route[], filter: RouteFilterInput) {
-    function isFilterFails(filter: string[] | null, value: string) {
+    function isStringFilterFails(filter: string[] | null, value: string) {
       const isFilterEmpty =
         !filter || (Array.isArray(filter) && filter.length == 0)
       return (
         !isFilterEmpty && !(Array.isArray(filter) && filter.includes(value))
       )
+    }
+
+    function isBooleanFilterFails(
+      filter: boolean | null | undefined,
+      value: boolean
+    ) {
+      if (filter === true) {
+        return !value
+      } else if (filter === false) {
+        return value
+      } else {
+        return false
+      }
     }
 
     function isUserIdFails(
@@ -386,44 +399,51 @@ export class RouteService {
     }
 
     const {
-      id,
+      ids,
       userId,
       search,
       transit,
       difficulty,
       category,
+      sort,
+      order = 'asc',
       similar,
       simplify,
-      max
+      moderated,
+      verified,
+      from,
+      to
     } = filter || {}
 
-    if (id) {
-      //? const place = await this.getRoute({ id })
-      const routesFiltered = routes.filter((r) => r._id.toString() === id)
+    if (ids && Array.isArray(ids) && ids.length > 0) {
+      const routesFiltered = routes.filter((route) =>
+        ids.includes(route._id.toString())
+      )
       const routesSimplified = simplify
         ? routesSimplify(routesFiltered, simplify)
         : routesFiltered
       return routesSimplified
     }
 
-    let routesSimilar: Route[]
-    if (similar) {
-      const reference = await this.routeModel.findById(similar)
-      routesSimilar = routes
-        .sort((a: Route, b: Route) => {
-          return (
-            this.calcDistanceL2(reference, a) -
-            this.calcDistanceL2(reference, b)
-          )
-        })
-        .filter((route: Route) => {
-          return route._id.toString() !== similar.toString()
-        })
+    let routesSorted = routes
+    if (sort === 'similarity') {
+      if (!similar) {
+        throw new ClientException(40009)
+      }
+      routesSorted = await this.sortBySimilarity(routes, similar, order)
+    } else if (sort === 'date') {
+      routesSorted = await this.sortByDate(routes, order)
+    } else if (sort === null || sort === undefined) {
+      if (similar) {
+        routesSorted = await this.sortBySimilarity(routes, similar, order)
+      } else {
+        routesSorted = await this.sortByDate(routes, order)
+      }
     } else {
-      routesSimilar = routes
+      throw new ClientException(40010)
     }
 
-    const routesFiltered = routesSimilar.filter((route) => {
+    const routesFiltered = routesSorted.filter((route) => {
       if (isUserIdFails(userId, route.userId)) return false
       else if (
         isSearchFails(search, route.name) &&
@@ -431,21 +451,48 @@ export class RouteService {
         isSearchFails(search, route.address)
       )
         return false
-      else if (isFilterFails(transit, route.transit)) return false
-      else if (isFilterFails(difficulty, route.difficulty)) return false
-      else if (isFilterFails(category, route.category)) return false
+      else if (isStringFilterFails(transit, route.transit)) return false
+      else if (isStringFilterFails(difficulty, route.difficulty)) return false
+      else if (isStringFilterFails(category, route.category)) return false
+      else if (isBooleanFilterFails(moderated, route.moderated)) return false
+      else if (isBooleanFilterFails(verified, route.verified)) return false
       else return true
     })
 
     const routesSimplified = simplify
       ? routesSimplify(routesFiltered, simplify)
       : routesFiltered
-    return routesSimplified.slice(
-      0,
-      max && max < routesFiltered.length ? max : routesFiltered.length
-    )
+
+    const start = from && from > 0 ? from : 0
+    const end = to && to < routesFiltered.length ? to : routesFiltered.length
+    return routesSimplified.slice(start, end)
   }
 
+  async sortBySimilarity(
+    routes: Route[],
+    similar: MongooSchema.Types.ObjectId,
+    order: string
+  ) {
+    const reference = await this.routeModel.findById(similar)
+    routes.sort((a: Route, b: Route) => {
+      return (
+        this.calcDistanceL2(reference, a) - this.calcDistanceL2(reference, b)
+      )
+    })
+
+    if (order === 'desc') {
+      routes.reverse()
+    }
+
+    return routes
+  }
+
+  async sortByDate(routes: Route[], order: string) {
+    routes.sort((a: Route, b: Route) => {
+      return (a.tsCreated - b.tsCreated) * (order === 'asc' ? 1 : -1)
+    })
+    return routes
+  }
   calcDistanceL2(sourceRoute: Route, targetRoute: Route) {
     if (!sourceRoute.points[0] || !targetRoute.points[0]) return null
 

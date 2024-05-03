@@ -44,7 +44,7 @@ export class PlaceResolver {
 
   @Query(() => Place, {
     deprecationReason:
-      'This query is deprecated, use getContent({filter: id}) instead',
+      'This query is deprecated, use getPlaces({filter: id}) instead',
     description: 'Получить чужое интересное место по id'
   })
   @UseGuards(JwtFreeGuard)
@@ -59,12 +59,12 @@ export class PlaceResolver {
     description: 'Получить все интересные места, удовлетворяющие фильтру'
   })
   @UseGuards(JwtFreeGuard)
-  getContent(
+  getPlaces(
     @UserId() userId: MongooSchema.Types.ObjectId,
     @Args('placeFilterInput', { nullable: true })
     placeFilterInput?: PlaceFilterInput
   ) {
-    return this.placeService.getContent(userId, placeFilterInput)
+    return this.placeService.getPlaces(userId, placeFilterInput)
   }
 
   @Subscription(() => SubscriptionPlaceResponse, {

@@ -48,6 +48,16 @@ const ERRORS: ErrorRecord[] = [
     status: HttpStatus.BAD_REQUEST
   },
   {
+    code: 40009,
+    message: 'Similar id is not specified',
+    status: HttpStatus.BAD_REQUEST
+  },
+  {
+    code: 40010,
+    message: 'Wrong sorting method',
+    status: HttpStatus.BAD_REQUEST
+  },
+  {
     code: 40101,
     message: 'Code is incorrect',
     status: HttpStatus.UNAUTHORIZED

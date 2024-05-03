@@ -7,6 +7,8 @@ type JwtToken = string
 
 export enum Role {
   Admin = 'admin',
+  Moderator = 'moderator',
+  Verifier = 'verifier',
   Superuser = 'superuser',
   User = 'user',
   Guest = 'guest'

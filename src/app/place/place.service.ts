@@ -98,14 +98,14 @@ export class PlaceService {
     return place as Place
   }
 
-  async getContent(
+  async getPlaces(
     userId: MongooSchema.Types.ObjectId,
     filter: PlaceFilterInput
   ) {
     const places = await this.renewManyPlacesPhotos(
       await this.placeModel.find({})
     )
-    const placesFiltered = await this.filterPlaces(userId, places, filter)
+    const placesFiltered = await this.filterPlaces(places, filter)
     const favorites = userId ? await this.favoritesService.findAll(userId) : []
     placesFiltered.forEach((place) => {
       const isFavorite = !!favorites.find(
@@ -241,12 +241,8 @@ export class PlaceService {
     return await this.placeModel.countDocuments()
   }
 
-  async filterPlaces(
-    currentId: MongooSchema.Types.ObjectId,
-    places: Place[],
-    filter: PlaceFilterInput
-  ) {
-    function isFilterFails(filter: string[] | null, value: string) {
+  async filterPlaces(places: Place[], filter: PlaceFilterInput) {
+    function isStringFilterFails(filter: string[] | null, value: string) {
       const isFilterEmpty =
         !filter ||
         (Array.isArray(filter) &&
@@ -254,6 +250,19 @@ export class PlaceService {
       return (
         !isFilterEmpty && !(Array.isArray(filter) && filter.includes(value))
       )
+    }
+
+    function isBooleanFilterFails(
+      filter: boolean | null | undefined,
+      value: boolean
+    ) {
+      if (filter === true) {
+        return !value
+      } else if (filter === false) {
+        return value
+      } else {
+        return false
+      }
     }
 
     function isUserIdFails(
@@ -264,40 +273,86 @@ export class PlaceService {
       return !isUserIdEmpty && userId?.toString() !== value?.toString()
     }
 
-    const { id, type, userId, similar, max } = filter || {}
+    const {
+      ids,
+      type,
+      userId,
+      sort,
+      order = 'asc',
+      similar,
+      moderated,
+      verified,
+      from,
+      to
+    } = filter || {}
 
-    if (id) {
-      const place = await this.getPlace(currentId, { id })
-      return [place]
+    if (ids && Array.isArray(ids) && ids.length > 0) {
+      const placesFiltered = places.filter((place) => {
+        return ids.includes(place._id.toString())
+      })
+      return placesFiltered
     }
 
-    let placesSimilar: Place[]
-    if (similar) {
-      const reference = await this.placeModel.findById(similar)
-      placesSimilar = places
-        .sort((a: Place, b: Place) => {
-          return (
-            this.calcDistanceL2(reference, a) -
-            this.calcDistanceL2(reference, b)
-          )
-        })
-        .filter((place: Place) => {
-          return place._id.toString() !== similar.toString()
-        })
+    let placesSorted = places
+    if (sort === 'similarity') {
+      if (!similar) {
+        throw new ClientException(40009)
+      }
+      placesSorted = await this.sortBySimilarity(places, similar, order)
+    } else if (sort === 'date') {
+      placesSorted = await this.sortByDate(places, order)
+    } else if (sort === null || sort === undefined) {
+      if (similar) {
+        placesSorted = await this.sortBySimilarity(places, similar, order)
+      } else {
+        placesSorted = await this.sortByDate(places, order)
+      }
     } else {
-      placesSimilar = places
+      throw new ClientException(40010)
     }
 
-    const placesFiltered = placesSimilar.filter((place) => {
+    const placesFiltered = placesSorted.filter((place) => {
       if (isUserIdFails(userId, place.userId)) return false
-      else if (isFilterFails([type], place.type)) return false
+      else if (isStringFilterFails([type], place.type)) return false
+      else if (isBooleanFilterFails(moderated, place.moderated)) return false
+      else if (isBooleanFilterFails(verified, place.verified)) return false
       else return true
     })
 
-    return placesFiltered.slice(
-      0,
-      max && max < placesFiltered.length ? max : placesFiltered.length
-    )
+    const start = from && from > 0 ? from : 0
+    const end = to && to < placesFiltered.length ? to : placesFiltered.length
+    return placesFiltered.slice(start, end)
+  }
+
+  async sortBySimilarity(
+    places: Place[],
+    similar: MongooSchema.Types.ObjectId,
+    order: string
+  ) {
+    const reference = await this.placeModel.findById(similar)
+    places.sort((a: Place, b: Place) => {
+      return (
+        this.calcDistanceL2(reference, a) - this.calcDistanceL2(reference, b)
+      )
+    })
+
+    if (order === 'desc') {
+      places.reverse()
+    }
+
+    return places
+  }
+
+  async sortByDate(places: Place[], order: string) {
+    places.sort((a: Place, b: Place) => {
+      return a.tsCreated - b.tsCreated
+    })
+
+    if (order === 'desc') {
+      places.reverse()
+    }
+
+    return places
   }
 
   calcDistanceL2(sourcePlace: Place, targetPlace: Place) {

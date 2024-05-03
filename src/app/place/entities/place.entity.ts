@@ -71,6 +71,20 @@ export class Place {
 
   @Field(() => Boolean, {
     nullable: true,
+    description: 'Модерировано ли интересное место?'
+  })
+  @Prop()
+  moderated?: boolean
+
+  @Field(() => Boolean, {
+    nullable: true,
+    description: 'Верифицировано ли интересное место?'
+  })
+  @Prop()
+  verified?: boolean
+
+  @Field(() => Boolean, {
+    nullable: true,
     description: 'Находится ли в списке избранного?'
   })
   favorite: boolean

@@ -18,7 +18,7 @@ import { GeocodingModule } from './geocoding/geocoding.module'
 import { PlaceModule } from './place/place.module'
 import { SurveyModule } from './survey/survey.module'
 import { FavoritesModule } from './favorites/favorites.module'
-import { AdminModule } from './admin/admin.module';
+import { AdminModule } from './admin/admin.module'
 
 interface Extra {
   request: {

@@ -103,6 +103,20 @@ export class Route {
 
   @Field(() => Boolean, {
     nullable: true,
+    description: 'Модерирован ли маршрут?'
+  })
+  @Prop()
+  moderated?: boolean
+
+  @Field(() => Boolean, {
+    nullable: true,
+    description: 'Верифицирован ли маршрут?'
+  })
+  @Prop()
+  verified?: boolean
+
+  @Field(() => Boolean, {
+    nullable: true,
     description: 'Находится ли в списке избранного?'
   })
   favorite?: boolean
