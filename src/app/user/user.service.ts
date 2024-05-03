@@ -112,6 +112,36 @@ export class UserService {
     return `Админ ${login} успешно создан`
   }
 
+  async createModerator(login: string, passwd: string): Promise<string> {
+    const moderator = await this.userModel.findOne({ login })
+    if (moderator) {
+      throw new ClientException(40904)
+    }
+    const password = await bcrypt.hash(
+      passwd,
+      Number(this.configService.get('SALT_ROUND'))
+    )
+    await this.userModel.insertMany([
+      { login, password, phone: 'N/A', roles: [Role.Moderator] }
+    ])
+    return `Модератор ${login} успешно создан`
+  }
+
+  async createVerifier(login: string, passwd: string): Promise<string> {
+    const verifier = await this.userModel.findOne({ login })
+    if (verifier) {
+      throw new ClientException(40905)
+    }
+    const password = await bcrypt.hash(
+      passwd,
+      Number(this.configService.get('SALT_ROUND'))
+    )
+    await this.userModel.insertMany([
+      { login, password, phone: 'N/A', roles: [Role.Verifier] }
+    ])
+    return `Верификатор ${login} успешно создан`
+  }
+
   async updateUser(user: User) {
     const userFromDB = await this.userModel.findOne({ phone: user.phone })
     if (!userFromDB) {
@@ -157,6 +187,38 @@ export class UserService {
     return `Admin ${login} успешно удален`
   }
 
+  async deleteModerator(login: string) {
+    const moderatorFromDB = await this.userModel.findOne({ login })
+    if (!moderatorFromDB) {
+      throw new ClientException(40411)
+    }
+
+    const oldAvatarFile = moderatorFromDB.avatarFile
+      ? moderatorFromDB.avatarFile
+      : null
+    await this.userModel.deleteOne({ login })
+    if (oldAvatarFile) {
+      this.minioClientService.deleteFile('avatars', oldAvatarFile)
+    }
+    return `Moderator ${login} успешно удален`
+  }
+
+  async deleteVerifier(login: string) {
+    const verifierFromDB = await this.userModel.findOne({ login })
+    if (!verifierFromDB) {
+      throw new ClientException(40412)
+    }
+
+    const oldAvatarFile = verifierFromDB.avatarFile
+      ? verifierFromDB.avatarFile
+      : null
+    await this.userModel.deleteOne({ login })
+    if (oldAvatarFile) {
+      this.minioClientService.deleteFile('avatars', oldAvatarFile)
+    }
+    return `Verifier ${login} успешно удален`
+  }
+
   async setName(phone: string, setNameInput: SetNameInput) {
     let { name } = setNameInput
     name = name.trim()
@@ -185,6 +247,10 @@ export class UserService {
   }
 
   async setAdminPassword(login: string, password: string): Promise<string> {
+    if (!this.validatePassword(password)) {
+      throw new ClientException(40008)
+    }
+
     const admin = await this.getUserByLogin(login)
     if (!admin) {
       throw new ClientException(40409)
@@ -194,6 +260,38 @@ export class UserService {
     await admin.save()
 
     return `Пароль администратора ${login} успешно изменен`
+  }
+
+  async setModeratorPassword(login: string, password: string): Promise<string> {
+    if (!this.validatePassword(password)) {
+      throw new ClientException(40008)
+    }
+
+    const moderator = await this.getUserByLogin(login)
+    if (!moderator) {
+      throw new ClientException(40411)
+    }
+
+    moderator.password = password
+    await moderator.save()
+
+    return `Пароль модератора ${login} успешно изменен`
+  }
+
+  async setVerifierPassword(login: string, password: string): Promise<string> {
+    if (!this.validatePassword(password)) {
+      throw new ClientException(40008)
+    }
+
+    const verifier = await this.getUserByLogin(login)
+    if (!verifier) {
+      throw new ClientException(40412)
+    }
+
+    verifier.password = password
+    await verifier.save()
+
+    return `Пароль верификатора ${login} успешно изменен`
   }
 
   async setProfleStatus(phone: string, setStatusInput: SetStatusInput) {
@@ -346,5 +444,13 @@ export class UserService {
 
   validateName(name: string): boolean {
     return /^[A-Za-zа-яёA-ЯЁ ]+$/.test(name)
+  }
+
+  validateLogin(login: string): boolean {
+    return /.*/.test(login)
+  }
+
+  validatePassword(password: string): boolean {
+    return /.*/.test(password)
   }
 }

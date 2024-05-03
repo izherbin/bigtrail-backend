@@ -106,7 +106,7 @@ export class AuthService {
       login,
       _id,
       phone: 'N/A',
-      roles: [Role.Admin]
+      roles: admin.roles
     }
     return {
       user,
@@ -197,19 +197,47 @@ export class AuthService {
   async signupAdmin(payload: LoginPasswordInput): Promise<string> {
     const { login, password } = payload
 
-    if (!this.validateLogin(login)) {
+    if (!this.userService.validateLogin(login)) {
       throw new ClientException(40007)
     }
 
-    if (!this.validatePassword(password)) {
+    if (!this.userService.validatePassword(password)) {
       throw new ClientException(40008)
     }
 
     return await this.userService.createAdmin(login, password)
   }
 
+  async signupModerator(payload: LoginPasswordInput): Promise<string> {
+    const { login, password } = payload
+
+    if (!this.userService.validateLogin(login)) {
+      throw new ClientException(40007)
+    }
+
+    if (!this.userService.validatePassword(password)) {
+      throw new ClientException(40008)
+    }
+
+    return await this.userService.createModerator(login, password)
+  }
+
+  async signupVerifier(payload: LoginPasswordInput): Promise<string> {
+    const { login, password } = payload
+
+    if (!this.userService.validateLogin(login)) {
+      throw new ClientException(40007)
+    }
+
+    if (!this.userService.validatePassword(password)) {
+      throw new ClientException(40008)
+    }
+
+    return await this.userService.createVerifier(login, password)
+  }
+
   async setAdminPassword(login: string, password: string): Promise<string> {
-    if (!this.validatePassword(password)) {
+    if (!this.userService.validatePassword(password)) {
       throw new ClientException(40006)
     }
 
@@ -223,14 +251,6 @@ export class AuthService {
 
   validatePhone(phone: string): boolean {
     return /^7\d{10}/.test(phone)
-  }
-
-  validateLogin(login: string): boolean {
-    return /.*/.test(login)
-  }
-
-  validatePassword(password: string): boolean {
-    return /.*/.test(password)
   }
 
   genCode(): number {

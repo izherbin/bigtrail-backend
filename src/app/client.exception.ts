@@ -168,6 +168,16 @@ const ERRORS: ErrorRecord[] = [
     status: HttpStatus.NOT_FOUND
   },
   {
+    code: 40411,
+    message: 'No such moderator',
+    status: HttpStatus.NOT_FOUND
+  },
+  {
+    code: 40412,
+    message: 'No such verifier',
+    status: HttpStatus.NOT_FOUND
+  },
+  {
     code: 40901,
     message: 'SMS too early',
     status: HttpStatus.CONFLICT
@@ -180,6 +190,16 @@ const ERRORS: ErrorRecord[] = [
   {
     code: 40903,
     message: 'This admin is already exists',
+    status: HttpStatus.CONFLICT
+  },
+  {
+    code: 40904,
+    message: 'This moderator is already exists',
+    status: HttpStatus.CONFLICT
+  },
+  {
+    code: 40905,
+    message: 'This verifier is already exists',
     status: HttpStatus.CONFLICT
   },
   {

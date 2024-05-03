@@ -43,6 +43,7 @@ import { RouteModule } from '../route/route.module'
       }
     }),
     MinioClientModule
-  ]
+  ],
+  exports: [AuthService]
 })
 export class AuthModule {}

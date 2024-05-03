@@ -5,9 +5,10 @@ import { UserModule } from '../user/user.module'
 import { TrackModule } from '../track/track.module'
 import { RouteModule } from '../route/route.module'
 import { PlaceModule } from '../place/place.module'
+import { AuthModule } from '../auth/auth.module'
 
 @Module({
-  imports: [UserModule, TrackModule, RouteModule, PlaceModule],
+  imports: [AuthModule, UserModule, TrackModule, RouteModule, PlaceModule],
   providers: [AdminResolver, AdminService]
 })
 export class AdminModule {}
