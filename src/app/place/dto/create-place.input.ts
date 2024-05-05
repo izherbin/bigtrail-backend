@@ -6,7 +6,17 @@ import { TrackPhotoInput } from 'src/app/track/dto/create-track.input'
 @InputType({ description: 'Объект ввода при создании интересного места' })
 export class CreatePlaceInput extends OmitType(
   Place,
-  ['_id', 'type', 'timestamp', 'userId', 'photos'],
+  [
+    '_id',
+    'type',
+    'timestamp',
+    'tsCreated',
+    'userId',
+    'photos',
+    'moderated',
+    'verified',
+    'favorite'
+  ],
   InputType
 ) {
   @Field(() => [TrackPhotoInput], { description: 'Фото интересного места' })

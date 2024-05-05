@@ -15,6 +15,10 @@ import { SubscriptionPlaceInput } from './dto/subscription-place.input'
 import { GetPlaceInput } from './dto/get-place.input'
 import { JwtFreeGuard } from '../auth/jwt-free.guards'
 import { EditPlaceInput } from './dto/edit-place.input'
+import { RequiredRoles } from '../auth/required-roles.decorator'
+import { Role } from '../user/entities/user.entity'
+import { RolesGuard } from '../auth/roles.guards'
+import { SetModeratedPlaceInput } from './dto/set-moderated-place.input'
 
 @Resolver(() => Place)
 export class PlaceResolver {
@@ -40,6 +44,18 @@ export class PlaceResolver {
     @Args('editPlaceInput') editPlaceInput: EditPlaceInput
   ) {
     return this.placeService.edit(userId, editPlaceInput)
+  }
+
+  @Mutation(() => String, {
+    description: 'Модерировать интересное место'
+  })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RequiredRoles(Role.Moderator)
+  setModeratedPlace(
+    @Args('setModeratedPlaceInput')
+    setModeratedPlaceInput: SetModeratedPlaceInput
+  ) {
+    return this.placeService.setModerated(setModeratedPlaceInput)
   }
 
   @Query(() => Place, {

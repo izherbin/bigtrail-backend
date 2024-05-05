@@ -18,6 +18,7 @@ import { ClientException } from '../client.exception'
 import { GetProfileResponse } from '../user/dto/get-profile.response'
 import { ConfigService } from '@nestjs/config'
 import { FavoritesService } from '../favorites/favorites.service'
+import { SetModeratedRouteInput } from './dto/set-moderated-route.input'
 
 const STRING_SIMULARITY_THRESHOLD = 0.65
 
@@ -271,7 +272,7 @@ export class RouteService {
     Promise.allSettled(downloads.concat(elevations)).then(async () => {
       const route = await this.routeModel.findByIdAndUpdate(
         id,
-        editRouteInput,
+        { $set: editRouteInput },
         { new: true }
       )
 
@@ -290,6 +291,31 @@ export class RouteService {
     return uploads
   }
 
+  async setModerated(setModeratedRouteInput: SetModeratedRouteInput) {
+    const { id, ...update } = setModeratedRouteInput
+    const route = await this.routeModel.findById(id)
+    if (!route) {
+      throw new ClientException(40402)
+    }
+
+    if (route.moderated) {
+      throw new ClientException(40906)
+    }
+
+    route.moderated = true
+    route.set(update)
+    await route.save()
+
+    const emit: SubscriptionRouteResponse = {
+      function: 'UPDATE',
+      id: route._id,
+      data: route as Route,
+      userId: route.userId
+    }
+    this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
+
+    return `Маршрут ${id} успешно отмодерирован`
+  }
   async remove(
     userId: MongooSchema.Types.ObjectId,
     deleteTrackInput: DeleteRouteInput
@@ -316,7 +342,7 @@ export class RouteService {
     }
     this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
 
-    return `Успешно удален мвршрут ${id} `
+    return `Успешно удален маршрут ${id} `
   }
 
   async updateUserStatistics(userId: MongooSchema.Types.ObjectId) {

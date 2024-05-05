@@ -203,6 +203,26 @@ const ERRORS: ErrorRecord[] = [
     status: HttpStatus.CONFLICT
   },
   {
+    code: 40906,
+    message: 'This route is already moderated',
+    status: HttpStatus.CONFLICT
+  },
+  {
+    code: 40907,
+    message: 'This place is already moderated',
+    status: HttpStatus.CONFLICT
+  },
+  {
+    code: 40908,
+    message: 'This route is already verified',
+    status: HttpStatus.CONFLICT
+  },
+  {
+    code: 40909,
+    message: 'This place is already verified',
+    status: HttpStatus.CONFLICT
+  },
+  {
     code: 50000,
     message: 'Unknown Error',
     status: HttpStatus.INTERNAL_SERVER_ERROR

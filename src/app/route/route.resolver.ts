@@ -21,6 +21,10 @@ import { DeleteRouteInput } from './dto/delete-route.input'
 import { GetRouteInput } from './dto/get-route.input'
 import { JwtFreeGuard } from '../auth/jwt-free.guards'
 import { EditRouteInput } from './dto/edit-route.input'
+import { SetModeratedRouteInput } from './dto/set-moderated-route.input'
+import { RequiredRoles } from '../auth/required-roles.decorator'
+import { Role } from '../user/entities/user.entity'
+import { RolesGuard } from '../auth/roles.guards'
 
 @Resolver(() => Route)
 export class RouteResolver {
@@ -46,6 +50,18 @@ export class RouteResolver {
     @Args('editRouteInput') editRouteInput: EditRouteInput
   ) {
     return this.routeService.edit(userId, editRouteInput)
+  }
+
+  @Mutation(() => String, {
+    description: 'Модерировать маршрут'
+  })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RequiredRoles(Role.Moderator)
+  setModeratedRoute(
+    @Args('setModeratedRouteInput')
+    setModeratedRouteInput: SetModeratedRouteInput
+  ) {
+    return this.routeService.setModerated(setModeratedRouteInput)
   }
 
   @Query(() => [Route], {

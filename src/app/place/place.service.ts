@@ -17,6 +17,7 @@ import { GetProfileResponse } from '../user/dto/get-profile.response'
 import { ConfigService } from '@nestjs/config'
 import { FavoritesService } from '../favorites/favorites.service'
 import { EditPlaceInput } from './dto/edit-place.input'
+import { SetModeratedPlaceInput } from './dto/set-moderated-place.input'
 
 @Injectable()
 export class PlaceService {
@@ -157,7 +158,7 @@ export class PlaceService {
     Promise.allSettled(downloads).then(async () => {
       const place = await this.placeModel.findByIdAndUpdate(
         id,
-        editPlaceInput,
+        { $set: editPlaceInput },
         { new: true }
       )
 
@@ -176,6 +177,31 @@ export class PlaceService {
     return uploads
   }
 
+  async setModerated(setModeratedPlaceInput: SetModeratedPlaceInput) {
+    const { id, ...update } = setModeratedPlaceInput
+    const place = await this.placeModel.findById(id)
+    if (!place) {
+      throw new ClientException(40406)
+    }
+
+    if (place.moderated) {
+      throw new ClientException(40907)
+    }
+
+    place.moderated = true
+    place.set(update)
+    await place.save()
+
+    const emit: SubscriptionPlaceResponse = {
+      function: 'UPDATE',
+      id: place._id,
+      data: place as Place,
+      userId: place.userId
+    }
+    this.pubSub.publish('placeChanged', { watchPlaces: emit })
+
+    return `Интересное место № ${id} успешно модерировано`
+  }
   async remove(
     userId: MongooSchema.Types.ObjectId,
     deletePlaceInput: DeletePlaceInput
