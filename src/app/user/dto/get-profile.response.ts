@@ -8,6 +8,7 @@ export class GetProfileResponse extends PickType(User, [
   '_id',
   'phone',
   'ip',
+  'roles',
   'tsCreated',
   'name',
   'status',
