@@ -178,6 +178,11 @@ const ERRORS: ErrorRecord[] = [
     status: HttpStatus.NOT_FOUND
   },
   {
+    code: 40413,
+    message: 'No content owner',
+    status: HttpStatus.NOT_FOUND
+  },
+  {
     code: 40901,
     message: 'SMS too early',
     status: HttpStatus.CONFLICT

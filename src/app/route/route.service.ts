@@ -358,7 +358,10 @@ export class RouteService {
       throw new ClientException(40301)
     }
 
-    await this.routeModel.findByIdAndDelete(id)
+    route.moderated = false
+    route.verified = false
+    route.userId = await this.userService.getContentOwnerId()
+    await route.save()
 
     const profile = await this.updateUserStatistics(userId)
     this.pubSub.publish('profileChanged', { watchProfile: profile })

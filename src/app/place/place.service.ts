@@ -244,9 +244,12 @@ export class PlaceService {
       throw new ClientException(40308)
     }
 
-    await this.placeModel.findByIdAndDelete(id)
+    place.moderated = false
+    place.verified = false
+    place.userId = await this.userService.getContentOwnerId()
+    await place.save()
 
-    await this.favoritesService.remove(userId, { id: id.toString() })
+    // await this.favoritesService.remove(userId, { id: id.toString() })
 
     const profile = await this.updateUserStatistics(userId)
     this.pubSub.publish('profileChanged', { watchProfile: profile })
@@ -258,7 +261,7 @@ export class PlaceService {
     }
     this.pubSub.publish('placeChanged', { watchPlaces: emit })
 
-    return `Успешно удален маршрут № ${id} `
+    return `Успешно удалено интересное место ${id} `
   }
 
   async updateUserStatistics(userId: MongooSchema.Types.ObjectId) {

@@ -453,4 +453,15 @@ export class UserService {
   validatePassword(password: string): boolean {
     return /.*/.test(password)
   }
+
+  async getContentOwnerId() {
+    const contentOwner = await this.userModel.findOne({
+      login: this.configService.get('CONTENT_OWNER')
+    })
+    if (!contentOwner) {
+      throw new ClientException(40413)
+    }
+
+    return contentOwner._id
+  }
 }
