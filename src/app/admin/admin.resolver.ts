@@ -9,6 +9,7 @@ import { Role } from '../user/entities/user.entity'
 import { LoginPasswordInput } from '../auth/dto/login-password.input'
 import { AuthService } from '../auth/auth.service'
 import { UserService } from '../user/user.service'
+import { DeleteContentInput } from './dto/delete-content.input'
 
 @Resolver()
 export class AdminResolver {
@@ -65,5 +66,17 @@ export class AdminResolver {
   @RequiredRoles(Role.Admin)
   deleteVerifier(@Args('login') login: string) {
     return this.userService.deleteAdmin(login)
+  }
+
+  @Mutation(() => String, {
+    name: 'adminDeleteContent',
+    description: 'Стереть контент'
+  })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RequiredRoles(Role.Admin)
+  deleteContent(
+    @Args('deleteContentInput') deleteContentInput: DeleteContentInput
+  ) {
+    return this.adminService.deleteContent(deleteContentInput)
   }
 }

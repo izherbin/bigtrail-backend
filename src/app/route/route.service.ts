@@ -20,6 +20,7 @@ import { ConfigService } from '@nestjs/config'
 import { FavoritesService } from '../favorites/favorites.service'
 import { SetModeratedRouteInput } from './dto/set-moderated-route.input'
 import { SetVerifiedRouteInput } from './dto/set-verified-route.input'
+import { DeleteContentInput } from '../admin/dto/delete-content.input'
 
 const STRING_SIMULARITY_THRESHOLD = 0.65
 
@@ -346,9 +347,9 @@ export class RouteService {
 
   async remove(
     userId: MongooSchema.Types.ObjectId,
-    deleteTrackInput: DeleteRouteInput
+    deleteRouteInput: DeleteRouteInput
   ) {
-    const { id } = deleteTrackInput
+    const { id } = deleteRouteInput
     const route = await this.routeModel.findById(id)
     if (!route) {
       throw new ClientException(40402)
@@ -374,6 +375,33 @@ export class RouteService {
     this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
 
     return `Успешно удален маршрут ${id} `
+  }
+
+  async wipeout(deleteRouteInput: DeleteContentInput) {
+    const { id } = deleteRouteInput
+    const route = await this.routeModel.findById(id)
+    if (!route) {
+      throw new ClientException(40402)
+    }
+
+    if (route.moderated || route.verified) {
+      throw new ClientException(40910)
+    }
+
+    const userId = route.userId
+    await this.routeModel.findByIdAndDelete(id)
+
+    const profile = await this.updateUserStatistics(userId)
+    this.pubSub.publish('profileChanged', { watchProfile: profile })
+
+    const emit: SubscriptionRouteResponse = {
+      function: 'DELETE',
+      id: route._id,
+      userId
+    }
+    this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
+
+    return `Успешно стерт маршрут ${id} `
   }
 
   async updateUserStatistics(userId: MongooSchema.Types.ObjectId) {

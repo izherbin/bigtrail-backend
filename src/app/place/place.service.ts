@@ -19,6 +19,7 @@ import { FavoritesService } from '../favorites/favorites.service'
 import { EditPlaceInput } from './dto/edit-place.input'
 import { SetModeratedPlaceInput } from './dto/set-moderated-place.input'
 import { SetVerifiedPlaceInput } from './dto/set-verified-place.input'
+import { DeleteContentInput } from '../admin/dto/delete-content.input'
 
 @Injectable()
 export class PlaceService {
@@ -262,6 +263,35 @@ export class PlaceService {
     this.pubSub.publish('placeChanged', { watchPlaces: emit })
 
     return `Успешно удалено интересное место ${id} `
+  }
+
+  async wipeout(deletePlaceInput: DeleteContentInput) {
+    const { id } = deletePlaceInput
+    const place = await this.placeModel.findById(id)
+    if (!place) {
+      throw new ClientException(40406)
+    }
+
+    if (place.moderated || place.verified) {
+      throw new ClientException(40911)
+    }
+
+    const userId = place.userId
+    await this.placeModel.findByIdAndDelete(id)
+
+    // await this.favoritesService.remove(userId, { id: id.toString() })
+
+    const profile = await this.updateUserStatistics(userId)
+    this.pubSub.publish('profileChanged', { watchProfile: profile })
+
+    const emit: SubscriptionPlaceResponse = {
+      function: 'DELETE',
+      id: place._id,
+      userId
+    }
+    this.pubSub.publish('placeChanged', { watchPlaces: emit })
+
+    return `Успешно стерто интересное место ${id} `
   }
 
   async updateUserStatistics(userId: MongooSchema.Types.ObjectId) {

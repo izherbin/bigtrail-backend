@@ -58,6 +58,11 @@ const ERRORS: ErrorRecord[] = [
     status: HttpStatus.BAD_REQUEST
   },
   {
+    code: 40011,
+    message: 'Wrong content type',
+    status: HttpStatus.BAD_REQUEST
+  },
+  {
     code: 40101,
     message: 'Code is incorrect',
     status: HttpStatus.UNAUTHORIZED
@@ -225,6 +230,16 @@ const ERRORS: ErrorRecord[] = [
   {
     code: 40909,
     message: 'This place is already verified',
+    status: HttpStatus.CONFLICT
+  },
+  {
+    code: 40910,
+    message: 'Impossible to wipe out moderated or verified route',
+    status: HttpStatus.CONFLICT
+  },
+  {
+    code: 40911,
+    message: 'Impossible to wipe out moderated or verified place',
     status: HttpStatus.CONFLICT
   },
   {
