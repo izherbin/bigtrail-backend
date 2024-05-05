@@ -150,6 +150,10 @@ export class User {
   @Prop()
   tsSMSSent: timestamp
 
+  @Field(() => String, {
+    nullable: true,
+    description: 'Роли пользователя в формате массива строк'
+  })
   @Prop()
   roles: string[]
 
