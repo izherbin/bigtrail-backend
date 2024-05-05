@@ -19,6 +19,7 @@ import { RequiredRoles } from '../auth/required-roles.decorator'
 import { Role } from '../user/entities/user.entity'
 import { RolesGuard } from '../auth/roles.guards'
 import { SetModeratedPlaceInput } from './dto/set-moderated-place.input'
+import { SetVerifiedPlaceInput } from './dto/set-verified-place.input'
 
 @Resolver(() => Place)
 export class PlaceResolver {
@@ -56,6 +57,18 @@ export class PlaceResolver {
     setModeratedPlaceInput: SetModeratedPlaceInput
   ) {
     return this.placeService.setModerated(setModeratedPlaceInput)
+  }
+
+  @Mutation(() => String, {
+    description: 'Верифицировать интересное место'
+  })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RequiredRoles(Role.Verifier)
+  setVerifiedPlace(
+    @Args('setVerifiedPlaceInput')
+    setVerifiedPlaceInput: SetVerifiedPlaceInput
+  ) {
+    return this.placeService.setVerified(setVerifiedPlaceInput)
   }
 
   @Query(() => Place, {

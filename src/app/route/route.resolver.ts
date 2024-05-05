@@ -25,6 +25,7 @@ import { SetModeratedRouteInput } from './dto/set-moderated-route.input'
 import { RequiredRoles } from '../auth/required-roles.decorator'
 import { Role } from '../user/entities/user.entity'
 import { RolesGuard } from '../auth/roles.guards'
+import { SetVerifiedRouteInput } from './dto/set-verified-route.input'
 
 @Resolver(() => Route)
 export class RouteResolver {
@@ -62,6 +63,18 @@ export class RouteResolver {
     setModeratedRouteInput: SetModeratedRouteInput
   ) {
     return this.routeService.setModerated(setModeratedRouteInput)
+  }
+
+  @Mutation(() => String, {
+    description: 'Верифицировать маршрут'
+  })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RequiredRoles(Role.Verifier)
+  setVerifiedRoute(
+    @Args('setVerifiedRouteInput')
+    setVerifiedRouteInput: SetVerifiedRouteInput
+  ) {
+    return this.routeService.setVerified(setVerifiedRouteInput)
   }
 
   @Query(() => [Route], {

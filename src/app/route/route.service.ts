@@ -19,6 +19,7 @@ import { GetProfileResponse } from '../user/dto/get-profile.response'
 import { ConfigService } from '@nestjs/config'
 import { FavoritesService } from '../favorites/favorites.service'
 import { SetModeratedRouteInput } from './dto/set-moderated-route.input'
+import { SetVerifiedRouteInput } from './dto/set-verified-route.input'
 
 const STRING_SIMULARITY_THRESHOLD = 0.65
 
@@ -314,8 +315,35 @@ export class RouteService {
     }
     this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
 
-    return `Маршрут ${id} успешно отмодерирован`
+    return `Маршрут ${id} успешно модерирован`
   }
+
+  async setVerified(setVerifiedRouteInput: SetVerifiedRouteInput) {
+    const { id, ...update } = setVerifiedRouteInput
+    const route = await this.routeModel.findById(id)
+    if (!route) {
+      throw new ClientException(40402)
+    }
+
+    if (route.verified) {
+      throw new ClientException(40908)
+    }
+
+    route.verified = true
+    route.set(update)
+    await route.save()
+
+    const emit: SubscriptionRouteResponse = {
+      function: 'UPDATE',
+      id: route._id,
+      data: route as Route,
+      userId: route.userId
+    }
+    this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
+
+    return `Маршрут ${id} успешно верифицирован`
+  }
+
   async remove(
     userId: MongooSchema.Types.ObjectId,
     deleteTrackInput: DeleteRouteInput
