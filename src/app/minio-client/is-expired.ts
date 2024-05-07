@@ -13,7 +13,7 @@ export function parseLink(link: string): Query {
   try {
     const query = {} as Query
     query['bucketName'] = link.match(/\/{2}.*\/(.*)\//)[1]
-    query['objectName'] = link.match(/\/([0-9a-zA-Z_.]*)\?/)[1]
+    query['objectName'] = link.match(/\/([0-9a-zA-Z_.%-]*)\?/)[1]
     const queryArray = link.match(/\?(.*)$/)[1].split('&')
     for (const queryItem of queryArray) {
       const queryPair = queryItem.split('=')
