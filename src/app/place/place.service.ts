@@ -77,7 +77,7 @@ export class PlaceService {
   }
 
   async addReview(
-    userId: MongooSchema.Types.ObjectId,
+    userId: Types.ObjectId,
     createReviewInput: CreateReviewInput
   ): Promise<UploadPhoto[]> {
     const { contentId: placeId, ...payload } = createReviewInput
@@ -564,6 +564,7 @@ export class PlaceService {
     return Promise.allSettled(renews).then(() => {
       if (shouldSave) {
         place.markModified('photos')
+        place.markModified('reviews')
         return place.save()
       } else {
         return place

@@ -1,6 +1,7 @@
 import { InputType, Field, OmitType } from '@nestjs/graphql'
 import { Review } from '../entities/review.entity'
 import { SetoutPhotoInput } from 'src/app/route/dto/setout-photo.input'
+import { Schema as MongooSchema } from 'mongoose'
 
 @InputType({ description: 'Данные для создания ревью' })
 export class CreateReviewInput extends OmitType(
@@ -11,7 +12,7 @@ export class CreateReviewInput extends OmitType(
   @Field(() => String, {
     description: 'Идентификатор контента'
   })
-  contentId: string
+  contentId: MongooSchema.Types.ObjectId
 
   @Field(() => [SetoutPhotoInput], {
     nullable: true,

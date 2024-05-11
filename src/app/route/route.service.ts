@@ -124,7 +124,7 @@ export class RouteService {
   }
 
   async addReview(
-    userId: MongooSchema.Types.ObjectId,
+    userId: Types.ObjectId,
     createReviewInput: CreateReviewInput
   ): Promise<UploadPhoto[]> {
     const { contentId: routeId, ...payload } = createReviewInput
@@ -720,6 +720,7 @@ export class RouteService {
       if (shouldSave) {
         route.markModified('photos')
         route.markModified('notes')
+        route.markModified('reviews')
         return route.save()
       } else {
         return route

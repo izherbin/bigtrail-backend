@@ -1,6 +1,6 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql'
 import { Prop, Schema } from '@nestjs/mongoose'
-import { Schema as MongooSchema } from 'mongoose'
+import { Types } from 'mongoose'
 import { SetoutPhoto } from 'src/app/route/entities/route.entity'
 
 @ObjectType({ description: 'Ревью' })
@@ -8,7 +8,7 @@ import { SetoutPhoto } from 'src/app/route/entities/route.entity'
 export class Review {
   @Field(() => String, { description: 'Идентификатор автора ревью в MongoDB' })
   @Prop()
-  userId: MongooSchema.Types.ObjectId
+  userId: Types.ObjectId
 
   @Field(() => String, { description: 'Тип контента' })
   type: 'route' | 'place'

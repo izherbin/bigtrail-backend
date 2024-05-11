@@ -23,12 +23,15 @@ export class FavoritesService {
 
     const user = await this.userModel.findById(userId)
 
-    if (user.favorites && user.favorites.find((f) => f.id.toString() === id)) {
+    if (
+      user.favorites &&
+      user.favorites.find((f) => f.id.toString() === id.toString())
+    ) {
       return `Content #${id} is already in favorites`
     }
 
     const favorite: Favorite = {
-      id: new Types.ObjectId(id),
+      id: new Types.ObjectId(id.toString()),
       type
     }
     user.favorites.push(favorite)

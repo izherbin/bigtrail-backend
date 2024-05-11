@@ -5,6 +5,7 @@ import { RouteService } from '../route/route.service'
 import { PlaceService } from '../place/place.service'
 import { Schema as MongoSchema } from 'mongoose'
 import { ClientException } from '../client.exception'
+import { Types } from 'mongoose'
 
 @Injectable()
 export class ReviewService {
@@ -14,11 +15,12 @@ export class ReviewService {
   ) {}
 
   async create(
-    userId: MongoSchema.Types.ObjectId,
+    userId_: MongoSchema.Types.ObjectId,
     createReviewInput: CreateReviewInput
   ): Promise<UploadPhoto[]> {
     const { type } = createReviewInput
 
+    const userId = new Types.ObjectId(userId_.toString())
     if (type === 'route') {
       return await this.routeService.addReview(userId, createReviewInput)
     } else if (type === 'place') {
