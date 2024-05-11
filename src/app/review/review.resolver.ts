@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args, Int } from '@nestjs/graphql'
+import { Resolver, Mutation, Args } from '@nestjs/graphql'
 import { ReviewService } from './review.service'
 import { Review } from './entities/review.entity'
 import { CreateReviewInput } from './dto/create-review.input'
@@ -7,6 +7,7 @@ import { Schema as MongoSchema } from 'mongoose'
 import { UserId } from '../auth/user-id.decorator'
 import { UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/jwt-auth.guards'
+import { DeleteReviewInput } from './dto/delete-review.input'
 
 @Resolver(() => Review)
 export class ReviewResolver {
@@ -21,8 +22,12 @@ export class ReviewResolver {
     return this.reviewService.create(userId, createReviewInput)
   }
 
-  @Mutation(() => Review)
-  removeReview(@Args('id', { type: () => Int }) id: number) {
-    return this.reviewService.remove(id)
+  @Mutation(() => String)
+  @UseGuards(JwtAuthGuard)
+  deleteReview(
+    @UserId() userId: MongoSchema.Types.ObjectId,
+    @Args('deleteReviewInput') deleteReviewInput: DeleteReviewInput
+  ) {
+    return this.reviewService.remove(userId, deleteReviewInput)
   }
 }

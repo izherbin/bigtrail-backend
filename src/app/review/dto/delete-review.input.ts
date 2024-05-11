@@ -6,7 +6,7 @@ export class DeleteReviewInput {
   @Field(() => String, {
     description: 'Тип контента'
   })
-  type: string
+  type: 'route' | 'place'
 
   @Field(() => String, {
     description: 'Идентификатор контента'

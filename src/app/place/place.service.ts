@@ -23,6 +23,7 @@ import { DeleteContentInput } from '../admin/dto/delete-content.input'
 import { CreateReviewInput } from '../review/dto/create-review.input'
 import { Review } from '../review/entities/review.entity'
 import { UploadPhoto } from '../track/dto/upload-photo.response'
+import { DeleteReviewInput } from '../review/dto/delete-review.input'
 
 @Injectable()
 export class PlaceService {
@@ -122,6 +123,34 @@ export class PlaceService {
     })
 
     return uploads
+  }
+
+  async deleteReview(
+    userId: MongooSchema.Types.ObjectId,
+    deleteReviewInput: DeleteReviewInput
+  ) {
+    const place = await this.placeModel.findById(deleteReviewInput.id)
+
+    if (!place) {
+      throw new ClientException(40406)
+    }
+
+    if (userId.toString() === place.userId.toString()) {
+      return 'Отсутствует ревью для удаления'
+    }
+
+    const reviewIdx = place.reviews.findIndex(
+      (p) => p.userId.toString() === userId.toString()
+    )
+
+    if (reviewIdx >= 0) {
+      place.reviews.splice(reviewIdx, 1)
+      place.markModified('reviews')
+      await place.save()
+      return 'Ревью успешно удалено'
+    } else {
+      return 'Отсутствует ревью для удаления'
+    }
   }
 
   async getPlace(

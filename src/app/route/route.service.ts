@@ -24,6 +24,7 @@ import { DeleteContentInput } from '../admin/dto/delete-content.input'
 import { CreateReviewInput } from '../review/dto/create-review.input'
 import { Review } from '../review/entities/review.entity'
 import { UploadPhoto } from '../track/dto/upload-photo.response'
+import { DeleteReviewInput } from '../review/dto/delete-review.input'
 
 const STRING_SIMULARITY_THRESHOLD = 0.65
 
@@ -169,6 +170,35 @@ export class RouteService {
     })
 
     return uploads
+  }
+
+  async deleteReview(
+    userId: MongooSchema.Types.ObjectId,
+    deleteReviewInput: DeleteReviewInput
+  ) {
+    const { id } = deleteReviewInput
+    const route = await this.routeModel.findById(id)
+
+    if (!route) {
+      throw new ClientException(40402)
+    }
+
+    if (userId.toString() === route.userId.toString()) {
+      return 'Отсутствует ревью для удаления'
+    }
+
+    const reviewIdx = route.reviews.findIndex(
+      (r) => r.userId.toString() === userId.toString()
+    )
+
+    if (reviewIdx >= 0) {
+      route.reviews.splice(reviewIdx, 1)
+      route.markModified('reviews')
+      await route.save()
+      return 'Ревью успешно удалено'
+    } else {
+      return 'Отсутствует ревью для удаления'
+    }
   }
 
   findAll() {

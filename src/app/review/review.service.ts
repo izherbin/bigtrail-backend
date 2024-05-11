@@ -6,6 +6,7 @@ import { PlaceService } from '../place/place.service'
 import { Schema as MongoSchema } from 'mongoose'
 import { ClientException } from '../client.exception'
 import { Types } from 'mongoose'
+import { DeleteReviewInput } from './dto/delete-review.input'
 
 @Injectable()
 export class ReviewService {
@@ -38,7 +39,17 @@ export class ReviewService {
     return `This action returns a #${id} review`
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} review`
+  remove(
+    userId: MongoSchema.Types.ObjectId,
+    deleteReviewInput: DeleteReviewInput
+  ) {
+    const { type } = deleteReviewInput
+    if (type === 'route') {
+      return this.routeService.deleteReview(userId, deleteReviewInput)
+    } else if (type === 'place') {
+      return this.placeService.deleteReview(userId, deleteReviewInput)
+    } else {
+      throw new ClientException(40011)
+    }
   }
 }
