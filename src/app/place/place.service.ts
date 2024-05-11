@@ -217,7 +217,9 @@ export class PlaceService {
   async getReviews(getReviewsInput: GetReviewsInput) {
     const { contentId: id } = getReviewsInput
 
-    const place = await this.placeModel.findById(id)
+    const place = await this.renewOnePlacePhotos(
+      await this.placeModel.findById(id)
+    )
     if (!place) {
       throw new ClientException(40406)
     }

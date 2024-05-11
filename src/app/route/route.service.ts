@@ -287,7 +287,9 @@ export class RouteService {
   async getReviews(getReviewsInput: GetReviewsInput) {
     const { contentId: id } = getReviewsInput
 
-    const route = await this.routeModel.findById(id)
+    const route = await this.renewOneRoutePhotos(
+      await this.routeModel.findById(id)
+    )
     if (!route) {
       throw new ClientException(40402)
     }
