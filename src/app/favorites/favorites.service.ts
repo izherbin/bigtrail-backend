@@ -73,7 +73,9 @@ export class FavoritesService {
     const user = await this.userModel.findById(userId)
 
     const { id } = deleteFavoriteInput
-    const idx = user.favorites.findIndex((f) => f.id.toString() === id)
+    const idx = user.favorites.findIndex(
+      (f) => f.id.toString() === id.toString()
+    )
     if (idx < 0) {
       return `No such content #${id} in favorites`
     } else {
