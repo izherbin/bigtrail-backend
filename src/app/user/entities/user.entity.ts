@@ -10,6 +10,7 @@ export enum Role {
   Moderator = 'moderator',
   Verifier = 'verifier',
   Superuser = 'superuser',
+  Supervisor = 'supervisor',
   User = 'user',
   Guest = 'guest'
 }

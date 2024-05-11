@@ -54,12 +54,12 @@ const ERRORS: ErrorRecord[] = [
   },
   {
     code: 40010,
-    message: 'Wrong sorting method',
+    message: 'Illegal sorting method',
     status: HttpStatus.BAD_REQUEST
   },
   {
     code: 40011,
-    message: 'Wrong content type',
+    message: 'Illegal content type',
     status: HttpStatus.BAD_REQUEST
   },
   {
@@ -240,6 +240,16 @@ const ERRORS: ErrorRecord[] = [
   {
     code: 40911,
     message: 'Impossible to wipe out moderated or verified place',
+    status: HttpStatus.CONFLICT
+  },
+  {
+    code: 40912,
+    message: 'Impossible to review user`s own route',
+    status: HttpStatus.CONFLICT
+  },
+  {
+    code: 40913,
+    message: 'Impossible to review user`s own place',
     status: HttpStatus.CONFLICT
   },
   {

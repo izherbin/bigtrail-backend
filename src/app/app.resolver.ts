@@ -37,7 +37,13 @@ export class AppResolver {
 
   @Query(() => String, { description: 'Определение id пользователя' })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @RequiredRoles(Role.Superuser, Role.Admin, Role.Moderator, Role.Verifier)
+  @RequiredRoles(
+    Role.Superuser,
+    Role.Admin,
+    Role.Supervisor,
+    Role.Moderator,
+    Role.Verifier
+  )
   myId(@UserId() _id: MongooSchema.Types.ObjectId): string {
     return this.appService.myId(_id)
   }

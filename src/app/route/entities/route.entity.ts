@@ -1,6 +1,7 @@
 import { ObjectType, Field, Float, Int } from '@nestjs/graphql'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document, Schema as MongooSchema } from 'mongoose'
+import { Review } from 'src/app/review/entities/review.entity'
 import { TrackNote, TrackPoint } from 'src/app/track/entities/track.entity'
 
 export type RouteDifficulty = 'easily' | 'moderately' | 'difficult'
@@ -114,6 +115,9 @@ export class Route {
   })
   @Prop()
   verified?: boolean
+
+  @Prop()
+  reviews?: Review[]
 
   @Field(() => Boolean, {
     nullable: true,

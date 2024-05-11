@@ -35,6 +35,8 @@ export class AuthService {
     const tsCheck = Date.now()
     const isValid =
       user.roles.includes(Role.Admin) ||
+      user.roles.includes(Role.Superuser) ||
+      user.roles.includes(Role.Supervisor) ||
       tsCheck - user.tsSMSSent <
         Number(this.configService.get<string>('CODE_EXPIRES_IN'))
 

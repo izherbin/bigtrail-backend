@@ -4,7 +4,7 @@
 			"path": "src/app/user/entities/user.entity.ts",
 			"bookmarks": [
 				{
-					"line": 160,
+					"line": 161,
 					"column": 0,
 					"label": "Admin: User"
 				}
@@ -44,17 +44,17 @@
 					"label": "Admin: validateUser"
 				},
 				{
-					"line": 74,
+					"line": 76,
 					"column": 0,
 					"label": "Admin: loginUser"
 				},
 				{
-					"line": 127,
+					"line": 129,
 					"column": 0,
 					"label": "Admin: signupUser"
 				},
 				{
-					"line": 293,
+					"line": 295,
 					"column": 0,
 					"label": "Admin: kill"
 				}

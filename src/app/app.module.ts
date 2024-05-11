@@ -19,6 +19,7 @@ import { PlaceModule } from './place/place.module'
 import { SurveyModule } from './survey/survey.module'
 import { FavoritesModule } from './favorites/favorites.module'
 import { AdminModule } from './admin/admin.module'
+import { ReviewModule } from './review/review.module';
 
 interface Extra {
   request: {
@@ -82,7 +83,8 @@ interface Extra {
     PlaceModule,
     SurveyModule,
     FavoritesModule,
-    AdminModule
+    AdminModule,
+    ReviewModule
   ],
   controllers: [],
   providers: [AppResolver, AppService]

@@ -2,6 +2,7 @@ import { ObjectType, Field, Float } from '@nestjs/graphql'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { TrackPhoto } from 'src/app/track/entities/track.entity'
 import { Document, Schema as MongooSchema } from 'mongoose'
+import { Review } from 'src/app/review/entities/review.entity'
 
 export type PlaceCategory =
   | 'religious'
@@ -82,6 +83,9 @@ export class Place {
   })
   @Prop()
   verified?: boolean
+
+  @Prop()
+  reviews?: Review[]
 
   @Field(() => Boolean, {
     nullable: true,

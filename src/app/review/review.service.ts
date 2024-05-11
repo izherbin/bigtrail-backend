@@ -1,0 +1,42 @@
+import { Injectable } from '@nestjs/common'
+import { CreateReviewInput } from './dto/create-review.input'
+import { UploadPhoto } from '../track/dto/upload-photo.response'
+import { RouteService } from '../route/route.service'
+import { PlaceService } from '../place/place.service'
+import { Schema as MongoSchema } from 'mongoose'
+import { ClientException } from '../client.exception'
+
+@Injectable()
+export class ReviewService {
+  constructor(
+    private readonly routeService: RouteService,
+    private readonly placeService: PlaceService
+  ) {}
+
+  async create(
+    userId: MongoSchema.Types.ObjectId,
+    createReviewInput: CreateReviewInput
+  ): Promise<UploadPhoto[]> {
+    const { type } = createReviewInput
+
+    if (type === 'route') {
+      return await this.routeService.addReview(userId, createReviewInput)
+    } else if (type === 'place') {
+      return await this.placeService.addReview(userId, createReviewInput)
+    } else {
+      throw new ClientException(40011)
+    }
+  }
+
+  findAll() {
+    return `This action returns all review`
+  }
+
+  findOne(id: number) {
+    return `This action returns a #${id} review`
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} review`
+  }
+}

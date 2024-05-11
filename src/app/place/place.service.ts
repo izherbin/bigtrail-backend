@@ -20,6 +20,9 @@ import { EditPlaceInput } from './dto/edit-place.input'
 import { SetModeratedPlaceInput } from './dto/set-moderated-place.input'
 import { SetVerifiedPlaceInput } from './dto/set-verified-place.input'
 import { DeleteContentInput } from '../admin/dto/delete-content.input'
+import { CreateReviewInput } from '../review/dto/create-review.input'
+import { Review } from '../review/entities/review.entity'
+import { UploadPhoto } from '../track/dto/upload-photo.response'
 
 @Injectable()
 export class PlaceService {
@@ -68,6 +71,54 @@ export class PlaceService {
         userId: place.userId
       }
       this.pubSub.publish('placeChanged', { watchPlaces: emit })
+    })
+
+    return uploads
+  }
+
+  async addReview(
+    userId: MongooSchema.Types.ObjectId,
+    createReviewInput: CreateReviewInput
+  ): Promise<UploadPhoto[]> {
+    const { contentId: placeId, ...payload } = createReviewInput
+    const review = payload as Review
+    review.userId = userId
+
+    const place = await this.renewOnePlacePhotos(
+      await this.placeModel.findById(placeId)
+    )
+    if (!place) {
+      throw new ClientException(40406)
+    }
+
+    if (place.userId.toString() === userId.toString()) {
+      throw new ClientException(40913)
+    }
+
+    const reviewIdx = place.reviews.findIndex(
+      (r) => r.userId.toString() === userId.toString()
+    )
+
+    const uploads: UploadPhoto[] = []
+    const downloads = [] as Promise<any>[]
+
+    for (const p in review.photos) {
+      const photo = await this.trackService.uploadPhoto(review.photos[p])
+      if (photo) {
+        uploads.push(photo.upload)
+        downloads.push(photo.download)
+      }
+    }
+
+    Promise.allSettled(downloads).then(async () => {
+      if (reviewIdx >= 0) {
+        place.reviews[reviewIdx] = review
+      } else {
+        place.reviews.push(review)
+      }
+
+      place.markModified('reviews')
+      await place.save()
     })
 
     return uploads
@@ -490,6 +541,23 @@ export class PlaceService {
             }
           })
         )
+      }
+    }
+
+    for (const review of place?.reviews) {
+      if (!review.photos) continue
+
+      for (const photo of review?.photos) {
+        if (photo?.uri) {
+          renews.push(
+            this.minioClientService.renewLink(photo.uri).then((uri) => {
+              if (uri) {
+                photo.uri = uri
+                shouldSave = true
+              }
+            })
+          )
+        }
       }
     }
 

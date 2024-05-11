@@ -21,6 +21,9 @@ import { FavoritesService } from '../favorites/favorites.service'
 import { SetModeratedRouteInput } from './dto/set-moderated-route.input'
 import { SetVerifiedRouteInput } from './dto/set-verified-route.input'
 import { DeleteContentInput } from '../admin/dto/delete-content.input'
+import { CreateReviewInput } from '../review/dto/create-review.input'
+import { Review } from '../review/entities/review.entity'
+import { UploadPhoto } from '../track/dto/upload-photo.response'
 
 const STRING_SIMULARITY_THRESHOLD = 0.65
 
@@ -115,6 +118,54 @@ export class RouteService {
         userId: route.userId
       }
       this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
+    })
+
+    return uploads
+  }
+
+  async addReview(
+    userId: MongooSchema.Types.ObjectId,
+    createReviewInput: CreateReviewInput
+  ): Promise<UploadPhoto[]> {
+    const { contentId: routeId, ...payload } = createReviewInput
+    const review = payload as Review
+    review.userId = userId
+
+    const route = await this.renewOneRoutePhotos(
+      await this.routeModel.findById(routeId)
+    )
+    if (!route) {
+      throw new ClientException(40402)
+    }
+
+    if (userId.toString() === route.userId.toString()) {
+      throw new ClientException(40912)
+    }
+
+    const reviewIdx = route.reviews.findIndex(
+      (r) => r.userId.toString() === userId.toString()
+    )
+
+    const uploads: UploadPhoto[] = []
+    const downloads = [] as Promise<any>[]
+
+    for (const p in review.photos) {
+      const photo = await this.trackService.uploadPhoto(review.photos[p])
+      if (photo) {
+        uploads.push(photo.upload)
+        downloads.push(photo.download)
+      }
+    }
+
+    Promise.allSettled(downloads).then(async () => {
+      if (reviewIdx >= 0) {
+        route.reviews[reviewIdx] = review
+      } else {
+        route.reviews.push(review)
+      }
+
+      route.markModified('reviews')
+      await route.save()
     })
 
     return uploads
@@ -635,6 +686,23 @@ export class RouteService {
       if (!note.photos) continue
 
       for (const photo of note?.photos) {
+        if (photo?.uri) {
+          renews.push(
+            this.minioClientService.renewLink(photo.uri).then((uri) => {
+              if (uri) {
+                photo.uri = uri
+                shouldSave = true
+              }
+            })
+          )
+        }
+      }
+    }
+
+    for (const review of route?.reviews) {
+      if (!review?.photos) continue
+
+      for (const photo of review?.photos) {
         if (photo?.uri) {
           renews.push(
             this.minioClientService.renewLink(photo.uri).then((uri) => {
