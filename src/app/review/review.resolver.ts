@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args } from '@nestjs/graphql'
+import { Resolver, Mutation, Args, Query } from '@nestjs/graphql'
 import { ReviewService } from './review.service'
 import { Review } from './entities/review.entity'
 import { CreateReviewInput } from './dto/create-review.input'
@@ -8,6 +8,7 @@ import { UserId } from '../auth/user-id.decorator'
 import { UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/jwt-auth.guards'
 import { DeleteReviewInput } from './dto/delete-review.input'
+import { GetReviewsInput } from './dto/get-reviews.input'
 
 @Resolver(() => Review)
 export class ReviewResolver {
@@ -29,5 +30,10 @@ export class ReviewResolver {
     @Args('deleteReviewInput') deleteReviewInput: DeleteReviewInput
   ) {
     return this.reviewService.remove(userId, deleteReviewInput)
+  }
+
+  @Query(() => [Review])
+  getReviews(@Args('getReviewsInput') getReviewsInput: GetReviewsInput) {
+    return this.reviewService.getReviews(getReviewsInput)
   }
 }

@@ -24,6 +24,7 @@ import { CreateReviewInput } from '../review/dto/create-review.input'
 import { Review } from '../review/entities/review.entity'
 import { UploadPhoto } from '../track/dto/upload-photo.response'
 import { DeleteReviewInput } from '../review/dto/delete-review.input'
+import { GetReviewsInput } from '../review/dto/get-reviews.input'
 
 @Injectable()
 export class PlaceService {
@@ -129,7 +130,8 @@ export class PlaceService {
     userId: MongooSchema.Types.ObjectId,
     deleteReviewInput: DeleteReviewInput
   ) {
-    const place = await this.placeModel.findById(deleteReviewInput.id)
+    const { contentId: id } = deleteReviewInput
+    const place = await this.placeModel.findById(id)
 
     if (!place) {
       throw new ClientException(40406)
@@ -210,6 +212,17 @@ export class PlaceService {
 
   findOne(id: number) {
     return `This action returns a #${id} place`
+  }
+
+  async getReviews(getReviewsInput: GetReviewsInput) {
+    const { contentId: id } = getReviewsInput
+
+    const place = await this.placeModel.findById(id)
+    if (!place) {
+      throw new ClientException(40406)
+    }
+
+    return place.reviews || []
   }
 
   async edit(

@@ -25,6 +25,7 @@ import { CreateReviewInput } from '../review/dto/create-review.input'
 import { Review } from '../review/entities/review.entity'
 import { UploadPhoto } from '../track/dto/upload-photo.response'
 import { DeleteReviewInput } from '../review/dto/delete-review.input'
+import { GetReviewsInput } from '../review/dto/get-reviews.input'
 
 const STRING_SIMULARITY_THRESHOLD = 0.65
 
@@ -176,7 +177,7 @@ export class RouteService {
     userId: MongooSchema.Types.ObjectId,
     deleteReviewInput: DeleteReviewInput
   ) {
-    const { id } = deleteReviewInput
+    const { contentId: id } = deleteReviewInput
     const route = await this.routeModel.findById(id)
 
     if (!route) {
@@ -281,6 +282,17 @@ export class RouteService {
 
   findOne(id: number) {
     return `This action returns a #${id} route`
+  }
+
+  async getReviews(getReviewsInput: GetReviewsInput) {
+    const { contentId: id } = getReviewsInput
+
+    const route = await this.routeModel.findById(id)
+    if (!route) {
+      throw new ClientException(40402)
+    }
+
+    return route.reviews || []
   }
 
   async edit(

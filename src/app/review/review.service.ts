@@ -7,6 +7,7 @@ import { Schema as MongoSchema } from 'mongoose'
 import { ClientException } from '../client.exception'
 import { Types } from 'mongoose'
 import { DeleteReviewInput } from './dto/delete-review.input'
+import { GetReviewsInput } from './dto/get-reviews.input'
 
 @Injectable()
 export class ReviewService {
@@ -37,6 +38,17 @@ export class ReviewService {
 
   findOne(id: number) {
     return `This action returns a #${id} review`
+  }
+
+  async getReviews(getReviewsInput: GetReviewsInput) {
+    const { type } = getReviewsInput
+    if (type === 'route') {
+      return this.routeService.getReviews(getReviewsInput)
+    } else if (type === 'place') {
+      return this.placeService.getReviews(getReviewsInput)
+    } else {
+      throw new ClientException(40011)
+    }
   }
 
   remove(

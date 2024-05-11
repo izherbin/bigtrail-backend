@@ -1,8 +1,8 @@
 import { Field, InputType } from '@nestjs/graphql'
 import { Schema as MongooSchema } from 'mongoose'
 
-@InputType({ description: 'Данные для удаления ревью' })
-export class DeleteReviewInput {
+@InputType({ description: 'Данные для показа ревью' })
+export class GetReviewsInput {
   @Field(() => String, {
     description: 'Тип контента'
   })
