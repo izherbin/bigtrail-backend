@@ -6,7 +6,7 @@ import { LoginCodeInput } from './dto/login-code.input'
 import { catchError, lastValueFrom, map } from 'rxjs'
 import { HttpService } from '@nestjs/axios'
 import { UserService } from '../user/user.service'
-import { ClientException } from '../client.exception'
+import { ClientErrors, ClientException } from '../client.exception'
 import { LoginPasswordInput } from './dto/login-password.input'
 import { Role } from '../user/entities/user.entity'
 import * as bcrypt from 'bcrypt'
@@ -70,7 +70,7 @@ export class AuthService {
     const { phone } = loginUserInput
     const user = await this.userService.getUserByPhone(phone)
     if (!user) {
-      throw new ClientException(40401)
+      throw new ClientException(ClientErrors['No such phone'])
     }
 
     const _id = user._id
@@ -100,7 +100,7 @@ export class AuthService {
     const { login } = loginPasswordInput
     const admin = await this.userService.getUserByLogin(login)
     if (!admin) {
-      throw new ClientException(40409)
+      throw new ClientException(ClientErrors['No such admin'])
     }
 
     const _id = admin._id
@@ -144,11 +144,11 @@ export class AuthService {
       tsCheck - user.tsSMSSent <
         Number(this.configService.get<string>('NEW_SMS_TIMEOUT'))
     ) {
-      throw new ClientException(40901)
+      throw new ClientException(ClientErrors['SMS too early'])
     }
 
     if (!this.validatePhone(payload.phone)) {
-      throw new ClientException(40001)
+      throw new ClientException(ClientErrors['Incorrect phone number'])
     }
 
     user.code = this.genCode()
@@ -173,14 +173,14 @@ export class AuthService {
       .pipe(map((res) => res.data.response.msg))
       .pipe(
         catchError(() => {
-          throw new ClientException(50301)
+          throw new ClientException(ClientErrors['SMS API not available'])
         })
       )
     const msg = await lastValueFrom(request)
 
     console.log('msg.err_code:', msg.err_code)
     if (msg.err_code !== '0') {
-      throw new ClientException(40002, msg.text)
+      throw new ClientException(ClientErrors['SMS service error'], msg.text)
     }
 
     user.tsSMSSent = Date.now()
@@ -200,11 +200,15 @@ export class AuthService {
     const { login, password } = payload
 
     if (!this.userService.validateLogin(login)) {
-      throw new ClientException(40007)
+      throw new ClientException(
+        ClientErrors['Login does not meet requirements']
+      )
     }
 
     if (!this.userService.validatePassword(password)) {
-      throw new ClientException(40008)
+      throw new ClientException(
+        ClientErrors['Password does not meet requirements']
+      )
     }
 
     return await this.userService.createAdmin(login, password)
@@ -214,11 +218,15 @@ export class AuthService {
     const { login, password } = payload
 
     if (!this.userService.validateLogin(login)) {
-      throw new ClientException(40007)
+      throw new ClientException(
+        ClientErrors['Login does not meet requirements']
+      )
     }
 
     if (!this.userService.validatePassword(password)) {
-      throw new ClientException(40008)
+      throw new ClientException(
+        ClientErrors['Password does not meet requirements']
+      )
     }
 
     return await this.userService.createModerator(login, password)
@@ -228,11 +236,15 @@ export class AuthService {
     const { login, password } = payload
 
     if (!this.userService.validateLogin(login)) {
-      throw new ClientException(40007)
+      throw new ClientException(
+        ClientErrors['Login does not meet requirements']
+      )
     }
 
     if (!this.userService.validatePassword(password)) {
-      throw new ClientException(40008)
+      throw new ClientException(
+        ClientErrors['Password does not meet requirements']
+      )
     }
 
     return await this.userService.createVerifier(login, password)
@@ -240,7 +252,7 @@ export class AuthService {
 
   async setAdminPassword(login: string, password: string): Promise<string> {
     if (!this.userService.validatePassword(password)) {
-      throw new ClientException(40006)
+      throw new ClientException(ClientErrors['Incorrect profile name'])
     }
 
     const hash = await bcrypt.hash(

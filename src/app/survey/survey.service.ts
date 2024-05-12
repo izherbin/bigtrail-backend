@@ -4,7 +4,7 @@ import { UpdateSurveyInput } from './dto/update-survey.input'
 import { Model, Schema as MongooSchema } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
 import { Survey, SurveyDocument } from './entities/survey.entity'
-import { ClientException } from '../client.exception'
+import { ClientErrors, ClientException } from '../client.exception'
 import {
   SurveyResult,
   SurveyResultDocument
@@ -114,7 +114,7 @@ export class SurveyService {
     const { surveyId } = surveyResultInput
     const survey = await this.surveyModel.findById(surveyId)
     if (!survey) {
-      throw new ClientException(40407)
+      throw new ClientException(ClientErrors['No such survey'])
     }
 
     const surveyResult = new this.surveyResultModel(surveyResultInput)
@@ -126,7 +126,7 @@ export class SurveyService {
     const { scenarioId } = scenarioResultInput
     const scenario = await this.scenarioModel.findById(scenarioId)
     if (!scenario) {
-      throw new ClientException(40408)
+      throw new ClientException(ClientErrors['No such scenario'])
     }
 
     const scenarioResult = new this.scenarioResultModel(scenarioResultInput)

@@ -4,7 +4,7 @@ import { GeocodingInput } from './dto/geocoding.input'
 import { ReverseGeocodingInput } from './dto/reverse-geocoding.input'
 import { ConfigService } from '@nestjs/config'
 import { catchError, lastValueFrom, map } from 'rxjs'
-import { ClientException } from '../client.exception'
+import { ClientErrors, ClientException } from '../client.exception'
 import { Geocode } from './entity/geocode.entity'
 
 interface Feature {
@@ -48,7 +48,7 @@ export class GeocodingService {
       .pipe(
         catchError((err) => {
           console.log('err:', err)
-          throw new ClientException(50302)
+          throw new ClientException(ClientErrors['Geocoding API not available'])
         })
       )
     const features: Feature[] = await lastValueFrom(request)
@@ -74,7 +74,7 @@ export class GeocodingService {
       .pipe(
         catchError((err) => {
           console.log('err:', err)
-          throw new ClientException(50302)
+          throw new ClientException(ClientErrors['Geocoding API not available'])
         })
       )
     const features: Feature[] = await lastValueFrom(request)

@@ -4,7 +4,7 @@ import { UploadPhoto } from '../track/dto/upload-photo.response'
 import { RouteService } from '../route/route.service'
 import { PlaceService } from '../place/place.service'
 import { Schema as MongoSchema } from 'mongoose'
-import { ClientException } from '../client.exception'
+import { ClientErrors, ClientException } from '../client.exception'
 import { Types } from 'mongoose'
 import { DeleteReviewInput } from './dto/delete-review.input'
 import { GetReviewsInput } from './dto/get-reviews.input'
@@ -28,7 +28,7 @@ export class ReviewService {
     } else if (type === 'place') {
       return await this.placeService.addReview(userId, createReviewInput)
     } else {
-      throw new ClientException(40011)
+      throw new ClientException(ClientErrors['Illegal content type'])
     }
   }
 
@@ -47,7 +47,7 @@ export class ReviewService {
     } else if (type === 'place') {
       return this.placeService.getReviews(getReviewsInput)
     } else {
-      throw new ClientException(40011)
+      throw new ClientException(ClientErrors['Illegal content type'])
     }
   }
 
@@ -61,7 +61,7 @@ export class ReviewService {
     } else if (type === 'place') {
       return this.placeService.deleteReview(userId, deleteReviewInput)
     } else {
-      throw new ClientException(40011)
+      throw new ClientException(ClientErrors['Illegal content type'])
     }
   }
 }

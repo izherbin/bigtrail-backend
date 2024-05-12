@@ -14,7 +14,7 @@ import { DeleteRouteInput } from './dto/delete-route.input'
 import { GetRouteInput } from './dto/get-route.input'
 import { stringSimilarity } from './string-similarity'
 import { simplifyPoints } from '../track/simplify'
-import { ClientException } from '../client.exception'
+import { ClientErrors, ClientException } from '../client.exception'
 import { GetProfileResponse } from '../user/dto/get-profile.response'
 import { ConfigService } from '@nestjs/config'
 import { FavoritesService } from '../favorites/favorites.service'
@@ -137,11 +137,13 @@ export class RouteService {
       await this.routeModel.findById(routeId)
     )
     if (!route) {
-      throw new ClientException(40402)
+      throw new ClientException(ClientErrors['No such route'])
     }
 
     if (userId.toString() === route.userId.toString()) {
-      throw new ClientException(40912)
+      throw new ClientException(
+        ClientErrors['Impossible to review user`s own route']
+      )
     }
 
     const reviewIdx = route.reviews.findIndex(
@@ -181,7 +183,7 @@ export class RouteService {
     const route = await this.routeModel.findById(id)
 
     if (!route) {
-      throw new ClientException(40402)
+      throw new ClientException(ClientErrors['No such route'])
     }
 
     if (userId.toString() === route.userId.toString()) {
@@ -254,11 +256,11 @@ export class RouteService {
           error.message,
           '\x1b[37m'
         )
-        throw new ClientException(40402)
+        throw new ClientException(ClientErrors['No such route'])
       })
     )
     if (!route) {
-      throw new ClientException(40402)
+      throw new ClientException(ClientErrors['No such route'])
     }
 
     route.id = route._id
@@ -291,7 +293,7 @@ export class RouteService {
       await this.routeModel.findById(id)
     )
     if (!route) {
-      throw new ClientException(40402)
+      throw new ClientException(ClientErrors['No such route'])
     }
 
     return route.reviews || []
@@ -304,10 +306,12 @@ export class RouteService {
     const { id } = editRouteInput
     const route = await this.routeModel.findById(id)
     if (!route) {
-      throw new ClientException(40402)
+      throw new ClientException(ClientErrors['No such route'])
     }
     if (route.userId.toString() !== userId.toString()) {
-      throw new ClientException(40310)
+      throw new ClientException(
+        ClientErrors['Impossible to edit someone else`s route']
+      )
     }
 
     const elevations = []
@@ -392,11 +396,11 @@ export class RouteService {
     const { id, ...update } = setModeratedRouteInput
     const route = await this.routeModel.findById(id)
     if (!route) {
-      throw new ClientException(40402)
+      throw new ClientException(ClientErrors['No such route'])
     }
 
     if (route.moderated) {
-      throw new ClientException(40906)
+      throw new ClientException(ClientErrors['This route is already moderated'])
     }
 
     route.moderated = true
@@ -418,11 +422,11 @@ export class RouteService {
     const { id, ...update } = setVerifiedRouteInput
     const route = await this.routeModel.findById(id)
     if (!route) {
-      throw new ClientException(40402)
+      throw new ClientException(ClientErrors['No such route'])
     }
 
     if (route.verified) {
-      throw new ClientException(40908)
+      throw new ClientException(ClientErrors['This route is already verified'])
     }
 
     route.verified = true
@@ -447,11 +451,13 @@ export class RouteService {
     const { id } = deleteRouteInput
     const route = await this.routeModel.findById(id)
     if (!route) {
-      throw new ClientException(40402)
+      throw new ClientException(ClientErrors['No such route'])
     }
 
     if (route.userId.toString() !== userId.toString()) {
-      throw new ClientException(40301)
+      throw new ClientException(
+        ClientErrors['Impossible to delete someone else`s route']
+      )
     }
 
     route.moderated = false
@@ -476,11 +482,13 @@ export class RouteService {
     const { id } = deleteRouteInput
     const route = await this.routeModel.findById(id)
     if (!route) {
-      throw new ClientException(40402)
+      throw new ClientException(ClientErrors['No such route'])
     }
 
     if (route.moderated || route.verified) {
-      throw new ClientException(40910)
+      throw new ClientException(
+        ClientErrors['Impossible to wipe out moderated or verified route']
+      )
     }
 
     const userId = route.userId
@@ -608,7 +616,7 @@ export class RouteService {
     let routesSorted = routes
     if (sort === 'similarity') {
       if (!similar) {
-        throw new ClientException(40009)
+        throw new ClientException(ClientErrors['Similar id is not specified'])
       }
       routesSorted = await this.sortBySimilarity(routes, similar, order)
     } else if (sort === 'date') {
@@ -620,7 +628,7 @@ export class RouteService {
         routesSorted = await this.sortByDate(routes, order)
       }
     } else {
-      throw new ClientException(40010)
+      throw new ClientException(ClientErrors['Illegal sorting method'])
     }
 
     const routesFiltered = routesSorted.filter((route) => {
@@ -708,7 +716,7 @@ export class RouteService {
       Document<any, any, any> & { _id: Types.ObjectId }
   ) {
     if (!route) {
-      throw new ClientException(40402)
+      throw new ClientException(ClientErrors['No such route'])
     }
 
     let shouldSave = false

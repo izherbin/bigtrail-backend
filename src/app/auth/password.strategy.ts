@@ -2,7 +2,7 @@ import { Strategy } from 'passport-local'
 import { Injectable } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { AuthService } from './auth.service'
-import { ClientException } from '../client.exception'
+import { ClientErrors, ClientException } from '../client.exception'
 
 @Injectable()
 export class PasswordStrategy extends PassportStrategy(Strategy, 'password') {
@@ -17,7 +17,7 @@ export class PasswordStrategy extends PassportStrategy(Strategy, 'password') {
     const user = await this.authService.validateAdmin(login, password)
 
     if (!user) {
-      throw new ClientException(40102)
+      throw new ClientException(ClientErrors['Password is incorrect'])
     }
 
     return user

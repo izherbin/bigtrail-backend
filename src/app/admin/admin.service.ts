@@ -4,7 +4,7 @@ import { RouteService } from '../route/route.service'
 import { TrackService } from '../track/track.service'
 import { UserService } from '../user/user.service'
 import { StatisticsResponse } from './dto/statistics.response'
-import { ClientException } from '../client.exception'
+import { ClientErrors, ClientException } from '../client.exception'
 import { DeleteContentInput } from './dto/delete-content.input'
 
 @Injectable()
@@ -35,7 +35,7 @@ export class AdminService {
       case 'route':
         return await this.routeService.wipeout(deleteContentInput)
       default:
-        throw new ClientException(40011)
+        throw new ClientException(ClientErrors['Illegal content type'])
     }
   }
 }

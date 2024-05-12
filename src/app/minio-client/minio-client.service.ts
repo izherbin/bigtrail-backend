@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config'
 import { UploadFileInput } from './dto/upload-file.dto'
 import { Readable } from 'stream'
 import { isExpired, parseLink } from './is-expired'
-import { ClientException } from '../client.exception'
+import { ClientErrors, ClientException } from '../client.exception'
 
 const FILE_UPLOAD_TIMEOUT = 60000 * 5
 
@@ -38,7 +38,10 @@ export class MinioClientService {
     const link: string = await this.minioService.client
       .presignedGetObject(bucketName, objectName, expiry)
       .catch((err) => {
-        throw new ClientException(40003, err)
+        throw new ClientException(
+          ClientErrors['Error calculating download link'],
+          err
+        )
       })
     return link
   }
@@ -49,7 +52,10 @@ export class MinioClientService {
     const link: string = await this.minioService.client
       .presignedPutObject(bucketName, objectName, expiry)
       .catch((err) => {
-        throw new ClientException(40004, err)
+        throw new ClientException(
+          ClientErrors['Error calculating upload link'],
+          err
+        )
       })
     return link
   }
@@ -97,7 +103,10 @@ export class MinioClientService {
     const res = await this.minioService.client
       .putObject(bucketName, objectName, (await file).createReadStream())
       .catch((err) => {
-        throw new ClientException(40003, err)
+        throw new ClientException(
+          ClientErrors['Error calculating download link'],
+          err
+        )
       })
 
     return res
@@ -111,7 +120,7 @@ export class MinioClientService {
     const res = await this.minioService.client
       .putObject(bucketName, filename, createReadStream())
       .catch((err) => {
-        throw new ClientException(40005, err)
+        throw new ClientException(ClientErrors['Error uploading file'], err)
       })
 
     return res

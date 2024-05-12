@@ -7,7 +7,7 @@ import { MinioClientService } from '../minio-client/minio-client.service'
 import { Document, Model, Schema as MongooSchema, Types } from 'mongoose'
 import { TrackService } from '../track/track.service'
 import { GetPlaceInput } from './dto/get-place.input'
-import { ClientException } from '../client.exception'
+import { ClientErrors, ClientException } from '../client.exception'
 import { DeletePlaceInput } from './dto/delete-place.input'
 import { PlaceFilterInput } from './dto/place-filter.input'
 import { PubSubEngine } from 'graphql-subscriptions'
@@ -90,11 +90,13 @@ export class PlaceService {
       await this.placeModel.findById(placeId)
     )
     if (!place) {
-      throw new ClientException(40406)
+      throw new ClientException(ClientErrors['No such place'])
     }
 
     if (place.userId.toString() === userId.toString()) {
-      throw new ClientException(40913)
+      throw new ClientException(
+        ClientErrors['Impossible to review user`s own place']
+      )
     }
 
     const reviewIdx = place.reviews.findIndex(
@@ -134,7 +136,7 @@ export class PlaceService {
     const place = await this.placeModel.findById(id)
 
     if (!place) {
-      throw new ClientException(40406)
+      throw new ClientException(ClientErrors['No such place'])
     }
 
     if (userId.toString() === place.userId.toString()) {
@@ -170,11 +172,11 @@ export class PlaceService {
           error.message,
           '\x1b[37m'
         )
-        throw new ClientException(40406)
+        throw new ClientException(ClientErrors['No such place'])
       })
     )
     if (!place) {
-      throw new ClientException(40406)
+      throw new ClientException(ClientErrors['No such place'])
     }
 
     place.favorite =
@@ -221,7 +223,7 @@ export class PlaceService {
       await this.placeModel.findById(id)
     )
     if (!place) {
-      throw new ClientException(40406)
+      throw new ClientException(ClientErrors['No such place'])
     }
 
     return place.reviews || []
@@ -234,10 +236,12 @@ export class PlaceService {
     const { id } = editPlaceInput
     const place = await this.placeModel.findById(id)
     if (!place) {
-      throw new ClientException(40406)
+      throw new ClientException(ClientErrors['No such place'])
     }
     if (place.userId.toString() !== userId.toString()) {
-      throw new ClientException(40309)
+      throw new ClientException(
+        ClientErrors['Impossible to edit someone else`s place']
+      )
     }
 
     const uploads = []
@@ -278,11 +282,11 @@ export class PlaceService {
     const { id, ...update } = setModeratedPlaceInput
     const place = await this.placeModel.findById(id)
     if (!place) {
-      throw new ClientException(40406)
+      throw new ClientException(ClientErrors['No such place'])
     }
 
     if (place.moderated) {
-      throw new ClientException(40907)
+      throw new ClientException(ClientErrors['This place is already moderated'])
     }
 
     place.moderated = true
@@ -304,11 +308,11 @@ export class PlaceService {
     const { id, ...update } = setVerifiedPlaceInput
     const place = await this.placeModel.findById(id)
     if (!place) {
-      throw new ClientException(40406)
+      throw new ClientException(ClientErrors['No such place'])
     }
 
     if (place.verified) {
-      throw new ClientException(40909)
+      throw new ClientException(ClientErrors['This place is already verified'])
     }
 
     place.verified = true
@@ -333,11 +337,13 @@ export class PlaceService {
     const { id } = deletePlaceInput
     const place = await this.placeModel.findById(id)
     if (!place) {
-      throw new ClientException(40406)
+      throw new ClientException(ClientErrors['No such place'])
     }
 
     if (place.userId.toString() !== userId.toString()) {
-      throw new ClientException(40308)
+      throw new ClientException(
+        ClientErrors['Impossible to delete someone else`s place']
+      )
     }
 
     place.moderated = false
@@ -364,11 +370,13 @@ export class PlaceService {
     const { id } = deletePlaceInput
     const place = await this.placeModel.findById(id)
     if (!place) {
-      throw new ClientException(40406)
+      throw new ClientException(ClientErrors['No such place'])
     }
 
     if (place.moderated || place.verified) {
-      throw new ClientException(40911)
+      throw new ClientException(
+        ClientErrors['Impossible to wipe out moderated or verified place']
+      )
     }
 
     const userId = place.userId
@@ -478,7 +486,7 @@ export class PlaceService {
     let placesSorted = places
     if (sort === 'similarity') {
       if (!similar) {
-        throw new ClientException(40009)
+        throw new ClientException(ClientErrors['Similar id is not specified'])
       }
       placesSorted = await this.sortBySimilarity(places, similar, order)
     } else if (sort === 'date') {
@@ -490,7 +498,7 @@ export class PlaceService {
         placesSorted = await this.sortByDate(places, order)
       }
     } else {
-      throw new ClientException(40010)
+      throw new ClientException(ClientErrors['Illegal sorting method'])
     }
 
     const placesFiltered = placesSorted.filter((place) => {
@@ -570,7 +578,7 @@ export class PlaceService {
       Document<any, any, any> & { _id: Types.ObjectId }
   ) {
     if (!place) {
-      throw new ClientException(40406)
+      throw new ClientException(ClientErrors['No such place'])
     }
 
     let shouldSave = false

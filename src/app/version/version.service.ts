@@ -5,7 +5,7 @@ import { Model } from 'mongoose'
 import { SetVersionInput } from './dto/set-version.input'
 import { AppLinks, AppLinksDocument } from './entities/app-links.entity'
 import { SetAppLinksInput } from './dto/set-app-links.input'
-import { ClientException } from '../client.exception'
+import { ClientErrors, ClientException } from '../client.exception'
 
 @Injectable()
 export class VersionService {
@@ -19,7 +19,7 @@ export class VersionService {
   async getVersion() {
     const version = await this.versionModel.findOne({})
     if (!version) {
-      throw new ClientException(40405)
+      throw new ClientException(ClientErrors['No versions in DB'])
     }
 
     version.backend = process.env.npm_package_version

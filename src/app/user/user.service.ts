@@ -9,7 +9,7 @@ import { MinioClientService } from '../minio-client/minio-client.service'
 import { GetProfileResponse } from './dto/get-profile.response'
 import { PubSubEngine } from 'graphql-subscriptions'
 import { SetStatusInput } from './dto/set-status.input'
-import { ClientException } from '../client.exception'
+import { ClientErrors, ClientException } from '../client.exception'
 import * as bcrypt from 'bcrypt'
 
 @Injectable()
@@ -71,7 +71,7 @@ export class UserService {
   async getUserById(id: MongooSchema.Types.ObjectId) {
     const user = await this.userModel.findById(id)
     if (!user) {
-      throw new ClientException(40410)
+      throw new ClientException(ClientErrors['No such user'])
     }
 
     return user
@@ -88,7 +88,7 @@ export class UserService {
   async createUser(phone: string, ip: string) {
     const user = await this.userModel.findOne({ phone })
     if (user) {
-      throw new ClientException(40902)
+      throw new ClientException(ClientErrors['This user is already exists'])
     }
     const tsCreated = new Date().getTime()
     const res = await this.userModel.insertMany([
@@ -100,7 +100,7 @@ export class UserService {
   async createAdmin(login: string, passwd: string): Promise<string> {
     const admin = await this.userModel.findOne({ login })
     if (admin) {
-      throw new ClientException(40903)
+      throw new ClientException(ClientErrors['This admin is already exists'])
     }
     const password = await bcrypt.hash(
       passwd,
@@ -115,7 +115,9 @@ export class UserService {
   async createModerator(login: string, passwd: string): Promise<string> {
     const moderator = await this.userModel.findOne({ login })
     if (moderator) {
-      throw new ClientException(40904)
+      throw new ClientException(
+        ClientErrors['This moderator is already exists']
+      )
     }
     const password = await bcrypt.hash(
       passwd,
@@ -130,7 +132,7 @@ export class UserService {
   async createVerifier(login: string, passwd: string): Promise<string> {
     const verifier = await this.userModel.findOne({ login })
     if (verifier) {
-      throw new ClientException(40905)
+      throw new ClientException(ClientErrors['This verifier is already exists'])
     }
     const password = await bcrypt.hash(
       passwd,
@@ -145,11 +147,11 @@ export class UserService {
   async updateUser(user: User) {
     const userFromDB = await this.userModel.findOne({ phone: user.phone })
     if (!userFromDB) {
-      throw new ClientException(40410)
+      throw new ClientException(ClientErrors['No such user'])
     }
 
     if (userFromDB.roles.includes(Role.Admin)) {
-      throw new ClientException(40303)
+      throw new ClientException(ClientErrors['Can not update this profile'])
     }
 
     return await userFromDB.updateOne(user)
@@ -158,11 +160,11 @@ export class UserService {
   async deleteUser(phone: string) {
     const userFromDB = await this.userModel.findOne({ phone })
     if (!userFromDB) {
-      throw new ClientException(40410)
+      throw new ClientException(ClientErrors['No such user'])
     }
 
     if (userFromDB.roles.includes(Role.Admin)) {
-      throw new ClientException(40304)
+      throw new ClientException(ClientErrors['Can not delete this profile'])
     }
 
     const oldAvatarFile = userFromDB.avatarFile ? userFromDB.avatarFile : null
@@ -176,7 +178,7 @@ export class UserService {
   async deleteAdmin(login: string) {
     const adminFromDB = await this.userModel.findOne({ login })
     if (!adminFromDB) {
-      throw new ClientException(40409)
+      throw new ClientException(ClientErrors['No such admin'])
     }
 
     const oldAvatarFile = adminFromDB.avatarFile ? adminFromDB.avatarFile : null
@@ -190,7 +192,7 @@ export class UserService {
   async deleteModerator(login: string) {
     const moderatorFromDB = await this.userModel.findOne({ login })
     if (!moderatorFromDB) {
-      throw new ClientException(40411)
+      throw new ClientException(ClientErrors['No such moderator'])
     }
 
     const oldAvatarFile = moderatorFromDB.avatarFile
@@ -206,7 +208,7 @@ export class UserService {
   async deleteVerifier(login: string) {
     const verifierFromDB = await this.userModel.findOne({ login })
     if (!verifierFromDB) {
-      throw new ClientException(40412)
+      throw new ClientException(ClientErrors['No such verifier'])
     }
 
     const oldAvatarFile = verifierFromDB.avatarFile
@@ -223,18 +225,18 @@ export class UserService {
     let { name } = setNameInput
     name = name.trim()
     if (!this.validateName(name)) {
-      throw new ClientException(40006)
+      throw new ClientException(ClientErrors['Incorrect profile name'])
     }
 
     const user = await this.renewProfileAvatar(
       await this.userModel.findOne({ phone })
     )
     if (!user) {
-      throw new ClientException(40410)
+      throw new ClientException(ClientErrors['No such user'])
     }
 
     if (user.roles.includes(Role.Admin)) {
-      throw new ClientException(40303)
+      throw new ClientException(ClientErrors['Can not update this profile'])
     }
 
     user.name = name
@@ -248,12 +250,14 @@ export class UserService {
 
   async setAdminPassword(login: string, password: string): Promise<string> {
     if (!this.validatePassword(password)) {
-      throw new ClientException(40008)
+      throw new ClientException(
+        ClientErrors['Password does not meet requirements']
+      )
     }
 
     const admin = await this.getUserByLogin(login)
     if (!admin) {
-      throw new ClientException(40409)
+      throw new ClientException(ClientErrors['No such admin'])
     }
 
     admin.password = password
@@ -264,12 +268,14 @@ export class UserService {
 
   async setModeratorPassword(login: string, password: string): Promise<string> {
     if (!this.validatePassword(password)) {
-      throw new ClientException(40008)
+      throw new ClientException(
+        ClientErrors['Password does not meet requirements']
+      )
     }
 
     const moderator = await this.getUserByLogin(login)
     if (!moderator) {
-      throw new ClientException(40411)
+      throw new ClientException(ClientErrors['No such moderator'])
     }
 
     moderator.password = password
@@ -280,12 +286,14 @@ export class UserService {
 
   async setVerifierPassword(login: string, password: string): Promise<string> {
     if (!this.validatePassword(password)) {
-      throw new ClientException(40008)
+      throw new ClientException(
+        ClientErrors['Password does not meet requirements']
+      )
     }
 
     const verifier = await this.getUserByLogin(login)
     if (!verifier) {
-      throw new ClientException(40412)
+      throw new ClientException(ClientErrors['No such verifier'])
     }
 
     verifier.password = password
@@ -301,11 +309,11 @@ export class UserService {
       await this.userModel.findOne({ phone })
     )
     if (!user) {
-      throw new ClientException(40410)
+      throw new ClientException(ClientErrors['No such user'])
     }
 
     if (user.roles.includes(Role.Admin)) {
-      throw new ClientException(40303)
+      throw new ClientException(ClientErrors['Can not update this profile'])
     }
 
     user.status = status
@@ -320,7 +328,7 @@ export class UserService {
   async setProfileAvatar(phone: string) {
     const user = await this.userModel.findOne({ phone })
     if (!user) {
-      throw new ClientException(40410)
+      throw new ClientException(ClientErrors['No such user'])
     }
 
     const filename = String(Date.now()) + '_' + user._id.toString() + '.jpg'
@@ -366,7 +374,7 @@ export class UserService {
   ) {
     const user = await this.userModel.findOne({ phone })
     if (!user) {
-      throw new ClientException(40410)
+      throw new ClientException(ClientErrors['No such user'])
     }
 
     const timestamp = Date.now().toString()
@@ -397,7 +405,7 @@ export class UserService {
   async deleteProfileAvatar(phone: string) {
     const user = await this.userModel.findOne({ phone })
     if (!user) {
-      throw new ClientException(40410)
+      throw new ClientException(ClientErrors['No such user'])
     }
 
     const oldAvatarFile = user.avatarFile ? user.avatarFile : null
@@ -429,7 +437,7 @@ export class UserService {
       Document<any, any, any> & { _id: Types.ObjectId }
   ) {
     if (!user) {
-      throw new ClientException(40404)
+      throw new ClientException(ClientErrors['No such profile'])
     }
 
     if (user?.avatar) {
@@ -459,7 +467,7 @@ export class UserService {
       login: this.configService.get('CONTENT_OWNER')
     })
     if (!contentOwner) {
-      throw new ClientException(40413)
+      throw new ClientException(ClientErrors['No content owner'])
     }
 
     return contentOwner._id

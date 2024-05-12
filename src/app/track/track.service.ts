@@ -11,7 +11,7 @@ import { UploadPhoto } from './dto/upload-photo.response'
 import { MinioClientService } from '../minio-client/minio-client.service'
 import { UserService } from '../user/user.service'
 import { elevation } from './elevation'
-import { ClientException } from '../client.exception'
+import { ClientErrors, ClientException } from '../client.exception'
 import { GetProfileResponse } from '../user/dto/get-profile.response'
 import { ConfigService } from '@nestjs/config'
 import { simplifyPoints } from './simplify'
@@ -205,11 +205,13 @@ export class TrackService {
     const { id } = deleteTrackInput
     const track = await this.trackModel.findById(id)
     if (!track) {
-      throw new ClientException(40403)
+      throw new ClientException(ClientErrors['No such track'])
     }
 
     if (track.userId.toString() !== userId.toString()) {
-      throw new ClientException(40302)
+      throw new ClientException(
+        ClientErrors['Impossible to delete someone else`s track']
+      )
     }
 
     await this.trackModel.findByIdAndDelete(id)
