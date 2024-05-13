@@ -26,7 +26,6 @@ import { Review } from '../review/entities/review.entity'
 import { UploadPhoto } from '../track/dto/upload-photo.response'
 import { DeleteReviewInput } from '../review/dto/delete-review.input'
 import { GetReviewsInput } from '../review/dto/get-reviews.input'
-import { NotificationService } from '../notification/notification.service'
 
 const STRING_SIMULARITY_THRESHOLD = 0.65
 
@@ -39,7 +38,6 @@ export class RouteService {
     private readonly minioClientService: MinioClientService,
     private readonly trackService: TrackService,
     private readonly favoritesService: FavoritesService,
-    private readonly notificationService: NotificationService,
     private readonly userService: UserService,
     @Inject('PUB_SUB') private pubSub: PubSubEngine
   ) {}
@@ -409,14 +407,6 @@ export class RouteService {
     route.set(update)
     await route.save()
 
-    await this.notificationService.create({
-      userId: route.userId,
-      type: 'route',
-      contentId: route._id,
-      title: 'Маршрут модерирован',
-      text: `Маршрут ${route.name} был модерирован`
-    })
-
     const emit: SubscriptionRouteResponse = {
       function: 'UPDATE',
       id: route._id,
@@ -442,14 +432,6 @@ export class RouteService {
     route.verified = true
     route.set(update)
     await route.save()
-
-    await this.notificationService.create({
-      userId: route.userId,
-      type: 'route',
-      contentId: route._id,
-      title: 'Маршрут верифицирован',
-      text: `Маршрут ${route.name} был верифицирован`
-    })
 
     const emit: SubscriptionRouteResponse = {
       function: 'UPDATE',

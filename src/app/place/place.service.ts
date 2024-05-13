@@ -25,7 +25,6 @@ import { Review } from '../review/entities/review.entity'
 import { UploadPhoto } from '../track/dto/upload-photo.response'
 import { DeleteReviewInput } from '../review/dto/delete-review.input'
 import { GetReviewsInput } from '../review/dto/get-reviews.input'
-import { NotificationService } from '../notification/notification.service'
 
 @Injectable()
 export class PlaceService {
@@ -37,7 +36,6 @@ export class PlaceService {
     private readonly configService: ConfigService,
     private readonly favoritesService: FavoritesService,
     private readonly userService: UserService,
-    private readonly notificationService: NotificationService,
     @Inject('PUB_SUB') private pubSub: PubSubEngine
   ) {}
 
@@ -295,14 +293,6 @@ export class PlaceService {
     place.set(update)
     await place.save()
 
-    await this.notificationService.create({
-      type: 'place',
-      contentId: place._id,
-      userId: place.userId,
-      title: 'Интересное место модерировано',
-      text: `Интересное место ${place.name} модерировано`
-    })
-
     const emit: SubscriptionPlaceResponse = {
       function: 'UPDATE',
       id: place._id,
@@ -328,14 +318,6 @@ export class PlaceService {
     place.verified = true
     place.set(update)
     await place.save()
-
-    await this.notificationService.create({
-      type: 'place',
-      contentId: place._id,
-      userId: place.userId,
-      title: 'Интересное место верифицировано',
-      text: `Интересное место ${place.name} верифицировано`
-    })
 
     const emit: SubscriptionPlaceResponse = {
       function: 'UPDATE',

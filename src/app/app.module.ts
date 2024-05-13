@@ -20,7 +20,6 @@ import { SurveyModule } from './survey/survey.module'
 import { FavoritesModule } from './favorites/favorites.module'
 import { AdminModule } from './admin/admin.module'
 import { ReviewModule } from './review/review.module';
-import { NotificationModule } from './notification/notification.module';
 
 interface Extra {
   request: {
@@ -85,8 +84,7 @@ interface Extra {
     SurveyModule,
     FavoritesModule,
     AdminModule,
-    ReviewModule,
-    NotificationModule
+    ReviewModule
   ],
   controllers: [],
   providers: [AppResolver, AppService]
