@@ -8,6 +8,7 @@ import { TrackModule } from '../track/track.module'
 import { UserModule } from '../user/user.module'
 import { ConfigModule } from '@nestjs/config'
 import { FavoritesModule } from '../favorites/favorites.module'
+import { NotificationModule } from '../notification/notification.module'
 
 @Module({
   providers: [PlaceResolver, PlaceService],
@@ -19,7 +20,8 @@ import { FavoritesModule } from '../favorites/favorites.module'
     MinioClientModule,
     FavoritesModule,
     TrackModule,
-    UserModule
+    UserModule,
+    NotificationModule
   ],
   exports: [PlaceService]
 })
