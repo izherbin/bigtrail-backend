@@ -122,6 +122,20 @@ export class Route {
   @Prop()
   reviews?: Review[]
 
+  @Field(() => Int, {
+    nullable: true,
+    description: 'Количество отзывов'
+  })
+  @Prop()
+  reviewsCount?: number
+
+  @Field(() => Float, {
+    nullable: true,
+    description: 'Средний рейтинг'
+  })
+  @Prop()
+  rating?: number
+
   @Field(() => Boolean, {
     nullable: true,
     description: 'Находится ли в списке избранного?'

@@ -171,6 +171,14 @@ export class RouteService {
         route.reviews.push(review)
       }
 
+      route.reviewsCount = route.reviews.length
+      route.markModified('reviewsCount')
+      const ratingTotal = route.reviews.reduce(
+        (total, review) => total + review.rating,
+        0
+      )
+      route.rating = ratingTotal / route.reviews.length
+      route.markModified('rating')
       route.markModified('reviews')
       await route.save()
     })
@@ -199,6 +207,14 @@ export class RouteService {
 
     if (reviewIdx >= 0) {
       route.reviews.splice(reviewIdx, 1)
+      route.reviewsCount = route.reviews.length
+      route.markModified('reviewsCount')
+      const ratingTotal = route.reviews.reduce(
+        (total, review) => total + review.rating,
+        0
+      )
+      route.rating = ratingTotal / route.reviews.length
+      route.markModified('rating')
       route.markModified('reviews')
       await route.save()
       return 'Ревью успешно удалено'

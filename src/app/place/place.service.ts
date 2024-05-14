@@ -124,6 +124,14 @@ export class PlaceService {
         place.reviews.push(review)
       }
 
+      place.reviewsCount = place.reviews.length
+      place.markModified('reviewsCount')
+      const totalRating = place.reviews.reduce(
+        (total, review) => total + review.rating,
+        0
+      )
+      place.rating = totalRating / place.reviewsCount
+      place.markModified('rating')
       place.markModified('reviews')
       await place.save()
     })
@@ -152,6 +160,14 @@ export class PlaceService {
 
     if (reviewIdx >= 0) {
       place.reviews.splice(reviewIdx, 1)
+      place.reviewsCount = place.reviews.length
+      place.markModified('reviewsCount')
+      const totalRating = place.reviews.reduce(
+        (total, review) => total + review.rating,
+        0
+      )
+      place.rating = totalRating / place.reviewsCount
+      place.markModified('rating')
       place.markModified('reviews')
       await place.save()
       return 'Ревью успешно удалено'

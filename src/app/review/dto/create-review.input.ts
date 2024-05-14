@@ -6,7 +6,7 @@ import { Schema as MongooSchema } from 'mongoose'
 @InputType({ description: 'Данные для создания ревью' })
 export class CreateReviewInput extends OmitType(
   Review,
-  ['userId', 'photos'],
+  ['userId', 'tsCreated', 'photos'],
   InputType
 ) {
   @Field(() => String, {

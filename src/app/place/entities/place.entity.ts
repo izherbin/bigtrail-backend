@@ -1,4 +1,4 @@
-import { ObjectType, Field, Float } from '@nestjs/graphql'
+import { ObjectType, Field, Float, Int } from '@nestjs/graphql'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { TrackPhoto } from 'src/app/track/entities/track.entity'
 import { Document, Schema as MongooSchema } from 'mongoose'
@@ -86,6 +86,20 @@ export class Place {
 
   @Prop()
   reviews?: Review[]
+
+  @Field(() => Int, {
+    nullable: true,
+    description: 'Количество отзывов'
+  })
+  @Prop()
+  reviewsCount: number
+
+  @Field(() => Float, {
+    nullable: true,
+    description: 'Средний рейтинг'
+  })
+  @Prop()
+  rating?: number
 
   @Field(() => Boolean, {
     nullable: true,
