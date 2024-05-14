@@ -102,19 +102,20 @@ export async function elevation(lat, lon) {
 
   // And as each pixel in the tile covers a geographic area, not a single
   // GPS coordinate, get the area that this pixel covers:
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const gpsBBox = [
     transform(x, y, pixelToGPS),
     transform(x + 1, y + 1, pixelToGPS)
   ]
-  console.log(`Pixel covers the following GPS area:`, gpsBBox)
+  // console.log(`Pixel covers the following GPS area:`, gpsBBox)
 
   // Finally, retrieve the elevation associated with this pixel's geographic area:
   const rasters = await image.readRasters()
   const { width, [0]: raster } = rasters
   const elev = raster[x + y * width]
-  // console.log(
-  //   `The elevation  at (${lat.toFixed(6)},${lon.toFixed(6)}) is ${elev}m`
-  // )
+  console.log(
+    `The elevation  at (${lat.toFixed(6)},${lon.toFixed(6)}) is ${elev}m`
+  )
 
   return elev
 }

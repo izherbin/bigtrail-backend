@@ -10,7 +10,6 @@ import { SubscriptionTrackResponse } from './dto/subscription-track.response'
 import { UploadPhoto } from './dto/upload-photo.response'
 import { MinioClientService } from '../minio-client/minio-client.service'
 import { UserService } from '../user/user.service'
-import { elevation } from './elevation'
 import { ClientErrors, ClientException } from '../client.exception'
 import { GetProfileResponse } from '../user/dto/get-profile.response'
 import { ConfigService } from '@nestjs/config'
@@ -283,8 +282,11 @@ export class TrackService {
     return await this.trackModel.countDocuments()
   }
 
+  // TODO Realize elevation calculating
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getElevation(lat: number, lon: number) {
-    const elev = await elevation(lat, lon)
+    // const elev = await elevation(lat, lon)
+    const elev = null
     return elev
   }
 
