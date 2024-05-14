@@ -8,6 +8,7 @@ import { Route, RouteSchema } from './entities/route.entity'
 import { UserModule } from '../user/user.module'
 import { ConfigModule } from '@nestjs/config'
 import { FavoritesModule } from '../favorites/favorites.module'
+import { NotificationModule } from '../notification/notification.module'
 
 @Module({
   providers: [RouteResolver, RouteService],
@@ -19,6 +20,7 @@ import { FavoritesModule } from '../favorites/favorites.module'
     FavoritesModule,
     MinioClientModule,
     TrackModule,
+    NotificationModule,
     UserModule
   ],
   exports: [RouteService]
