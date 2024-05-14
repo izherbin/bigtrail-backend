@@ -9,7 +9,10 @@ export type RouteDifficulty = 'easily' | 'moderately' | 'difficult'
 @ObjectType({ description: 'Маршрут' })
 @Schema()
 export class SetoutPhoto {
-  @Field(() => String, { description: 'Ссылка на загрузку в Minio' })
+  @Field(() => String, {
+    nullable: true,
+    description: 'Ссылка на загрузку в Minio'
+  })
   uri: string
 
   @Prop()
