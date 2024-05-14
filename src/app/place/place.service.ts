@@ -359,7 +359,7 @@ export class PlaceService {
     const emit: SubscriptionPlaceResponse = {
       function: 'DELETE',
       id: place._id,
-      userId: place.userId
+      userId
     }
     this.pubSub.publish('placeChanged', { watchPlaces: emit })
 

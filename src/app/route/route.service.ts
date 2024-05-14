@@ -471,7 +471,7 @@ export class RouteService {
     const emit: SubscriptionRouteResponse = {
       function: 'DELETE',
       id: route._id,
-      userId: route.userId
+      userId
     }
     this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
 
