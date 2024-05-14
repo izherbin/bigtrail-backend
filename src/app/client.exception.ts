@@ -306,6 +306,7 @@ export enum ClientErrors {
   'No such moderator' = 40411,
   'No such verifier' = 40412,
   'No content owner' = 40413,
+  'No such notification' = 40414,
   'SMS too early' = 40901,
   'This user is already exists' = 40902,
   'This admin is already exists' = 40903,
@@ -319,6 +320,7 @@ export enum ClientErrors {
   'Impossible to wipe out moderated or verified place' = 40911,
   'Impossible to review user`s own route' = 40912,
   'Impossible to review user`s own place' = 40913,
+  'Impossible to mark someone else`s notification as read' = 40914,
   'Unknown Error' = 50000,
   'SMS API not available' = 50301,
   'Geocoding API not available' = 50302

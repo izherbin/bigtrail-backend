@@ -7,6 +7,8 @@ import {
 } from './entities/notification.entity'
 import { NotificationFilterInput } from './dto/notification-filter.input'
 import { CreateNotificationInput } from './dto/create-notification.input'
+import { ClientErrors, ClientException } from '../client.exception'
+import { SetNotificationViewedInput } from './dto/mark-notification.input'
 
 @Injectable()
 export class NotificationService {
@@ -78,5 +80,26 @@ export class NotificationService {
         ? to
         : notificationsFiltered.length
     return notificationsFiltered.slice(start, end)
+  }
+
+  async markAsReadNotification(
+    userId: MongooSchema.Types.ObjectId,
+    setNotificationAsViewedInput: SetNotificationViewedInput
+  ): Promise<string> {
+    const { id } = setNotificationAsViewedInput
+    const notification = await this.notificationModel.findById(id)
+    if (!notification) {
+      throw new ClientException(ClientErrors['No such notification'])
+    }
+
+    if (notification.userId.toString() !== userId.toString()) {
+      throw new ClientException(
+        ClientErrors['Impossible to mark someone else`s notification as read']
+      )
+    }
+
+    notification.viewed = true
+    await notification.save()
+    return `Уведомление ${id} отмечено как прочитанное`
   }
 }
