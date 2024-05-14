@@ -1,6 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql'
 import { WatchResponseFunction } from 'src/app/track/dto/subscription-track.response'
 import { Schema as MongooSchema } from 'mongoose'
+import { Notification } from '../entities/notification.entity'
 
 @ObjectType({ description: 'Информация от подписки на изменения уведомлении' })
 export class SubscriptionNotificationResponse {

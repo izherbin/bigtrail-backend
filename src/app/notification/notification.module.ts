@@ -6,13 +6,15 @@ import {
   Notification,
   NotificationSchema
 } from './entities/notification.entity'
+import { UserModule } from '../user/user.module'
 
 @Module({
   providers: [NotificationResolver, NotificationService],
   imports: [
     MongooseModule.forFeature([
       { name: Notification.name, schema: NotificationSchema }
-    ])
+    ]),
+    UserModule
   ],
   exports: [NotificationService]
 })

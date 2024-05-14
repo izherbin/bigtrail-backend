@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Schema as MongooSchema, Model } from 'mongoose'
 import {
@@ -9,12 +9,14 @@ import { NotificationFilterInput } from './dto/notification-filter.input'
 import { CreateNotificationInput } from './dto/create-notification.input'
 import { ClientErrors, ClientException } from '../client.exception'
 import { SetNotificationViewedInput } from './dto/mark-notification.input'
+import { PubSubEngine } from 'graphql-subscriptions'
 
 @Injectable()
 export class NotificationService {
   constructor(
     @InjectModel(Notification.name)
-    private readonly notificationModel: Model<NotificationDocument>
+    private readonly notificationModel: Model<NotificationDocument>,
+    @Inject('PUB_SUB') private pubSub: PubSubEngine
   ) {}
   async create(createNotificationInput: CreateNotificationInput) {
     const notification = new this.notificationModel(createNotificationInput)
@@ -80,6 +82,11 @@ export class NotificationService {
         ? to
         : notificationsFiltered.length
     return notificationsFiltered.slice(start, end)
+  }
+
+  watchUserNotifications() {
+    const res = this.pubSub.asyncIterator('notificationChanged')
+    return res
   }
 
   async markAsReadNotification(
