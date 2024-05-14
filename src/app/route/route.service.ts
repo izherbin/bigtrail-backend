@@ -134,6 +134,7 @@ export class RouteService {
     const { contentId: routeId, ...payload } = createReviewInput
     const review = payload as Review
     review.userId = userId
+    review.tsCreated = Date.now()
 
     const route = await this.renewOneRoutePhotos(
       await this.routeModel.findById(routeId)

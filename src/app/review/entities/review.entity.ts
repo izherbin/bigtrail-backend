@@ -1,4 +1,4 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql'
+import { ObjectType, Field, Int, Float } from '@nestjs/graphql'
 import { Prop, Schema } from '@nestjs/mongoose'
 import { Types } from 'mongoose'
 import { SetoutPhoto } from 'src/app/route/entities/route.entity'
@@ -12,6 +12,10 @@ export class Review {
 
   @Field(() => String, { description: 'Тип контента' })
   type: 'route' | 'place'
+
+  @Field(() => Float, { description: 'Время создания ревью' })
+  @Prop()
+  tsCreated: number
 
   @Field(() => Int, {
     nullable: true,

@@ -87,6 +87,7 @@ export class PlaceService {
     const { contentId: placeId, ...payload } = createReviewInput
     const review = payload as Review
     review.userId = userId
+    review.tsCreated = Date.now()
 
     const place = await this.renewOnePlacePhotos(
       await this.placeModel.findById(placeId)
