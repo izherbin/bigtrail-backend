@@ -177,7 +177,11 @@ export class RouteService {
         (total, review) => total + review.rating,
         0
       )
-      route.rating = ratingTotal / route.reviews.length
+      route.rating =
+        Math.round(
+          (route.reviews.length ? ratingTotal / route.reviews.length : 0) * 10
+        ) / 10
+
       route.markModified('rating')
       route.markModified('reviews')
       await route.save()
@@ -213,9 +217,10 @@ export class RouteService {
         (total, review) => total + review.rating,
         0
       )
-      route.rating = route.reviews.length
-        ? ratingTotal / route.reviews.length
-        : 0
+      route.rating =
+        Math.round(
+          (route.reviews.length ? ratingTotal / route.reviews.length : 0) * 10
+        ) / 10
       route.markModified('rating')
       route.markModified('reviews')
       await route.save()
