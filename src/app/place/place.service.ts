@@ -166,7 +166,9 @@ export class PlaceService {
         (total, review) => total + review.rating,
         0
       )
-      place.rating = totalRating / place.reviewsCount
+      place.rating = place.reviews.length
+        ? totalRating / place.reviews.length
+        : 0
       place.markModified('rating')
       place.markModified('reviews')
       await place.save()
