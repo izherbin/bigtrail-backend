@@ -14,7 +14,7 @@ import { UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/jwt-auth.guards'
 import { UploadPhoto } from '../track/dto/upload-photo.response'
 import { UserId } from '../auth/user-id.decorator'
-import { Schema as MongooSchema } from 'mongoose'
+import { Schema as MongooSchema, Types } from 'mongoose'
 import { SubscriptionRouteResponse } from './dto/subscription-route.response'
 import { RouteFilterInput } from './dto/route-filter.input'
 import { DeleteRouteInput } from './dto/delete-route.input'
@@ -26,6 +26,7 @@ import { RequiredRoles } from '../auth/required-roles.decorator'
 import { Role } from '../user/entities/user.entity'
 import { RolesGuard } from '../auth/roles.guards'
 import { SetVerifiedRouteInput } from './dto/set-verified-route.input'
+import { WatchRoutesFilterInput } from './dto/watch-route-filter.input'
 
 @Resolver(() => Route)
 export class RouteResolver {
@@ -119,23 +120,44 @@ export class RouteResolver {
     return this.routeService.getRoutesCount(routeFilterInput)
   }
 
+  // @Subscription(() => SubscriptionRouteResponse, {
+  //   description: 'Следить за всеми маршрутами пользователя',
+  //   filter: (payload, variables, context): boolean => {
+  //     const res =
+  //       payload.watchUserRoutes.userId.toString() === context.req.user._id
+  //     console.log('Watch route: My userId:', context.req.user._id)
+  //     console.log(
+  //       'Watch route: Changed userId:',
+  //       payload.watchUserRoutes.userId.toString()
+  //     )
+  //     return res
+  //   }
+  // })
+  // @UseGuards(JwtAuthGuard)
+  // watchUserRoutes(@UserId() userId: MongooSchema.Types.ObjectId) {
+  //   console.log('Watch route: Input userId:', userId)
+  //   const res = this.routeService.watchUserRoutes()
+  //   return res
+  // }
+
   @Subscription(() => SubscriptionRouteResponse, {
-    description: 'Следить за всеми маршрутами пользователя',
-    filter: (payload, variables, context): boolean => {
-      const res =
-        payload.watchUserRoutes.userId.toString() === context.req.user._id
-      console.log('Watch route: My userId:', context.req.user._id)
-      console.log(
-        'Watch route: Changed userId:',
-        payload.watchUserRoutes.userId.toString()
+    description:
+      'Следить за всеми маршрутами пользователя, удовлетворяющих фильтру',
+    filter: (payload, variables): boolean => {
+      const { ids } = variables.watchRoutesFilterInput
+      const passedFilter = ids.some(
+        (id: Types.ObjectId) =>
+          id.toString() === payload.watchRoutes.id.toString()
       )
-      return res
+      return passedFilter
     }
   })
-  @UseGuards(JwtAuthGuard)
-  watchUserRoutes(@UserId() userId: MongooSchema.Types.ObjectId) {
-    console.log('Watch route: Input userId:', userId)
-    const res = this.routeService.watchUserRoutes()
+  watchRoutes(
+    @Args('watchRoutesFilterInput', { nullable: true })
+    filter: WatchRoutesFilterInput
+  ) {
+    console.log('Watch route: Input filter:', filter)
+    const res = this.routeService.watchRoutes()
     return res
   }
 

@@ -121,7 +121,7 @@ export class RouteService {
         data: route as Route,
         userId: route.userId
       }
-      this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
+      this.pubSub.publish('routeChanged', { watchRoutes: emit })
     })
 
     return uploads
@@ -185,6 +185,14 @@ export class RouteService {
       route.markModified('rating')
       route.markModified('reviews')
       await route.save()
+
+      const emit: SubscriptionRouteResponse = {
+        function: 'UPDATE',
+        id: route._id,
+        data: route as Route,
+        userId: route.userId
+      }
+      this.pubSub.publish('routeChanged', { watchRoutes: emit })
     })
 
     return uploads
@@ -224,6 +232,15 @@ export class RouteService {
       route.markModified('rating')
       route.markModified('reviews')
       await route.save()
+
+      const emit: SubscriptionRouteResponse = {
+        function: 'UPDATE',
+        id: route._id,
+        data: route as Route,
+        userId: route.userId
+      }
+      this.pubSub.publish('routeChanged', { watchRoutes: emit })
+
       return 'Ревью успешно удалено'
     } else {
       return 'Отсутствует ревью для удаления'
@@ -303,7 +320,7 @@ export class RouteService {
     return routesFiltered.length
   }
 
-  watchUserRoutes() {
+  watchRoutes() {
     const res = this.pubSub.asyncIterator('routeChanged')
     return res
   }
@@ -412,7 +429,7 @@ export class RouteService {
         data: route as Route,
         userId: route.userId
       }
-      this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
+      this.pubSub.publish('routeChanged', { watchRoutes: emit })
     })
 
     return uploads
@@ -447,7 +464,7 @@ export class RouteService {
       data: route as Route,
       userId: route.userId
     }
-    this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
+    this.pubSub.publish('routeChanged', { watchRoutes: emit })
 
     return `Маршрут ${id} успешно модерирован`
   }
@@ -481,7 +498,7 @@ export class RouteService {
       data: route as Route,
       userId: route.userId
     }
-    this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
+    this.pubSub.publish('routeChanged', { watchRoutes: emit })
 
     return `Маршрут ${id} успешно верифицирован`
   }
@@ -515,7 +532,7 @@ export class RouteService {
       id: route._id,
       userId
     }
-    this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
+    this.pubSub.publish('routeChanged', { watchRoutes: emit })
 
     return `Успешно удален маршрут ${id} `
   }
@@ -544,7 +561,7 @@ export class RouteService {
       id: route._id,
       userId
     }
-    this.pubSub.publish('routeChanged', { watchUserRoutes: emit })
+    this.pubSub.publish('routeChanged', { watchRoutes: emit })
 
     return `Успешно стерт маршрут ${id} `
   }

@@ -47,6 +47,7 @@ export class NotificationResolver {
   @Subscription(() => SubscriptionNotificationResponse, {
     description: 'Следить за всеми уведомлениями заданного пользователя',
     filter: (payload, variables, context): boolean => {
+      console.log('variables:', variables)
       const userId = context.req.user._id
 
       const res = payload.watchNotifications.userId.toString() === userId
