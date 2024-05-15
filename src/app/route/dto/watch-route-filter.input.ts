@@ -8,4 +8,10 @@ export class WatchRoutesFilterInput {
     description: 'Фильтр по массиву id маршрутов'
   })
   ids?: Types.ObjectId[]
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'Фильтр по владельцу'
+  })
+  userId?: Types.ObjectId
 }
