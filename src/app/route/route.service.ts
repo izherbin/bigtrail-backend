@@ -166,11 +166,14 @@ export class RouteService {
       }
     }
 
+    let isNewReview: boolean
     Promise.allSettled(downloads).then(async () => {
       if (reviewIdx >= 0) {
         route.reviews[reviewIdx] = review
+        isNewReview = false
       } else {
         route.reviews.push(review)
+        isNewReview = true
       }
 
       route.reviewsCount = route.reviews.length
@@ -197,7 +200,7 @@ export class RouteService {
       this.pubSub.publish('routeChanged', { watchRoutes: emit })
 
       const emitReview: SubscriptionReviewResponse = {
-        function: 'ADD',
+        function: isNewReview ? 'ADD' : 'UPDATE',
         type: 'route',
         contentId: route._id,
         userId: userId as unknown as MongooSchema.Types.ObjectId,

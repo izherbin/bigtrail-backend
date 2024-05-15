@@ -119,11 +119,14 @@ export class PlaceService {
       }
     }
 
+    let isNewReview: boolean
     Promise.allSettled(downloads).then(async () => {
       if (reviewIdx >= 0) {
         place.reviews[reviewIdx] = review
+        isNewReview = false
       } else {
         place.reviews.push(review)
+        isNewReview = true
       }
 
       place.reviewsCount = place.reviews.length
@@ -141,7 +144,7 @@ export class PlaceService {
       await place.save()
 
       const emitReview: SubscriptionReviewResponse = {
-        function: 'ADD',
+        function: isNewReview ? 'ADD' : 'UPDATE',
         type: 'place',
         contentId: place._id,
         userId: userId as unknown as MongooSchema.Types.ObjectId,
