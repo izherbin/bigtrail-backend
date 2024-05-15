@@ -8,6 +8,8 @@ import { ClientErrors, ClientException } from '../client.exception'
 import { Types } from 'mongoose'
 import { DeleteReviewInput } from './dto/delete-review.input'
 import { GetReviewsInput } from './dto/get-reviews.input'
+import { Review } from './entities/review.entity'
+import { ReviewFilterInput } from './dto/review-filter.input'
 
 @Injectable()
 export class ReviewService {
@@ -40,12 +42,21 @@ export class ReviewService {
     return `This action returns a #${id} review`
   }
 
-  async getReviews(getReviewsInput: GetReviewsInput) {
+  async getReviews(
+    getReviewsInput: GetReviewsInput,
+    filter: ReviewFilterInput = {}
+  ) {
     const { type } = getReviewsInput
     if (type === 'route') {
-      return this.routeService.getReviews(getReviewsInput)
+      return this.filterReviews(
+        await this.routeService.getReviews(getReviewsInput),
+        filter
+      )
     } else if (type === 'place') {
-      return this.placeService.getReviews(getReviewsInput)
+      return this.filterReviews(
+        await this.placeService.getReviews(getReviewsInput),
+        filter
+      )
     } else {
       throw new ClientException(ClientErrors['Illegal content type'])
     }
@@ -63,5 +74,15 @@ export class ReviewService {
     } else {
       throw new ClientException(ClientErrors['Illegal content type'])
     }
+  }
+
+  async filterReviews(reviews: Review[], filter: ReviewFilterInput) {
+    if (!filter) return reviews
+    const { userId } = filter
+    const reviewsFiltered = reviews.filter((review) => {
+      if (userId && review.userId.toString() !== userId.toString()) return false
+      else return true
+    })
+    return reviewsFiltered
   }
 }

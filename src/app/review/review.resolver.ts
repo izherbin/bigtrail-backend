@@ -9,6 +9,7 @@ import { UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/jwt-auth.guards'
 import { DeleteReviewInput } from './dto/delete-review.input'
 import { GetReviewsInput } from './dto/get-reviews.input'
+import { ReviewFilterInput } from './dto/review-filter.input'
 
 @Resolver(() => Review)
 export class ReviewResolver {
@@ -32,8 +33,11 @@ export class ReviewResolver {
     return this.reviewService.remove(userId, deleteReviewInput)
   }
 
-  @Query(() => [Review])
-  getReviews(@Args('getReviewsInput') getReviewsInput: GetReviewsInput) {
-    return this.reviewService.getReviews(getReviewsInput)
+  @Query(() => [Review], { description: 'Получить ревью, ' })
+  getReviews(
+    @Args('getReviewsInput') getReviewsInput: GetReviewsInput,
+    @Args('filter', { nullable: true }) filter: ReviewFilterInput
+  ) {
+    return this.reviewService.getReviews(getReviewsInput, filter)
   }
 }
