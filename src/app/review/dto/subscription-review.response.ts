@@ -11,9 +11,17 @@ export class SubscriptionReviewResponse {
   function: WatchResponseFunction
 
   @Field(() => String, {
-    description: 'Идентификатор ревью'
+    description: 'Тип контента'
   })
-  id: MongooSchema.Types.ObjectId
+  type: 'route' | 'place'
+
+  @Field(() => String, {
+    description: 'Идентификатор контента'
+  })
+  contentId: MongooSchema.Types.ObjectId
+
+  @Field(() => String, { description: 'Идентификатор владельца ревью' })
+  userId: MongooSchema.Types.ObjectId
 
   @Field(() => Review, {
     nullable: true,

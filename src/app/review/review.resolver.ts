@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args, Query } from '@nestjs/graphql'
+import { Resolver, Mutation, Args, Query, Subscription } from '@nestjs/graphql'
 import { ReviewService } from './review.service'
 import { Review } from './entities/review.entity'
 import { CreateReviewInput } from './dto/create-review.input'
@@ -10,6 +10,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guards'
 import { DeleteReviewInput } from './dto/delete-review.input'
 import { GetReviewsInput } from './dto/get-reviews.input'
 import { ReviewFilterInput } from './dto/review-filter.input'
+import { SubscriptionReviewResponse } from './dto/subscription-review.response'
 
 @Resolver(() => Review)
 export class ReviewResolver {
@@ -39,5 +40,20 @@ export class ReviewResolver {
     @Args('filter', { nullable: true }) filter: ReviewFilterInput
   ) {
     return this.reviewService.getReviews(getReviewsInput, filter)
+  }
+
+  @Subscription(() => SubscriptionReviewResponse, {
+    description: 'Следить за всеми ревью единицы контента',
+    filter: (payload, variables): boolean => {
+      const { type, contentId } = variables.getReviewsInput
+      const passedFilter =
+        payload.watchReviews.type === type &&
+        payload.watchReviews.contentId.toString() === contentId.toString()
+      return passedFilter
+    }
+  })
+  watchReviews(@Args('getReviewsInput') getReviewsInput: GetReviewsInput) {
+    console.log('getReviewsInput:', getReviewsInput)
+    return this.reviewService.watchReviews()
   }
 }

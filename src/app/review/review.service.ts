@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { CreateReviewInput } from './dto/create-review.input'
 import { UploadPhoto } from '../track/dto/upload-photo.response'
 import { RouteService } from '../route/route.service'
@@ -10,12 +10,14 @@ import { DeleteReviewInput } from './dto/delete-review.input'
 import { GetReviewsInput } from './dto/get-reviews.input'
 import { Review } from './entities/review.entity'
 import { ReviewFilterInput } from './dto/review-filter.input'
+import { PubSubEngine } from 'graphql-subscriptions'
 
 @Injectable()
 export class ReviewService {
   constructor(
     private readonly routeService: RouteService,
-    private readonly placeService: PlaceService
+    private readonly placeService: PlaceService,
+    @Inject('PUB_SUB') private pubSub: PubSubEngine
   ) {}
 
   async create(
@@ -26,9 +28,17 @@ export class ReviewService {
 
     const userId = new Types.ObjectId(userId_.toString())
     if (type === 'route') {
-      return await this.routeService.addReview(userId, createReviewInput)
+      return await this.routeService.addReview(
+        this.pubSub,
+        userId,
+        createReviewInput
+      )
     } else if (type === 'place') {
-      return await this.placeService.addReview(userId, createReviewInput)
+      return await this.placeService.addReview(
+        this.pubSub,
+        userId,
+        createReviewInput
+      )
     } else {
       throw new ClientException(ClientErrors['Illegal content type'])
     }
@@ -68,9 +78,17 @@ export class ReviewService {
   ) {
     const { type } = deleteReviewInput
     if (type === 'route') {
-      return this.routeService.deleteReview(userId, deleteReviewInput)
+      return this.routeService.deleteReview(
+        this.pubSub,
+        userId,
+        deleteReviewInput
+      )
     } else if (type === 'place') {
-      return this.placeService.deleteReview(userId, deleteReviewInput)
+      return this.placeService.deleteReview(
+        this.pubSub,
+        userId,
+        deleteReviewInput
+      )
     } else {
       throw new ClientException(ClientErrors['Illegal content type'])
     }
@@ -84,5 +102,10 @@ export class ReviewService {
       else return true
     })
     return reviewsFiltered
+  }
+
+  watchReviews() {
+    const iterator = this.pubSub.asyncIterator('reviewChanged')
+    return iterator
   }
 }

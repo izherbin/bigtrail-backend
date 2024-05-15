@@ -27,6 +27,7 @@ import { UploadPhoto } from '../track/dto/upload-photo.response'
 import { DeleteReviewInput } from '../review/dto/delete-review.input'
 import { GetReviewsInput } from '../review/dto/get-reviews.input'
 import { NotificationService } from '../notification/notification.service'
+import { SubscriptionReviewResponse } from '../review/dto/subscription-review.response'
 
 const STRING_SIMULARITY_THRESHOLD = 0.65
 
@@ -128,6 +129,7 @@ export class RouteService {
   }
 
   async addReview(
+    pubSubReview: PubSubEngine,
     userId: Types.ObjectId,
     createReviewInput: CreateReviewInput
   ): Promise<UploadPhoto[]> {
@@ -193,12 +195,22 @@ export class RouteService {
         userId: route.userId
       }
       this.pubSub.publish('routeChanged', { watchRoutes: emit })
+
+      const emitReview: SubscriptionReviewResponse = {
+        function: 'ADD',
+        type: 'route',
+        contentId: route._id,
+        userId: userId as unknown as MongooSchema.Types.ObjectId,
+        data: review
+      }
+      pubSubReview.publish('reviewChanged', { watchReviews: emitReview })
     })
 
     return uploads
   }
 
   async deleteReview(
+    pubSubReview: PubSubEngine,
     userId: MongooSchema.Types.ObjectId,
     deleteReviewInput: DeleteReviewInput
   ) {
@@ -240,6 +252,14 @@ export class RouteService {
         userId: route.userId
       }
       this.pubSub.publish('routeChanged', { watchRoutes: emit })
+
+      const emitReview: SubscriptionReviewResponse = {
+        function: 'DELETE',
+        type: 'route',
+        contentId: route._id,
+        userId: userId as unknown as MongooSchema.Types.ObjectId
+      }
+      pubSubReview.publish('reviewChanged', { watchReviews: emitReview })
 
       return 'Ревью успешно удалено'
     } else {
