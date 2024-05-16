@@ -75,6 +75,13 @@ export class UserStatistics {
   })
   @Prop()
   points?: number
+
+  @Field(() => Int, {
+    nullable: true,
+    description: 'Количество непрочтенных уведомлений пользователя'
+  })
+  @Prop()
+  notificationsUnread?: number
 }
 
 @ObjectType({ description: 'Список избранного' })

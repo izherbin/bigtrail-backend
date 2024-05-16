@@ -491,7 +491,8 @@ export class PlaceService {
         tracks: 0,
         duration: 0,
         distance: 0,
-        points: 0
+        points: 0,
+        notificationsUnread: 0
       }
     }
 

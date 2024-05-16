@@ -10,18 +10,35 @@ import { CreateNotificationInput } from './dto/create-notification.input'
 import { ClientErrors, ClientException } from '../client.exception'
 import { SetNotificationViewedInput } from './dto/mark-notification.input'
 import { PubSubEngine } from 'graphql-subscriptions'
+import { UserService } from '../user/user.service'
+import { GetProfileResponse } from '../user/dto/get-profile.response'
+import { SubscriptionNotificationResponse } from './dto/subscription-notification.response'
 
 @Injectable()
 export class NotificationService {
   constructor(
     @InjectModel(Notification.name)
     private readonly notificationModel: Model<NotificationDocument>,
+    private readonly userService: UserService,
     @Inject('PUB_SUB') private pubSub: PubSubEngine
   ) {}
+
   async create(createNotificationInput: CreateNotificationInput) {
     const notification = new this.notificationModel(createNotificationInput)
     notification.tsCreated = Date.now()
     const res = await notification.save()
+
+    const profile = await this.updateUserStatistics(notification.userId)
+    this.pubSub.publish('profileChanged', { watchProfile: profile })
+
+    const emit: SubscriptionNotificationResponse = {
+      function: 'ADD',
+      id: res._id,
+      data: res as Notification,
+      userId: res.userId
+    }
+    this.pubSub.publish('notificationsChanged', { watchNotifications: emit })
+
     return res
   }
 
@@ -85,7 +102,7 @@ export class NotificationService {
   }
 
   watchUserNotifications() {
-    const res = this.pubSub.asyncIterator('notificationChanged')
+    const res = this.pubSub.asyncIterator('notificationsChanged')
     return res
   }
 
@@ -115,9 +132,49 @@ export class NotificationService {
       notifications.forEach(async (notification) => {
         notification.viewed = true
         await notification.save()
+
+        const emit: SubscriptionNotificationResponse = {
+          function: 'UPDATE',
+          id: notification._id,
+          data: notification as Notification,
+          userId: notification.userId
+        }
+        this.pubSub.publish('notificationsChanged', {
+          watchNotifications: emit
+        })
       })
+
+      const profile = await this.updateUserStatistics(userId)
+      this.pubSub.publish('profileChanged', { watchProfile: profile })
 
       return 'Все уведомления отмечены как прочитанные'
     }
+  }
+
+  async updateUserStatistics(userId: MongooSchema.Types.ObjectId) {
+    const user = await this.userService.getUserById(userId)
+    if (!user.statistics) {
+      user.statistics = {
+        subscribers: 0,
+        subscriptions: 0,
+        places: 0,
+        routes: 0,
+        tracks: 0,
+        duration: 0,
+        distance: 0,
+        points: 0,
+        notificationsUnread: 0
+      }
+    }
+
+    const unread = await this.notificationModel.countDocuments({
+      userId,
+      viewed: false
+    })
+
+    user.statistics.notificationsUnread = unread
+
+    await user.save()
+    return user as GetProfileResponse
   }
 }
