@@ -143,6 +143,14 @@ export class PlaceService {
       place.markModified('reviews')
       await place.save()
 
+      const emit: SubscriptionPlaceResponse = {
+        function: 'UPDATE',
+        id: place._id,
+        data: place as Place,
+        userId: place.userId
+      }
+      this.pubSub.publish('placeChanged', { watchPlaces: emit })
+
       const emitReview: SubscriptionReviewResponse = {
         function: isNewReview ? 'ADD' : 'UPDATE',
         type: 'place',
@@ -191,6 +199,14 @@ export class PlaceService {
       place.markModified('rating')
       place.markModified('reviews')
       await place.save()
+
+      const emit: SubscriptionPlaceResponse = {
+        function: 'UPDATE',
+        id: place._id,
+        data: place as Place,
+        userId: place.userId
+      }
+      this.pubSub.publish('placeChanged', { watchPlaces: emit })
 
       const emitReview: SubscriptionReviewResponse = {
         function: 'DELETE',
