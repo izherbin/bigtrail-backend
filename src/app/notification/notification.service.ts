@@ -29,6 +29,10 @@ export class NotificationService {
     const res = await notification.save()
 
     const profile = await this.updateUserStatistics(notification.userId)
+    console.log(
+      'create Notification: notification.userId:',
+      notification.userId
+    )
     this.pubSub.publish('profileChanged', { watchProfile: profile })
 
     const emit: SubscriptionNotificationResponse = {
@@ -39,7 +43,7 @@ export class NotificationService {
     }
     this.pubSub.publish('notificationsChanged', { watchNotifications: emit })
 
-    return res
+    return notification
   }
 
   async getNotifications(

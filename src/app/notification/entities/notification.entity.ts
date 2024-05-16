@@ -9,6 +9,7 @@ export class Notification {
   @Field(() => String, { description: 'Идентификатор в MongoDB' })
   _id: MongooSchema.Types.ObjectId
 
+  @Field(() => String, { description: 'Id адресата' })
   @Prop()
   userId: MongooSchema.Types.ObjectId
 
