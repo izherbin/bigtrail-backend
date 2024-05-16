@@ -26,7 +26,7 @@ import { RequiredRoles } from '../auth/required-roles.decorator'
 import { Role } from '../user/entities/user.entity'
 import { RolesGuard } from '../auth/roles.guards'
 import { SetVerifiedRouteInput } from './dto/set-verified-route.input'
-import { WatchRoutesFilterInput } from './dto/watch-route-filter.input'
+import { WatchRoutesFilterInput } from './dto/watch-routes-filter.input'
 
 @Resolver(() => Route)
 export class RouteResolver {

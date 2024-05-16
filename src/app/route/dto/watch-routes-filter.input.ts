@@ -11,7 +11,7 @@ export class WatchRoutesFilterInput {
 
   @Field(() => String, {
     nullable: true,
-    description: 'Фильтр по владельцу'
+    description: 'Фильтр по владельцу маршрута'
   })
   userId?: Types.ObjectId
 }

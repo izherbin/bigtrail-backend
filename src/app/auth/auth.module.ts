@@ -13,7 +13,6 @@ import { UserModule } from '../user/user.module'
 import { UserService } from '../user/user.service'
 import { MongooseModule } from '@nestjs/mongoose'
 import { MinioClientModule } from '../minio-client/minio-client.module'
-import { RouteModule } from '../route/route.module'
 
 @Module({
   providers: [
@@ -27,7 +26,6 @@ import { RouteModule } from '../route/route.module'
   ],
   imports: [
     UserModule,
-    RouteModule,
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     HttpModule,
     PassportModule,

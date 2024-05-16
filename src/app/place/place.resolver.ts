@@ -2,16 +2,15 @@ import { Resolver, Mutation, Args, Query, Subscription } from '@nestjs/graphql'
 import { PlaceService } from './place.service'
 import { Place } from './entities/place.entity'
 import { CreatePlaceInput } from './dto/create-place.input'
-//? import { UpdatePlaceInput } from './dto/update-place.input'
 import { UserId } from '../auth/user-id.decorator'
-import { Schema as MongooSchema } from 'mongoose'
+import { Schema as MongooSchema, Types } from 'mongoose'
 import { UploadPhoto } from '../track/dto/upload-photo.response'
 import { UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/jwt-auth.guards'
 import { DeletePlaceInput } from './dto/delete-place.input'
 import { PlaceFilterInput } from './dto/place-filter.input'
 import { SubscriptionPlaceResponse } from './dto/subscription-place.response'
-import { SubscriptionPlaceInput } from './dto/subscription-place.input'
+import { WatchPlacesFilterInput } from './dto/watch-places-filter.input'
 import { GetPlaceInput } from './dto/get-place.input'
 import { JwtFreeGuard } from '../auth/jwt-free.guards'
 import { EditPlaceInput } from './dto/edit-place.input'
@@ -97,29 +96,31 @@ export class PlaceResolver {
   }
 
   @Subscription(() => SubscriptionPlaceResponse, {
-    description: 'Следить за всеми интересными местами заданного пользователя',
-    filter: (payload, variables, context): boolean => {
-      const userId = variables.subscriptionPlaceInput.userId
-        ? variables.subscriptionPlaceInput.userId.toString()
-        : context.req.user._id
+    description:
+      'Следить за всеми интересными местами заданного пользователя, удовлетворяющих фильтру',
+    filter: (payload, variables): boolean => {
+      const { ids } = variables.watchPlacesFilterInput
+      const passedIdFilter =
+        !ids ||
+        !Array.isArray(ids) ||
+        ids.length == 0 ||
+        ids.some(
+          (id: Types.ObjectId) =>
+            id.toString() === payload.watchPlaces.id.toString()
+        )
 
-      const res = payload.watchPlaces.userId.toString() === userId
-      console.log('Watch place: userId:', userId)
-      console.log('Watch place: My userId:', context.req.user._id)
-      console.log(
-        'Watch place: Changed userId:',
-        payload.watchPlaces.userId.toString()
-      )
-      return res
+      const passedUserIdFilter =
+        !variables.watchPlacesFilterInput.userId ||
+        payload.watchPlaces.userId.toString() ===
+          variables.watchPlacesFilterInput.userId.toString()
+      return passedIdFilter && passedUserIdFilter
     }
   })
-  @UseGuards(JwtAuthGuard)
   watchPlaces(
-    @Args('subscriptionPlaceInput')
-    subscriptionPlaceInput: SubscriptionPlaceInput
+    @Args('watchPlacesFilterInput', { nullable: true })
+    filter: WatchPlacesFilterInput
   ) {
-    const { userId } = subscriptionPlaceInput
-    console.log('Watch place: Input userId:', userId)
+    console.log('Watch place: Input filter:', filter)
     const res = this.placeService.watchPlaces()
     return res
   }
