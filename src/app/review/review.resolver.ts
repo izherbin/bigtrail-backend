@@ -11,6 +11,7 @@ import { DeleteReviewInput } from './dto/delete-review.input'
 import { GetReviewsInput } from './dto/get-reviews.input'
 import { ReviewFilterInput } from './dto/review-filter.input'
 import { SubscriptionReviewResponse } from './dto/subscription-review.response'
+import { WatchReviewsFilterInput } from './dto/watch-reviews-filter.input'
 
 @Resolver(() => Review)
 export class ReviewResolver {
@@ -43,17 +44,31 @@ export class ReviewResolver {
   }
 
   @Subscription(() => SubscriptionReviewResponse, {
-    description: 'Следить за всеми ревью единицы контента',
+    description:
+      'Следить за всеми ревью единицы контента. удовлетворяющим фильтру',
     filter: (payload, variables): boolean => {
       const { type, contentId } = variables.getReviewsInput
-      const passedFilter =
+
+      let passedFilter = true
+      if (variables.filter) {
+        const { userId } = variables.filter
+        passedFilter =
+          !userId ||
+          payload.watchReviews.userId.toString() === userId.toString()
+      }
+
+      const passedContentLocation =
         payload.watchReviews.type === type &&
         payload.watchReviews.contentId.toString() === contentId.toString()
-      return passedFilter
+      return passedContentLocation && passedFilter
     }
   })
-  watchReviews(@Args('getReviewsInput') getReviewsInput: GetReviewsInput) {
-    console.log('getReviewsInput:', getReviewsInput)
+  watchReviews(
+    @Args('getReviewsInput') getReviewsInput: GetReviewsInput,
+    @Args('filter', { nullable: true }) filter: WatchReviewsFilterInput
+  ) {
+    console.log('watchReviews(): filter:', filter)
+    console.log('watchReviews(): getReviewsInput:', getReviewsInput)
     return this.reviewService.watchReviews()
   }
 }
