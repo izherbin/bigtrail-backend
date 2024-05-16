@@ -93,20 +93,31 @@ export class NotificationService {
     userId: MongooSchema.Types.ObjectId,
     setNotificationAsViewedInput: SetNotificationViewedInput
   ): Promise<string> {
-    const { id } = setNotificationAsViewedInput
-    const notification = await this.notificationModel.findById(id)
-    if (!notification) {
-      throw new ClientException(ClientErrors['No such notification'])
-    }
+    if (setNotificationAsViewedInput?.id) {
+      const { id } = setNotificationAsViewedInput
+      const notification = await this.notificationModel.findById(id)
+      if (!notification) {
+        throw new ClientException(ClientErrors['No such notification'])
+      }
 
-    if (notification.userId.toString() !== userId.toString()) {
-      throw new ClientException(
-        ClientErrors['Impossible to mark someone else`s notification as read']
-      )
-    }
+      if (notification.userId.toString() !== userId.toString()) {
+        throw new ClientException(
+          ClientErrors['Impossible to mark someone else`s notification as read']
+        )
+      }
 
-    notification.viewed = true
-    await notification.save()
-    return `Уведомление ${id} отмечено как прочитанное`
+      notification.viewed = true
+      await notification.save()
+
+      return `Уведомление ${id} отмечено как прочитанное`
+    } else {
+      const notifications = await this.notificationModel.find({ userId })
+      notifications.forEach(async (notification) => {
+        notification.viewed = true
+        await notification.save()
+      })
+
+      return 'Все уведомления отмечены как прочитанные'
+    }
   }
 }

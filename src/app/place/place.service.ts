@@ -361,9 +361,10 @@ export class PlaceService {
     await this.notificationService.create({
       type: 'place',
       contentId: place._id,
+      event: 'MODERATE',
       userId: place.userId,
-      title: 'Интересное место модерировано',
-      text: `Интересное место ${place.name} модерировано`
+      title: null,
+      text: null
     })
 
     const emit: SubscriptionPlaceResponse = {
@@ -395,9 +396,10 @@ export class PlaceService {
     await this.notificationService.create({
       type: 'place',
       contentId: place._id,
+      event: 'VERIFY',
       userId: place.userId,
-      title: 'Интересное место верифицировано',
-      text: `Интересное место ${place.name} верифицировано`
+      title: null,
+      text: null
     })
 
     const emit: SubscriptionPlaceResponse = {

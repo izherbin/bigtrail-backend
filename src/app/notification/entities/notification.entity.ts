@@ -2,6 +2,7 @@ import { ObjectType, Field, Float } from '@nestjs/graphql'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Schema as MongooSchema } from 'mongoose'
 
+export type Event = 'ADD' | 'DELETE' | 'UPDATE' | 'MODERATE' | 'VERIFY'
 @ObjectType({ description: 'Уведомление пользователя' })
 @Schema()
 export class Notification {
@@ -31,13 +32,23 @@ export class Notification {
   @Prop()
   tsCreated: number
 
-  @Field(() => String, { description: 'Имя уведомления' })
+  @Field(() => String, {
+    nullable: true,
+    description: 'Имя уведомления'
+  })
   @Prop()
-  title: string
+  title?: string
 
-  @Field(() => String, { description: 'Текст уведомления' })
+  @Field(() => String, {
+    nullable: true,
+    description: 'Текст уведомления'
+  })
   @Prop()
-  text: string
+  text?: string
+
+  @Field(() => String, { description: 'Тип события' })
+  @Prop()
+  event: Event
 
   @Field(() => Boolean, {
     nullable: true,

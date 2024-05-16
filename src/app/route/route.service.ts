@@ -477,8 +477,9 @@ export class RouteService {
       userId: route.userId,
       type: 'route',
       contentId: route._id,
-      title: 'Маршрут модерирован',
-      text: `Маршрут ${route.name} был модерирован`
+      event: 'MODERATE',
+      title: null,
+      text: null
     })
 
     const emit: SubscriptionRouteResponse = {
@@ -511,8 +512,9 @@ export class RouteService {
       userId: route.userId,
       type: 'route',
       contentId: route._id,
-      title: 'Маршрут верифицирован',
-      text: `Маршрут ${route.name} был верифицирован`
+      event: 'VERIFY',
+      title: null,
+      text: null
     })
 
     const emit: SubscriptionRouteResponse = {
