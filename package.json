@@ -1,6 +1,6 @@
 {
   "name": "bigtrail-backend",
-  "version": "1.6.10",
+  "version": "1.6.11",
   "description": "Backend for BigTrail project",
   "author": "Maxim Piskunov (qualaddar@gmail.com)",
   "private": true,

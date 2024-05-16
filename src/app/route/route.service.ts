@@ -549,6 +549,15 @@ export class RouteService {
     route.userId = await this.userService.getContentOwnerId()
     await route.save()
 
+    await this.notificationService.create({
+      userId: userId,
+      type: 'route',
+      contentId: route._id,
+      event: 'DELETE',
+      title: null,
+      text: null
+    })
+
     const profile = await this.updateUserStatistics(userId)
     this.pubSub.publish('profileChanged', { watchProfile: profile })
 
