@@ -96,12 +96,21 @@ export class ReviewService {
 
   async filterReviews(reviews: Review[], filter: ReviewFilterInput) {
     if (!filter) return reviews
-    const { userId } = filter
-    const reviewsFiltered = reviews.filter((review) => {
-      if (userId && review.userId.toString() !== userId.toString()) return false
-      else return true
-    })
-    return reviewsFiltered
+    const { userId, from, to } = filter
+
+    if (userId) {
+      const reviewsFiltered = reviews.filter((review) => {
+        if (userId && review.userId.toString() !== userId.toString())
+          return false
+        else return true
+      })
+      return reviewsFiltered
+    } else {
+      const start = from > 0 ? from : 0
+      const end = to < reviews.length ? to : reviews.length
+      const reviewsPaginated = reviews.slice(start, end)
+      return reviewsPaginated
+    }
   }
 
   watchReviews() {
