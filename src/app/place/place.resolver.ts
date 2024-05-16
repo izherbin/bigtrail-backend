@@ -99,7 +99,11 @@ export class PlaceResolver {
     description:
       'Следить за всеми интересными местами заданного пользователя, удовлетворяющих фильтру',
     filter: (payload, variables): boolean => {
-      const { ids } = variables.watchPlacesFilterInput
+      if (!variables.watchPlacesFilterInput) {
+        return true
+      }
+      const { ids, userId } = variables.watchPlacesFilterInput
+
       const passedIdFilter =
         !ids ||
         !Array.isArray(ids) ||
@@ -110,9 +114,8 @@ export class PlaceResolver {
         )
 
       const passedUserIdFilter =
-        !variables.watchPlacesFilterInput.userId ||
-        payload.watchPlaces.userId.toString() ===
-          variables.watchPlacesFilterInput.userId.toString()
+        !userId || payload.watchPlaces.userId.toString() === userId.toString()
+
       return passedIdFilter && passedUserIdFilter
     }
   })

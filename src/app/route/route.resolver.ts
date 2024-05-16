@@ -144,7 +144,11 @@ export class RouteResolver {
     description:
       'Следить за всеми маршрутами пользователя, удовлетворяющих фильтру',
     filter: (payload, variables): boolean => {
-      const { ids } = variables.watchRoutesFilterInput
+      if (!variables.watchRoutesFilterInput) {
+        return true
+      }
+      const { ids, userId } = variables.watchRoutesFilterInput
+
       const passedIdFilter =
         !ids ||
         !Array.isArray(ids) ||
@@ -155,9 +159,8 @@ export class RouteResolver {
         )
 
       const passedUserIdFilter =
-        !variables.watchRoutesFilterInput.userId ||
-        payload.watchRoutes.userId.toString() ===
-          variables.watchRoutesFilterInput.userId.toString()
+        !userId || payload.watchRoutes.userId.toString() === userId.toString()
+
       return passedIdFilter && passedUserIdFilter
     }
   })
