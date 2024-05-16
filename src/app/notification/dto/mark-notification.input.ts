@@ -5,6 +5,9 @@ import { Schema as MongooSchema } from 'mongoose'
   description: 'Информация для отметки уведомления как прочитанного'
 })
 export class SetNotificationViewedInput {
-  @Field(() => String, { description: 'Id уведомления' })
-  id: MongooSchema.Types.ObjectId
+  @Field(() => String, {
+    nullable: true,
+    description: 'Id уведомления'
+  })
+  id?: MongooSchema.Types.ObjectId
 }
