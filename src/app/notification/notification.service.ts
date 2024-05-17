@@ -57,7 +57,11 @@ export class NotificationService {
       filter
     )
 
-    return notificationsFiltered
+    const nottificationsSorted = notificationsFiltered.sort((a, b) => {
+      return b.tsCreated - a.tsCreated
+    })
+
+    return nottificationsSorted
   }
 
   async filterNotifications(
