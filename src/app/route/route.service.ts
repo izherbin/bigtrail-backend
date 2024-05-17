@@ -113,6 +113,15 @@ export class RouteService {
       const route = await createRoute.save()
       // route.id = route._id.toString()
 
+      await this.notificationService.create({
+        userId: userId,
+        type: 'route',
+        contentId: route._id,
+        event: 'ADD',
+        title: null,
+        text: null
+      })
+
       const profile = await this.updateUserStatistics(userId)
       this.pubSub.publish('profileChanged', { watchProfile: profile })
 
@@ -442,6 +451,15 @@ export class RouteService {
         { $set: editRouteInput },
         { new: true }
       )
+
+      await this.notificationService.create({
+        userId: userId,
+        type: 'route',
+        contentId: route._id,
+        event: 'UPDATE',
+        title: null,
+        text: null
+      })
 
       const profile = await this.updateUserStatistics(userId)
       this.pubSub.publish('profileChanged', { watchProfile: profile })

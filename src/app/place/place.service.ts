@@ -66,6 +66,15 @@ export class PlaceService {
 
       const place = await createPlace.save()
 
+      await this.notificationService.create({
+        userId: userId,
+        type: 'place',
+        contentId: place._id,
+        event: 'DELETE',
+        title: null,
+        text: null
+      })
+
       const profile = await this.updateUserStatistics(userId)
       this.pubSub.publish('profileChanged', { watchProfile: profile })
 
@@ -328,6 +337,15 @@ export class PlaceService {
         { new: true }
       )
 
+      await this.notificationService.create({
+        userId: userId,
+        type: 'place',
+        contentId: place._id,
+        event: 'UPDATE',
+        title: null,
+        text: null
+      })
+
       const profile = await this.updateUserStatistics(userId)
       this.pubSub.publish('profileChanged', { watchProfile: profile })
 
@@ -435,6 +453,15 @@ export class PlaceService {
     await place.save()
 
     // await this.favoritesService.remove(userId, { id: id.toString() })
+
+    await this.notificationService.create({
+      userId: userId,
+      type: 'place',
+      contentId: place._id,
+      event: 'DELETE',
+      title: null,
+      text: null
+    })
 
     const profile = await this.updateUserStatistics(userId)
     this.pubSub.publish('profileChanged', { watchProfile: profile })
