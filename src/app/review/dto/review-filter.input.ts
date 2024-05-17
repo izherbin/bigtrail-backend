@@ -9,6 +9,12 @@ export class ReviewFilterInput {
   })
   userId?: MongooSchema.Types.ObjectId
 
+  @Field(() => [Int], {
+    nullable: true,
+    description: 'Фильтр по массиву рейтингов'
+  })
+  ratings?: (0 | 1 | 2 | 3 | 4 | 5)[]
+
   @Field(() => Int, {
     nullable: true,
     description: 'С какой позиции выдавать результаты'
