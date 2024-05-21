@@ -27,6 +27,8 @@ import { Role } from '../user/entities/user.entity'
 import { RolesGuard } from '../auth/roles.guards'
 import { SetVerifiedRouteInput } from './dto/set-verified-route.input'
 import { WatchRoutesFilterInput } from './dto/watch-routes-filter.input'
+import { GetRouteGraphInput } from './dto/get-route-graph.input'
+import { GraphPoint } from '../track/dto/graph-point'
 
 @Resolver(() => Route)
 export class RouteResolver {
@@ -118,6 +120,15 @@ export class RouteResolver {
     routeFilterInput?: RouteFilterInput
   ) {
     return this.routeService.getRoutesCount(routeFilterInput)
+  }
+
+  @Query(() => [GraphPoint], {
+    description: 'Получить грфйики маршрута пользователя'
+  })
+  getRouteGraph(
+    @Args('getRouteGraphInput') getRouteGraphInput: GetRouteGraphInput
+  ) {
+    return this.routeService.getRouteGraph(getRouteGraphInput)
   }
 
   // @Subscription(() => SubscriptionRouteResponse, {

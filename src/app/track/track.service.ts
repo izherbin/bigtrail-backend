@@ -16,7 +16,14 @@ import { ConfigService } from '@nestjs/config'
 import { simplifyPoints } from './simplify'
 import { TrackFilterInput } from './dto/track-filter.input'
 import { TrackAdminFilterInput } from './dto/track-admin-filter.input'
-import { trackStatistics } from './track-statistics'
+import {
+  distance2AltitudeGraph,
+  time2DistanceGraph,
+  time2SpeedGraph,
+  trackStatistics
+} from './track-statistics'
+import { GetTrackGraphInput } from './dto/get-track-grqph.input'
+import { GraphPoint } from './dto/graph-point'
 
 @Injectable()
 export class TrackService {
@@ -289,6 +296,26 @@ export class TrackService {
     track.statistics = await trackStatistics(track.points)
     track.markModified('statistics')
     return track
+  }
+
+  async getTrackGraph(
+    getTrackGraphInput: GetTrackGraphInput
+  ): Promise<GraphPoint[]> {
+    const track = await this.trackModel.findById(getTrackGraphInput.id)
+    if (!track) {
+      throw new ClientException(ClientErrors['No such track'])
+    }
+
+    switch (getTrackGraphInput.type) {
+      case 'TIME2DISTANCE':
+        return await time2DistanceGraph(track.points)
+      case 'TIME2SPEED':
+        return time2SpeedGraph(track.points)
+      case 'DISTANCE2ALTITUDE':
+        return await distance2AltitudeGraph(track.points)
+      default:
+        throw new ClientException(ClientErrors['Illegal graph type'])
+    }
   }
 
   async getAdminStatistics() {

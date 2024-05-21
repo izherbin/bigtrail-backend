@@ -281,6 +281,7 @@ export enum ClientErrors {
   'Similar id is not specified' = 40009,
   'Illegal sorting method' = 40010,
   'Illegal content type' = 40011,
+  'Illegal graph type' = 40012,
   'Code is incorrect' = 40101,
   'Password is incorrect' = 40102,
   'Impossible to delete someone else`s route' = 40301,

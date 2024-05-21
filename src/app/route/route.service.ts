@@ -28,7 +28,13 @@ import { DeleteReviewInput } from '../review/dto/delete-review.input'
 import { GetReviewsInput } from '../review/dto/get-reviews.input'
 import { NotificationService } from '../notification/notification.service'
 import { SubscriptionReviewResponse } from '../review/dto/subscription-review.response'
-import { trackStatistics } from '../track/track-statistics'
+import {
+  distance2AltitudeGraph,
+  time2DistanceGraph,
+  time2SpeedGraph,
+  trackStatistics
+} from '../track/track-statistics'
+import { GetRouteGraphInput } from './dto/get-route-graph.input'
 
 const STRING_SIMULARITY_THRESHOLD = 0.65
 
@@ -654,6 +660,25 @@ export class RouteService {
   async updateRouteStatistics(route) {
     route.statistics = await trackStatistics(route.points)
     return route
+  }
+
+  async getRouteGraph(getRouteGraphInput: GetRouteGraphInput) {
+    const { id, type } = getRouteGraphInput
+    const route = await this.routeModel.findById(id)
+    if (!route) {
+      throw new ClientException(ClientErrors['No such route'])
+    }
+
+    switch (type) {
+      case 'TIME2DISTANCE':
+        return time2DistanceGraph(route.points)
+      case 'TIME2SPEED':
+        return time2SpeedGraph(route.points)
+      case 'DISTANCE2ALTITUDE':
+        return distance2AltitudeGraph(route.points)
+      default:
+        throw new ClientException(ClientErrors['No such graph type'])
+    }
   }
 
   async getAdminStatistics() {

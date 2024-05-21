@@ -1,4 +1,5 @@
 import { TrackPoint, TrackStatistics } from './entities/track.entity'
+import { GraphPoint } from './dto/graph-point'
 export async function trackStatistics(
   points: TrackPoint[]
 ): Promise<TrackStatistics> {
@@ -59,6 +60,69 @@ export async function trackStatistics(
   }
 
   return statistics
+}
+
+export async function distance2AltitudeGraph(
+  points: TrackPoint[]
+): Promise<GraphPoint[]> {
+  const olSphere = await import('ol/sphere.js')
+
+  const data: GraphPoint[] = []
+
+  for (let idx = 0; idx < points.length; idx++) {
+    let distance = 0
+    if (idx !== 0) {
+      distance =
+        Math.abs(
+          getSqDist(points[idx], points[idx - 1], olSphere.getDistance)
+        ) + (data.at(-1)?.x ?? 0)
+    }
+
+    data.push({
+      y: points[idx].alt!,
+      x: Math.round(distance * 10000) / 10000
+    })
+  }
+
+  return data
+}
+
+export function time2SpeedGraph(points: TrackPoint[]): GraphPoint[] {
+  const data: GraphPoint[] = []
+
+  for (let idx = 0; idx < points.length; idx++) {
+    data.push({
+      y: points[idx].speed!,
+      x: Math.abs(points[0].timestamp! - points[idx].timestamp!)
+    })
+  }
+
+  return data
+}
+
+export async function time2DistanceGraph(
+  points: TrackPoint[]
+): Promise<GraphPoint[]> {
+  const olSphere = await import('ol/sphere.js')
+
+  const data: GraphPoint[] = []
+
+  for (let idx = 0; idx < points.length; idx++) {
+    let distance = 0
+    if (idx !== 0) {
+      distance =
+        Math.abs(
+          getSqDist(points[idx], points[idx - 1], olSphere.getDistance)
+        ) + (data.at(-1)?.x ?? 0)
+    }
+
+    data.push({
+      y: Math.round(distance * 10000) / 10000,
+      x: Math.abs(points[0].timestamp! - points[idx].timestamp!)
+    })
+  }
+
+  return data
 }
 
 export function getSqDist(

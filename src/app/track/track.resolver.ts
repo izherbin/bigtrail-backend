@@ -15,6 +15,8 @@ import { TrackAdminFilterInput } from './dto/track-admin-filter.input'
 import { RolesGuard } from '../auth/roles.guards'
 import { RequiredRoles } from '../auth/required-roles.decorator'
 import { Role } from '../user/entities/user.entity'
+import { GetTrackGraphInput } from './dto/get-track-grqph.input'
+import { GraphPoint } from './dto/graph-point'
 // import { UpdateTrackInput } from './dto/update-track.input'
 
 @Resolver()
@@ -44,6 +46,15 @@ export class TrackResolver {
     trackFilterInput: TrackFilterInput
   ) {
     return this.trackService.findByUserId(userId, trackFilterInput)
+  }
+
+  @Query(() => [GraphPoint], {
+    description: 'Получить грфйики трека пользователя'
+  })
+  getTrackGraph(
+    @Args('getTrackGraphInput') getTrackGraphInput: GetTrackGraphInput
+  ) {
+    return this.trackService.getTrackGraph(getTrackGraphInput)
   }
 
   @Query(() => [Track], {
