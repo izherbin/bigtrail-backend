@@ -28,6 +28,7 @@ import { DeleteReviewInput } from '../review/dto/delete-review.input'
 import { GetReviewsInput } from '../review/dto/get-reviews.input'
 import { NotificationService } from '../notification/notification.service'
 import { SubscriptionReviewResponse } from '../review/dto/subscription-review.response'
+import { trackStatistics } from '../track/track-statistics'
 
 const STRING_SIMULARITY_THRESHOLD = 0.65
 
@@ -110,7 +111,9 @@ export class RouteService {
       createRoute.userId = userId
       createRoute.timestamp = Date.now() //TODO Delete this if timestamp is not needed
       createRoute.tsCreated = new Date().getTime()
-      const route = await createRoute.save()
+      const route = await this.updateRouteStatistics(createRoute)
+      route.markModified('statistics')
+      await route.save()
       // route.id = route._id.toString()
 
       await this.notificationService.create({
@@ -446,11 +449,10 @@ export class RouteService {
     }
 
     Promise.allSettled(downloads.concat(elevations)).then(async () => {
-      const route = await this.routeModel.findByIdAndUpdate(
-        id,
-        { $set: editRouteInput },
-        { new: true }
-      )
+      route.set(editRouteInput)
+      const routeSave = await this.updateRouteStatistics(route)
+      routeSave.markModified('statistics')
+      await routeSave.save()
 
       await this.notificationService.create({
         userId: userId,
@@ -647,6 +649,11 @@ export class RouteService {
 
     user.save()
     return user as GetProfileResponse
+  }
+
+  async updateRouteStatistics(route) {
+    route.statistics = await trackStatistics(route.points)
+    return route
   }
 
   async getAdminStatistics() {

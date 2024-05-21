@@ -16,6 +16,7 @@ import { ConfigService } from '@nestjs/config'
 import { simplifyPoints } from './simplify'
 import { TrackFilterInput } from './dto/track-filter.input'
 import { TrackAdminFilterInput } from './dto/track-admin-filter.input'
+import { trackStatistics } from './track-statistics'
 
 @Injectable()
 export class TrackService {
@@ -78,7 +79,8 @@ export class TrackService {
       createTrack.userId = userId
       createTrack.tsCreated = new Date().getTime()
 
-      const track: Track = await createTrack.save()
+      const track = await this.updateTrackStatistics(createTrack)
+      await track.save()
       track.id = track._id.toString()
 
       const profile = await this.updateUserStatistics(userId)
@@ -277,6 +279,16 @@ export class TrackService {
 
     user.save()
     return user as GetProfileResponse
+  }
+
+  async updateTrackStatistics(
+    track: Document<unknown, object, TrackDocument> &
+      Track &
+      Document<any, any, any> & { _id: Types.ObjectId }
+  ) {
+    track.statistics = await trackStatistics(track.points)
+    track.markModified('statistics')
+    return track
   }
 
   async getAdminStatistics() {

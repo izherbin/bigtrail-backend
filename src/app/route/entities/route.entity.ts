@@ -2,7 +2,11 @@ import { ObjectType, Field, Float, Int } from '@nestjs/graphql'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document, Schema as MongooSchema } from 'mongoose'
 import { Review } from 'src/app/review/entities/review.entity'
-import { TrackNote, TrackPoint } from 'src/app/track/entities/track.entity'
+import {
+  TrackNote,
+  TrackPoint,
+  TrackStatistics
+} from 'src/app/track/entities/track.entity'
 
 export type RouteDifficulty = 'easily' | 'moderately' | 'difficult'
 
@@ -104,6 +108,13 @@ export class Route {
   @Field(() => String, { description: 'Адрес' })
   @Prop()
   address: string
+
+  @Field(() => TrackStatistics, {
+    nullable: true,
+    description: 'Статистика маршрута'
+  })
+  @Prop()
+  statistics?: TrackStatistics
 
   @Field(() => Boolean, {
     nullable: true,

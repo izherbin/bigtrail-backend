@@ -2,6 +2,59 @@ import { ObjectType, Field, Float } from '@nestjs/graphql'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document, Schema as MongooSchema } from 'mongoose'
 
+@ObjectType({ description: 'Статистика трека' })
+@Schema({ _id: false })
+export class TrackStatistics {
+  @Field(() => Float, { nullable: true, description: 'Расстояние, м' })
+  @Prop()
+  distance?: number
+
+  @Field(() => Float, { nullable: true, description: 'Длительность, сек' })
+  @Prop()
+  duration?: number
+
+  @Field(() => Float, { nullable: true, description: 'Время в движении, сек' })
+  @Prop()
+  movingTime?: number
+
+  @Field(() => Float, { nullable: true, description: 'Средняя скорость, км/ч' })
+  @Prop()
+  averageSpeed?: number
+
+  @Field(() => Float, {
+    nullable: true,
+    description: 'Максимальная скорость, км/ч'
+  })
+  @Prop()
+  maxSpeed?: number
+
+  @Field(() => Float, {
+    nullable: true,
+    description: 'Минимальная скорость, км/ч'
+  })
+  @Prop()
+  minSpeed?: number
+
+  @Field(() => Float, {
+    nullable: true,
+    description: 'Вертикальное расстояние, м'
+  })
+  @Prop()
+  verticalDistance?: number
+
+  @Field(() => Float, { nullable: true, description: 'Максимальная высота, м' })
+  @Prop()
+  maxAltitude?: number
+
+  @Field(() => Float, { nullable: true, description: 'Минимальная высота, м' })
+  @Prop()
+  minAltitude?: number
+
+  @Field(() => Float, { nullable: true, description: 'Разница высот, м' })
+  @Prop()
+  altitudesDifference?: number
+}
+
 @ObjectType({ description: 'Точка на маршруте' })
 @Schema({ _id: false })
 export class TrackPoint {
@@ -142,6 +195,13 @@ export class Track {
   @Field(() => Boolean, { nullable: true, description: 'Нерабочее?' })
   @Prop()
   disabled?: boolean
+
+  @Field(() => TrackStatistics, {
+    nullable: true,
+    description: 'Статистика трека'
+  })
+  @Prop()
+  statistics?: TrackStatistics
 }
 
 export type TrackDocument = Track & Document
