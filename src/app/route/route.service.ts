@@ -119,6 +119,7 @@ export class RouteService {
       createRoute.tsCreated = new Date().getTime()
       const route = await this.updateRouteStatistics(createRoute)
       route.markModified('statistics')
+      route.distance = route.statistics.distance || 0
       await route.save()
       // route.id = route._id.toString()
 
@@ -458,6 +459,7 @@ export class RouteService {
       route.set(editRouteInput)
       const routeSave = await this.updateRouteStatistics(route)
       routeSave.markModified('statistics')
+      routeSave.distance = routeSave.statistics.distance || 0
       await routeSave.save()
 
       await this.notificationService.create({
@@ -657,7 +659,13 @@ export class RouteService {
     return user as GetProfileResponse
   }
 
-  async updateRouteStatistics(route) {
+  async updateRouteStatistics(
+    route: Document<unknown, object, RouteDocument> &
+      Route &
+      Document<any, any, any> & {
+        _id: Types.ObjectId // route.id = route._id.toString()
+      }
+  ) {
     route.statistics = await trackStatistics(route.points)
     return route
   }

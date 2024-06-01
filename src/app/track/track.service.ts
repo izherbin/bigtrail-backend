@@ -87,6 +87,7 @@ export class TrackService {
       createTrack.tsCreated = new Date().getTime()
 
       const track = await this.updateTrackStatistics(createTrack)
+      track.distance = track.statistics.distance || 0
       await track.save()
       track.id = track._id.toString()
 
