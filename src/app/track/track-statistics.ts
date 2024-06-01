@@ -11,7 +11,7 @@ export async function trackStatistics(
   let maxSpeed = 0
   let minSpeed = 0
   let maxAltitude = 0
-  let minAltitude = 0
+  let minAltitude = points?.length > 0 && points[0].alt ? points[0].alt : 0
   let movingTime = 0
   let verticalDistance = 0
 
