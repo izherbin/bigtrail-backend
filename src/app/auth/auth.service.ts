@@ -74,7 +74,10 @@ export class AuthService {
     }
 
     const _id = user._id
-    if (!user.roles.includes(Role.Admin)) {
+    if (
+      !user.roles.includes(Role.Admin) &&
+      !user.roles.includes(Role.Supervisor)
+    ) {
       user.code = null
       user.save()
     }
@@ -127,7 +130,10 @@ export class AuthService {
       user = await this.userService.createUser(phone, ip)
     }
 
-    if (user.roles.includes(Role.Admin)) {
+    if (
+      user.roles.includes(Role.Admin) ||
+      user.roles.includes(Role.Supervisor)
+    ) {
       return {
         phone,
         sent: '1000000000000',

@@ -49,12 +49,12 @@
 					"label": "Admin: loginUser"
 				},
 				{
-					"line": 129,
+					"line": 132,
 					"column": 0,
 					"label": "Admin: signupUser"
 				},
 				{
-					"line": 307,
+					"line": 313,
 					"column": 0,
 					"label": "Admin: kill"
 				}
