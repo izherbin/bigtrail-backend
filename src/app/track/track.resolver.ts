@@ -49,6 +49,7 @@ export class TrackResolver {
   }
 
   @Query(() => [GraphPoint], {
+    nullable: true,
     description: 'Получить грфйики трека пользователя'
   })
   getTrackGraph(

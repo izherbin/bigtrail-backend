@@ -69,6 +69,7 @@ export async function distance2AltitudeGraph(
 
   const data: GraphPoint[] = []
 
+  let isEmpty = true
   for (let idx = 0; idx < points.length; idx++) {
     let distance = 0
     if (idx !== 0) {
@@ -76,6 +77,7 @@ export async function distance2AltitudeGraph(
         Math.abs(
           getSqDist(points[idx], points[idx - 1], olSphere.getDistance)
         ) + (data.at(-1)?.x ?? 0)
+      if (distance !== 0) isEmpty = false
     }
 
     data.push({
@@ -84,20 +86,24 @@ export async function distance2AltitudeGraph(
     })
   }
 
-  return data
+  if (isEmpty) return []
+  else return data
 }
 
 export function time2SpeedGraph(points: TrackPoint[]): GraphPoint[] {
   const data: GraphPoint[] = []
 
+  let isEmpty = true
   for (let idx = 0; idx < points.length; idx++) {
     data.push({
       y: points[idx].speed!,
       x: Math.abs(points[0].timestamp! - points[idx].timestamp!)
     })
+    if (points[idx].speed !== 0) isEmpty = false
   }
 
-  return data
+  if (isEmpty) return []
+  else return data
 }
 
 export async function time2DistanceGraph(
@@ -107,6 +113,7 @@ export async function time2DistanceGraph(
 
   const data: GraphPoint[] = []
 
+  let isEmpty = true
   for (let idx = 0; idx < points.length; idx++) {
     let distance = 0
     if (idx !== 0) {
@@ -120,9 +127,11 @@ export async function time2DistanceGraph(
       y: Math.round(distance * 10000) / 10000,
       x: Math.abs(points[0].timestamp! - points[idx].timestamp!)
     })
+    if (distance !== 0) isEmpty = false
   }
 
-  return data
+  if (isEmpty) return []
+  else return data
 }
 
 export function getSqDist(

@@ -123,6 +123,7 @@ export class RouteResolver {
   }
 
   @Query(() => [GraphPoint], {
+    nullable: true,
     description: 'Получить грфйики маршрута пользователя'
   })
   getRouteGraph(
