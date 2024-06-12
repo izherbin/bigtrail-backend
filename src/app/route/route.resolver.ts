@@ -60,7 +60,7 @@ export class RouteResolver {
     description: 'Модерировать маршрут'
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @RequiredRoles(Role.Moderator)
+  @RequiredRoles(Role.Moderator, Role.Admin)
   setModeratedRoute(
     @Args('setModeratedRouteInput')
     setModeratedRouteInput: SetModeratedRouteInput
@@ -72,7 +72,7 @@ export class RouteResolver {
     description: 'Верифицировать маршрут'
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @RequiredRoles(Role.Verifier)
+  @RequiredRoles(Role.Verifier, Role.Admin)
   setVerifiedRoute(
     @Args('setVerifiedRouteInput')
     setVerifiedRouteInput: SetVerifiedRouteInput

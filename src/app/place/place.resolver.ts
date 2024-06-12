@@ -50,7 +50,7 @@ export class PlaceResolver {
     description: 'Модерировать интересное место'
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @RequiredRoles(Role.Moderator)
+  @RequiredRoles(Role.Moderator, Role.Admin)
   setModeratedPlace(
     @Args('setModeratedPlaceInput')
     setModeratedPlaceInput: SetModeratedPlaceInput
@@ -62,7 +62,7 @@ export class PlaceResolver {
     description: 'Верифицировать интересное место'
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @RequiredRoles(Role.Verifier)
+  @RequiredRoles(Role.Verifier, Role.Admin)
   setVerifiedPlace(
     @Args('setVerifiedPlaceInput')
     setVerifiedPlaceInput: SetVerifiedPlaceInput
