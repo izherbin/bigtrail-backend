@@ -120,7 +120,7 @@ export async function time2DistanceGraph(
       distance =
         Math.abs(
           getSqDist(points[idx], points[idx - 1], olSphere.getDistance)
-        ) + (data.at(-1)?.x ?? 0)
+        ) + (data.at(-1)?.y ?? 0)
     }
 
     data.push({
