@@ -2,6 +2,21 @@ import { Field, Float, InputType, Int } from '@nestjs/graphql'
 import { RouteDifficulty } from '../entities/route.entity'
 import { Schema as MongooSchema } from 'mongoose'
 
+@InputType({ description: 'Фильтр маршрутов по длиительности' })
+export class RouteDurationFilterInput {
+  @Field(() => Float, {
+    nullable: true,
+    description: 'Минимальная длительность маршрута'
+  })
+  from?: number
+
+  @Field(() => Float, {
+    nullable: true,
+    description: 'Максимальная длительность маршрута'
+  })
+  to?: number
+}
+
 @InputType({ description: 'Набор фильтров маршрутов' })
 export class RouteFilterInput {
   @Field(() => [String], {
@@ -61,6 +76,18 @@ export class RouteFilterInput {
       'Фильтр по похожести маршрутов на основе расстояния между первыми точками трека (в поле передается эталонный маршрут)'
   })
   similar?: MongooSchema.Types.ObjectId
+
+  @Field(() => [Int], {
+    nullable: true,
+    description: 'Фильтр по доступности маршрута'
+  })
+  availability?: number[]
+
+  @Field(() => RouteDurationFilterInput, {
+    nullable: true,
+    description: 'Фильтр по длительности маршрута'
+  })
+  duration?: RouteDurationFilterInput
 
   @Field(() => Float, {
     nullable: true,

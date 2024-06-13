@@ -731,6 +731,32 @@ export class RouteService {
       )
     }
 
+    function isArrayStrictFilterFails(
+      array: number[] | null,
+      value: number[] | null
+    ) {
+      if (!array || (Array.isArray(array) && array.length == 0)) return false
+      else if (!value || (Array.isArray(value) && value.length == 0))
+        return true
+      else {
+        const isFit = array.every((a) => value.includes(a))
+        return !isFit
+      }
+    }
+
+    function isLimitsFilterFails(
+      limits: { from?: number; to?: number } | null,
+      value: number | null
+    ) {
+      if (!limits) return false
+      else if (!value) return true
+      else {
+        const { from = 0, to } = limits
+        const isFit = value >= from && (to ? value <= to : true)
+        return !isFit
+      }
+    }
+
     function routesSimplify(routes: Route[], tolerance: number) {
       for (const route of routes) {
         route.points = simplifyPoints(route.points, tolerance, false)
@@ -748,6 +774,8 @@ export class RouteService {
       sort,
       order = 'asc',
       similar,
+      availability,
+      duration,
       simplify,
       moderated,
       verified,
@@ -796,6 +824,9 @@ export class RouteService {
       else if (isStringFilterFails(category, route.category)) return false
       else if (isBooleanFilterFails(moderated, route.moderated)) return false
       else if (isBooleanFilterFails(verified, route.verified)) return false
+      else if (isArrayStrictFilterFails(availability, route.availability))
+        return false
+      else if (isLimitsFilterFails(duration, route.duration)) return false
       else return true
     })
 
