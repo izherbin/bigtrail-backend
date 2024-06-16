@@ -26,9 +26,21 @@ export class NotificationService {
   async create(createNotificationInput: CreateNotificationInput) {
     const notification = new this.notificationModel(createNotificationInput)
     notification.tsCreated = Date.now()
-    const res = await notification.save()
 
     const profile = await this.updateUserStatistics(notification.userId)
+    if (!profile) {
+      console.error(
+        '\x1b[31m[Notification] - \x1b[37m',
+        new Date().toLocaleString('en-EN'),
+        '\x1b[33mWARNING',
+        `Trying to send notificattion to non-existing user: ${notification.userId}`,
+        '\x1b[37m'
+      )
+      return null
+    }
+
+    const res = await notification.save()
+
     console.log(
       'create Notification: notification.userId:',
       notification.userId
@@ -160,7 +172,9 @@ export class NotificationService {
   }
 
   async updateUserStatistics(userId: MongooSchema.Types.ObjectId) {
-    const user = await this.userService.getUserById(userId)
+    const user = await this.userService.searchUserById(userId)
+    if (!user) return null
+
     if (!user.statistics) {
       user.statistics = {
         subscribers: 0,

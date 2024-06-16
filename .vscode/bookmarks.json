@@ -14,22 +14,22 @@
 			"path": "src/app/user/user.service.ts",
 			"bookmarks": [
 				{
-					"line": 155,
+					"line": 162,
 					"column": 0,
 					"label": "Admin: updateUser"
 				},
 				{
-					"line": 168,
+					"line": 175,
 					"column": 0,
 					"label": "Admin: deleteUser"
 				},
 				{
-					"line": 240,
+					"line": 247,
 					"column": 0,
 					"label": "Admin: setName"
 				},
 				{
-					"line": 317,
+					"line": 324,
 					"column": 0,
 					"label": "Admin: setProfileStatus"
 				}
@@ -57,6 +57,21 @@
 					"line": 313,
 					"column": 0,
 					"label": "Admin: kill"
+				}
+			]
+		},
+		{
+			"path": "src/app/notification/notification.service.ts",
+			"bookmarks": [
+				{
+					"line": 25,
+					"column": 6,
+					"label": ""
+				},
+				{
+					"line": 166,
+					"column": 6,
+					"label": ""
 				}
 			]
 		}

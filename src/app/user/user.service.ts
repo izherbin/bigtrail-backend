@@ -77,6 +77,13 @@ export class UserService {
     return user
   }
 
+  //* Search User By its Id without error handling
+  async searchUserById(id: MongooSchema.Types.ObjectId) {
+    const user = await this.userModel.findById(id)
+
+    return user
+  }
+
   async getAdminStatistics() {
     return await this.userModel
       .countDocuments({
