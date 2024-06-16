@@ -49,9 +49,9 @@ export async function trackStatistics(
   const statistics: TrackStatistics = {
     distance,
     duration: Math.round(duration / 1000),
-    averageSpeed: totalSpeed / points.length,
-    maxSpeed,
-    minSpeed,
+    averageSpeed: Math.round((totalSpeed / points.length) * 10) / 10,
+    maxSpeed: Math.round(maxSpeed * 10) / 10,
+    minSpeed: Math.round(minSpeed * 10) / 10,
     maxAltitude,
     minAltitude,
     movingTime: Math.round(movingTime / 1000),
