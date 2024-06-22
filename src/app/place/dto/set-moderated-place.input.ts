@@ -4,7 +4,7 @@ import { EditPlaceInput } from './edit-place.input'
 @InputType({ description: 'Информация для модерации интересного места' })
 export class SetModeratedPlaceInput extends OmitType(
   EditPlaceInput,
-  ['id', 'photos'],
+  ['id'],
   InputType
 ) {
   @Field(() => String, { description: 'Идентификатор в MongoDB' })

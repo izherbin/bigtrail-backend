@@ -399,7 +399,18 @@ export class RouteService {
       )
     }
 
-    return await this.edit(route, editRouteInput)
+    const uploads = await this.edit(route, editRouteInput)
+
+    await this.notificationService.create({
+      userId: route.userId,
+      type: 'route',
+      contentId: route._id,
+      event: 'UPDATE',
+      title: null,
+      text: null
+    })
+
+    return uploads
   }
 
   async edit(
@@ -473,15 +484,6 @@ export class RouteService {
       routeSave.distance = routeSave.statistics.distance || 0
       await routeSave.save()
 
-      await this.notificationService.create({
-        userId: route.userId,
-        type: 'route',
-        contentId: route._id,
-        event: 'UPDATE',
-        title: null,
-        text: null
-      })
-
       const profile = await this.updateUserStatistics(route.userId)
       this.pubSub.publish('profileChanged', { watchProfile: profile })
 
@@ -498,7 +500,7 @@ export class RouteService {
   }
 
   async setModerated(setModeratedRouteInput: SetModeratedRouteInput) {
-    const { id, ...update } = setModeratedRouteInput
+    const { id } = setModeratedRouteInput
     const route = await this.routeModel.findById(id)
     if (!route) {
       throw new ClientException(ClientErrors['No such route'])
@@ -509,8 +511,7 @@ export class RouteService {
     }
 
     route.moderated = true
-    route.set(update)
-    await route.save()
+    const uploads = await this.edit(route, setModeratedRouteInput)
 
     await this.notificationService.create({
       userId: route.userId,
@@ -529,11 +530,11 @@ export class RouteService {
     }
     this.pubSub.publish('routeChanged', { watchRoutes: emit })
 
-    return `Маршрут ${id} успешно модерирован`
+    return uploads
   }
 
   async setVerified(setVerifiedRouteInput: SetVerifiedRouteInput) {
-    const { id, ...update } = setVerifiedRouteInput
+    const { id } = setVerifiedRouteInput
     const route = await this.routeModel.findById(id)
     if (!route) {
       throw new ClientException(ClientErrors['No such route'])
@@ -544,8 +545,7 @@ export class RouteService {
     }
 
     route.verified = true
-    route.set(update)
-    await route.save()
+    const uploads = await this.edit(route, setVerifiedRouteInput)
 
     await this.notificationService.create({
       userId: route.userId,
@@ -564,7 +564,7 @@ export class RouteService {
     }
     this.pubSub.publish('routeChanged', { watchRoutes: emit })
 
-    return `Маршрут ${id} успешно верифицирован`
+    return uploads
   }
 
   async remove(

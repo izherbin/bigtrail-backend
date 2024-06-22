@@ -56,7 +56,7 @@ export class RouteResolver {
     return this.routeService.updateUserRoutes(userId, editRouteInput)
   }
 
-  @Mutation(() => String, {
+  @Mutation(() => [UploadPhoto], {
     description: 'Модерировать маршрут'
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -68,7 +68,7 @@ export class RouteResolver {
     return this.routeService.setModerated(setModeratedRouteInput)
   }
 
-  @Mutation(() => String, {
+  @Mutation(() => [UploadPhoto], {
     description: 'Верифицировать маршрут'
   })
   @UseGuards(JwtAuthGuard, RolesGuard)

@@ -46,7 +46,7 @@ export class PlaceResolver {
     return this.placeService.updateUserPlace(userId, editPlaceInput)
   }
 
-  @Mutation(() => String, {
+  @Mutation(() => [UploadPhoto], {
     description: 'Модерировать интересное место'
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -58,7 +58,7 @@ export class PlaceResolver {
     return this.placeService.setModerated(setModeratedPlaceInput)
   }
 
-  @Mutation(() => String, {
+  @Mutation(() => [UploadPhoto], {
     description: 'Верифицировать интересное место'
   })
   @UseGuards(JwtAuthGuard, RolesGuard)

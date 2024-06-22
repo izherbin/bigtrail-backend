@@ -4,7 +4,7 @@ import { EditRouteInput } from 'src/app/route/dto/edit-route.input'
 @InputType({ description: 'Информация для модерации маршрута' })
 export class SetModeratedRouteInput extends OmitType(
   EditRouteInput,
-  ['id', 'photos', 'points', 'notes'],
+  ['id', 'points'],
   InputType
 ) {
   @Field(() => String, { description: 'Идентификатор в MongoDB' })

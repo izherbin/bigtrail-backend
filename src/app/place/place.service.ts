@@ -318,7 +318,18 @@ export class PlaceService {
       )
     }
 
-    return this.edit(place, editPlaceInput)
+    const uploads = this.edit(place, editPlaceInput)
+
+    await this.notificationService.create({
+      userId: place.userId,
+      type: 'place',
+      contentId: place._id,
+      event: 'UPDATE',
+      title: null,
+      text: null
+    })
+
+    return uploads
   }
 
   async edit(
@@ -343,15 +354,6 @@ export class PlaceService {
       place.set(editPlaceInput)
       await place.save()
 
-      await this.notificationService.create({
-        userId: place.userId,
-        type: 'place',
-        contentId: place._id,
-        event: 'UPDATE',
-        title: null,
-        text: null
-      })
-
       const profile = await this.updateUserStatistics(place.userId)
       this.pubSub.publish('profileChanged', { watchProfile: profile })
 
@@ -368,7 +370,7 @@ export class PlaceService {
   }
 
   async setModerated(setModeratedPlaceInput: SetModeratedPlaceInput) {
-    const { id, ...update } = setModeratedPlaceInput
+    const { id } = setModeratedPlaceInput
     const place = await this.placeModel.findById(id)
     if (!place) {
       throw new ClientException(ClientErrors['No such place'])
@@ -379,8 +381,7 @@ export class PlaceService {
     }
 
     place.moderated = true
-    place.set(update)
-    await place.save()
+    const uploads = this.edit(place, setModeratedPlaceInput)
 
     await this.notificationService.create({
       type: 'place',
@@ -391,19 +392,11 @@ export class PlaceService {
       text: null
     })
 
-    const emit: SubscriptionPlaceResponse = {
-      function: 'UPDATE',
-      id: place._id,
-      data: place as Place,
-      userId: place.userId
-    }
-    this.pubSub.publish('placeChanged', { watchPlaces: emit })
-
-    return `Интересное место ${id} успешно модерировано`
+    return uploads
   }
 
   async setVerified(setVerifiedPlaceInput: SetVerifiedPlaceInput) {
-    const { id, ...update } = setVerifiedPlaceInput
+    const { id } = setVerifiedPlaceInput
     const place = await this.placeModel.findById(id)
     if (!place) {
       throw new ClientException(ClientErrors['No such place'])
@@ -414,8 +407,7 @@ export class PlaceService {
     }
 
     place.verified = true
-    place.set(update)
-    await place.save()
+    const uploads = this.edit(place, setVerifiedPlaceInput)
 
     await this.notificationService.create({
       type: 'place',
@@ -426,15 +418,7 @@ export class PlaceService {
       text: null
     })
 
-    const emit: SubscriptionPlaceResponse = {
-      function: 'UPDATE',
-      id: place._id,
-      data: place as Place,
-      userId: place.userId
-    }
-    this.pubSub.publish('placeChanged', { watchPlaces: emit })
-
-    return `Интересное место ${id} успешно верифицировано`
+    return uploads
   }
 
   async remove(
