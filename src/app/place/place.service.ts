@@ -641,7 +641,7 @@ export class PlaceService {
       places.reverse()
     }
 
-    return places
+    return places.filter((p) => p._id.toString() !== similar.toString())
   }
 
   async sortByDate(places: Place[], order: string) {

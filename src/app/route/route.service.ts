@@ -855,7 +855,7 @@ export class RouteService {
       routes.reverse()
     }
 
-    return routes
+    return routes.filter((r) => r._id.toString() !== similar.toString())
   }
 
   async sortByDate(routes: Route[], order: string) {
