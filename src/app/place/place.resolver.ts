@@ -43,7 +43,7 @@ export class PlaceResolver {
     @UserId() userId: MongooSchema.Types.ObjectId,
     @Args('editPlaceInput') editPlaceInput: EditPlaceInput
   ) {
-    return this.placeService.edit(userId, editPlaceInput)
+    return this.placeService.updateUserPlace(userId, editPlaceInput)
   }
 
   @Mutation(() => String, {

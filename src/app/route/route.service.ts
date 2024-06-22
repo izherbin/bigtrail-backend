@@ -384,7 +384,7 @@ export class RouteService {
     return route.reviews || []
   }
 
-  async edit(
+  async updateUserRoutes(
     userId: MongooSchema.Types.ObjectId,
     editRouteInput: EditRouteInput
   ) {
@@ -399,6 +399,17 @@ export class RouteService {
       )
     }
 
+    return await this.edit(route, editRouteInput)
+  }
+
+  async edit(
+    route: Document<unknown, object, RouteDocument> &
+      Route &
+      Document<any, any, any> & {
+        _id: Types.ObjectId
+      },
+    editRouteInput: EditRouteInput
+  ) {
     const elevations = []
     for (const p in editRouteInput.points) {
       if (!editRouteInput.points[p].alt) {
@@ -463,7 +474,7 @@ export class RouteService {
       await routeSave.save()
 
       await this.notificationService.create({
-        userId: userId,
+        userId: route.userId,
         type: 'route',
         contentId: route._id,
         event: 'UPDATE',
@@ -471,7 +482,7 @@ export class RouteService {
         text: null
       })
 
-      const profile = await this.updateUserStatistics(userId)
+      const profile = await this.updateUserStatistics(route.userId)
       this.pubSub.publish('profileChanged', { watchProfile: profile })
 
       const emit: SubscriptionRouteResponse = {

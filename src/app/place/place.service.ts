@@ -303,7 +303,7 @@ export class PlaceService {
     return place.reviews || []
   }
 
-  async edit(
+  async updateUserPlace(
     userId: MongooSchema.Types.ObjectId,
     editPlaceInput: EditPlaceInput
   ) {
@@ -318,6 +318,15 @@ export class PlaceService {
       )
     }
 
+    return this.edit(place, editPlaceInput)
+  }
+
+  async edit(
+    place: Document<unknown, object, PlaceDocument> &
+      Place &
+      Document<any, any, any> & { _id: Types.ObjectId },
+    editPlaceInput: EditPlaceInput
+  ) {
     const uploads = []
     const downloads = []
     for (const p in editPlaceInput.photos) {
@@ -331,14 +340,11 @@ export class PlaceService {
     }
 
     Promise.allSettled(downloads).then(async () => {
-      const place = await this.placeModel.findByIdAndUpdate(
-        id,
-        { $set: editPlaceInput },
-        { new: true }
-      )
+      place.set(editPlaceInput)
+      await place.save()
 
       await this.notificationService.create({
-        userId: userId,
+        userId: place.userId,
         type: 'place',
         contentId: place._id,
         event: 'UPDATE',
@@ -346,7 +352,7 @@ export class PlaceService {
         text: null
       })
 
-      const profile = await this.updateUserStatistics(userId)
+      const profile = await this.updateUserStatistics(place.userId)
       this.pubSub.publish('profileChanged', { watchProfile: profile })
 
       const emit: SubscriptionPlaceResponse = {

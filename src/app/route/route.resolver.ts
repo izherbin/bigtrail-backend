@@ -53,7 +53,7 @@ export class RouteResolver {
     @UserId() userId: MongooSchema.Types.ObjectId,
     @Args('editRouteInput') editRouteInput: EditRouteInput
   ) {
-    return this.routeService.edit(userId, editRouteInput)
+    return this.routeService.updateUserRoutes(userId, editRouteInput)
   }
 
   @Mutation(() => String, {
