@@ -53,7 +53,7 @@ export class RouteResolver {
     @UserId() userId: MongooSchema.Types.ObjectId,
     @Args('editRouteInput') editRouteInput: EditRouteInput
   ) {
-    return this.routeService.updateUserRoutes(userId, editRouteInput)
+    return this.routeService.updateUserRoute(userId, editRouteInput)
   }
 
   @Mutation(() => [UploadPhoto], {

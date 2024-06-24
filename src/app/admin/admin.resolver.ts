@@ -10,13 +10,20 @@ import { LoginPasswordInput } from '../auth/dto/login-password.input'
 import { AuthService } from '../auth/auth.service'
 import { UserService } from '../user/user.service'
 import { DeleteContentInput } from './dto/delete-content.input'
+import { UploadPhoto } from '../track/dto/upload-photo.response'
+import { EditRouteInput } from '../route/dto/edit-route.input'
+import { RouteService } from '../route/route.service'
+import { PlaceService } from '../place/place.service'
+import { EditPlaceInput } from '../place/dto/edit-place.input'
 
 @Resolver()
 export class AdminResolver {
   constructor(
     private readonly adminService: AdminService,
     private readonly authService: AuthService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly routeService: RouteService,
+    private readonly placeService: PlaceService
   ) {}
 
   @Query(() => StatisticsResponse, {
@@ -78,5 +85,23 @@ export class AdminResolver {
     @Args('deleteContentInput') deleteContentInput: DeleteContentInput
   ) {
     return this.adminService.deleteContent(deleteContentInput)
+  }
+
+  @Mutation(() => [UploadPhoto], {
+    description: 'Редактировать маршрут (админ)'
+  })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RequiredRoles(Role.Admin)
+  adminEditRoute(@Args('editRouteInput') editRouteInput: EditRouteInput) {
+    return this.routeService.updateRoute(editRouteInput)
+  }
+
+  @Mutation(() => [UploadPhoto], {
+    description: 'Редактировать место (админ)'
+  })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RequiredRoles(Role.Admin)
+  adminEditPlace(@Args('editPlaceInput') editPlaceInput: EditPlaceInput) {
+    return this.placeService.updatePlace(editPlaceInput)
   }
 }

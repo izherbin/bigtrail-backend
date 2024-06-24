@@ -384,7 +384,7 @@ export class RouteService {
     return route.reviews || []
   }
 
-  async updateUserRoutes(
+  async updateUserRoute(
     userId: MongooSchema.Types.ObjectId,
     editRouteInput: EditRouteInput
   ) {
@@ -397,6 +397,27 @@ export class RouteService {
       throw new ClientException(
         ClientErrors['Impossible to edit someone else`s route']
       )
+    }
+
+    const uploads = await this.edit(route, editRouteInput)
+
+    await this.notificationService.create({
+      userId: route.userId,
+      type: 'route',
+      contentId: route._id,
+      event: 'UPDATE',
+      title: null,
+      text: null
+    })
+
+    return uploads
+  }
+
+  async updateRoute(editRouteInput: EditRouteInput) {
+    const { id } = editRouteInput
+    const route = await this.routeModel.findById(id)
+    if (!route) {
+      throw new ClientException(ClientErrors['No such route'])
     }
 
     const uploads = await this.edit(route, editRouteInput)

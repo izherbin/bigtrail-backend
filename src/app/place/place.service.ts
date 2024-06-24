@@ -332,6 +332,27 @@ export class PlaceService {
     return uploads
   }
 
+  async updatePlace(editPlaceInput: EditPlaceInput) {
+    const { id } = editPlaceInput
+    const place = await this.placeModel.findById(id)
+    if (!place) {
+      throw new ClientException(ClientErrors['No such place'])
+    }
+
+    const uploads = this.edit(place, editPlaceInput)
+
+    await this.notificationService.create({
+      userId: place.userId,
+      type: 'place',
+      contentId: place._id,
+      event: 'UPDATE',
+      title: null,
+      text: null
+    })
+
+    return uploads
+  }
+
   async edit(
     place: Document<unknown, object, PlaceDocument> &
       Place &
