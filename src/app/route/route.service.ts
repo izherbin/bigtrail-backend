@@ -802,6 +802,8 @@ export class RouteService {
       search,
       transit,
       difficulty,
+      start,
+      end,
       category,
       sort,
       order = 'asc',
@@ -814,6 +816,8 @@ export class RouteService {
       from,
       to
     } = filter || {}
+
+    const tsCreatedLimits = !start && !end ? null : { from: start, to: end }
 
     if (ids && Array.isArray(ids) && ids.length > 0) {
       const routesFiltered = routes.filter((route) =>
@@ -859,6 +863,8 @@ export class RouteService {
       else if (isArrayStrictFilterFails(availability, route.availability))
         return false
       else if (isLimitsFilterFails(duration, route.duration)) return false
+      else if (isLimitsFilterFails(tsCreatedLimits, route.tsCreated))
+        return false
       else return true
     })
 
@@ -866,9 +872,10 @@ export class RouteService {
       ? routesSimplify(routesFiltered, simplify)
       : routesFiltered
 
-    const start = from && from > 0 ? from : 0
-    const end = to && to < routesFiltered.length ? to : routesFiltered.length
-    return routesSimplified.slice(start, end)
+    const outputStart = from && from > 0 ? from : 0
+    const outputEnd =
+      to && to < routesFiltered.length ? to : routesFiltered.length
+    return routesSimplified.slice(outputStart, outputEnd)
   }
 
   async sortBySimilarity(

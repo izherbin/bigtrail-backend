@@ -56,6 +56,18 @@ export class RouteFilterInput {
   })
   difficulty?: [RouteDifficulty]
 
+  @Field(() => Float, {
+    nullable: true,
+    description: 'Фильтр по времени создания после (в формате timestamp)'
+  })
+  start?: number
+
+  @Field(() => Float, {
+    nullable: true,
+    description: 'Фильтр по времени создания до (в формате timestamp)'
+  })
+  end?: number
+
   @Field(() => String, {
     nullable: true,
     description:

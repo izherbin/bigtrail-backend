@@ -585,10 +585,25 @@ export class PlaceService {
       return !isUserIdEmpty && userId?.toString() !== value?.toString()
     }
 
+    function isLimitsFilterFails(
+      limits: { from?: number; to?: number } | null,
+      value: number | null
+    ) {
+      if (!limits) return false
+      else if (!value) return true
+      else {
+        const { from = 0, to } = limits
+        const isFit = value >= from && (to ? value <= to : true)
+        return !isFit
+      }
+    }
+
     const {
       ids,
       type,
       userId,
+      start,
+      end,
       sort,
       order = 'asc',
       similar,
@@ -597,6 +612,8 @@ export class PlaceService {
       from,
       to
     } = filter || {}
+
+    const tsCreatedLimits = !start && !end ? null : { from: start, to: end }
 
     if (ids && Array.isArray(ids) && ids.length > 0) {
       const placesFiltered = places.filter((place) => {
@@ -628,12 +645,15 @@ export class PlaceService {
       else if (isStringFilterFails([type], place.type)) return false
       else if (isBooleanFilterFails(moderated, place.moderated)) return false
       else if (isBooleanFilterFails(verified, place.verified)) return false
+      else if (isLimitsFilterFails(tsCreatedLimits, place.tsCreated))
+        return false
       else return true
     })
 
-    const start = from && from > 0 ? from : 0
-    const end = to && to < placesFiltered.length ? to : placesFiltered.length
-    return placesFiltered.slice(start, end)
+    const outputStart = from && from > 0 ? from : 0
+    const outputEnd =
+      to && to < placesFiltered.length ? to : placesFiltered.length
+    return placesFiltered.slice(outputStart, outputEnd)
   }
 
   async sortBySimilarity(

@@ -1,4 +1,4 @@
-import { Field, InputType, Int } from '@nestjs/graphql'
+import { Field, Float, InputType, Int } from '@nestjs/graphql'
 import { Schema as MongooSchema } from 'mongoose'
 
 @InputType({ description: 'Набор фильтров интересных мест' })
@@ -21,6 +21,18 @@ export class PlaceFilterInput {
     description: 'Фильтр по владельцу'
   })
   userId?: MongooSchema.Types.ObjectId
+
+  @Field(() => Float, {
+    nullable: true,
+    description: 'Фильтр по времени создания после (в формате timestamp)'
+  })
+  start?: number
+
+  @Field(() => Float, {
+    nullable: true,
+    description: 'Фильтр по времени создания до (в формате timestamp)'
+  })
+  end?: number
 
   @Field(() => String, {
     nullable: true,
