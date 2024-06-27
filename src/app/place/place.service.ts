@@ -461,6 +461,7 @@ export class PlaceService {
     place.moderated = false
     place.verified = false
     place.userId = await this.userService.getContentOwnerId()
+    place.deleted = true
     await place.save()
 
     // await this.favoritesService.remove(userId, { id: id.toString() })

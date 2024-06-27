@@ -86,6 +86,13 @@ export class Route {
   @Prop()
   tsCreated?: number
 
+  @Field(() => Boolean, {
+    nullable: true,
+    description: 'Удален ли маршрут?'
+  })
+  @Prop()
+  deleted?: boolean
+
   @Field(() => [TrackPoint], { description: 'Массив точек маршрута' })
   @Prop()
   points: TrackPoint[]

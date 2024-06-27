@@ -35,6 +35,13 @@ export class Place {
   @Prop()
   tsCreated?: number
 
+  @Field(() => Boolean, {
+    nullable: true,
+    description: 'Удалено ли интересное место?'
+  })
+  @Prop()
+  deleted?: boolean
+
   @Field(() => String, { description: 'Индетификатор создателя в MongoDB' })
   @Prop()
   userId: MongooSchema.Types.ObjectId

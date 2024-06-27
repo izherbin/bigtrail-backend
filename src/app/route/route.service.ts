@@ -607,6 +607,7 @@ export class RouteService {
     route.moderated = false
     route.verified = false
     route.userId = await this.userService.getContentOwnerId()
+    route.deleted = true
     await route.save()
 
     await this.notificationService.create({
