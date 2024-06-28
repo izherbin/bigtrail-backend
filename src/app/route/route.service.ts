@@ -782,7 +782,7 @@ export class RouteService {
       value: number | null
     ) {
       if (!limits) return false
-      else if (!value) return true
+      else if (!value && value !== 0) return true
       else {
         const { from = 0, to } = limits
         const isFit = value >= from && (to ? value <= to : true)
